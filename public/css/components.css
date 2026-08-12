@@ -479,7 +479,8 @@ contact-form {
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
   padding: 0.7rem 0.9rem;
@@ -490,7 +491,8 @@ contact-form {
 }
 
 .field input:focus,
-.field textarea:focus {
+.field textarea:focus,
+.field select:focus {
   border-color: var(--color-accent-500);
 }
 
@@ -502,6 +504,42 @@ contact-form {
 .field.has-error input,
 .field.has-error textarea {
   border-color: var(--color-alert-500);
+}
+
+/* Campo de senha com botão de mostrar/ocultar + gerador — usado no admin,
+   pra criar usuário sem digitar senha às cegas. */
+.password-field {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: stretch;
+}
+
+.password-field input {
+  flex: 1;
+  min-width: 0;
+}
+
+.password-field__toggle {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  flex-shrink: 0;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.password-field__toggle:hover,
+.password-field__toggle[aria-pressed="true"] {
+  color: var(--color-accent-600);
+  border-color: var(--color-accent-500);
+}
+
+.password-field__toggle svg {
+  width: 18px;
+  height: 18px;
 }
 
 .field__error {

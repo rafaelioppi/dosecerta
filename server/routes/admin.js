@@ -1,13 +1,62 @@
 /**
  * routes/admin.js
- * CRUD do catálogo de medicamentos. Tudo aqui exige role 'admin'.
+ * CRUD de usuários e do catálogo de medicamentos. Tudo aqui exige role 'admin'.
  */
 const express = require("express");
+const bcrypt = require("bcrypt");
 const db = require("../db");
 const { requireRole } = require("../middleware/auth");
 
 const router = express.Router();
 router.use(requireRole("admin"));
+
+const SALT_ROUNDS = 12;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// ---- Usuários ----
+// Cria conta diretamente pelo admin (sem passar pelo cadastro público em
+// /cadastro.html) — inclusive contas admin. Continua não existindo rota
+// pra alguém virar admin sozinho: só quem já é admin acessa isto.
+router.get("/users", (_req, res) => {
+  res.json(
+    db
+      .prepare("SELECT id, name, email, role, council_type, council_number, created_at FROM users ORDER BY created_at DESC")
+      .all()
+  );
+});
+
+router.post("/users", async (req, res) => {
+  const { name, email, password, role, councilType, councilNumber } = req.body || {};
+
+  if (!name || String(name).trim().length < 2) {
+    return res.status(400).json({ error: "Informe um nome válido." });
+  }
+  if (!email || !EMAIL_RE.test(String(email))) {
+    return res.status(400).json({ error: "Informe um e-mail válido." });
+  }
+  if (!password || String(password).length < 8) {
+    return res.status(400).json({ error: "A senha deve ter pelo menos 8 caracteres." });
+  }
+  if (role !== "admin" && role !== "professional") {
+    return res.status(400).json({ error: "Papel inválido — use 'admin' ou 'professional'." });
+  }
+
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(normalizedEmail);
+  if (existing) {
+    return res.status(409).json({ error: "Já existe uma conta com este e-mail." });
+  }
+
+  const passwordHash = await bcrypt.hash(String(password), SALT_ROUNDS);
+  const result = db
+    .prepare(
+      `INSERT INTO users (name, email, password_hash, role, council_type, council_number)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    )
+    .run(String(name).trim(), normalizedEmail, passwordHash, role, councilType || null, councilNumber || null);
+
+  res.status(201).json({ id: result.lastInsertRowid, name: String(name).trim(), email: normalizedEmail, role });
+});
 
 router.get("/medications", (_req, res) => {
   res.json(db.prepare("SELECT * FROM medications ORDER BY name").all());

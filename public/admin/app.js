@@ -1,19 +1,148 @@
 /**
  * admin/app.js
- * CRUD do catálogo de medicamentos. Protegido por dosecertaRequireAuth('admin').
+ * CRUD de usuários e do catálogo de medicamentos. Protegido por
+ * dosecertaRequireAuth('admin').
  */
 dosecertaRequireAuth("admin");
+
+initTabs();
 
 document.addEventListener("dosecerta:session", (e) => {
   if (e.detail && e.detail.role === "admin") {
     document.getElementById("admin-app").hidden = false;
+    loadUsers();
     loadMeds();
   }
 });
 
+function initTabs() {
+  const buttons = document.querySelectorAll(".tab-btn");
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) => b.classList.remove("is-active"));
+      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      document.getElementById(`panel-${btn.dataset.tab}`).classList.add("is-active");
+    });
+  });
+}
+
 function escapeHtml(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
+
+/* ===== Usuários ===== */
+async function loadUsers() {
+  const res = await fetch("/api/admin/users", { credentials: "same-origin" });
+  if (!res.ok) return;
+  const users = await res.json();
+
+  document.getElementById("users-tbody").innerHTML = users
+    .map(
+      (u) => `
+    <tr>
+      <td>${escapeHtml(u.name)}</td>
+      <td>${escapeHtml(u.email)}</td>
+      <td><span class="tag${u.role === "admin" ? " tag--rescue" : ""}">${u.role === "admin" ? "Admin" : "Profissional"}</span></td>
+      <td>${new Date(u.created_at).toLocaleDateString("pt-BR")}</td>
+    </tr>`
+    )
+    .join("");
+}
+
+function openUserForm() {
+  document.getElementById("user-form-card").hidden = false;
+  window.scrollTo({ top: document.getElementById("panel-users").offsetTop - 100, behavior: "smooth" });
+  document.getElementById("user-name").focus();
+}
+
+function closeUserForm() {
+  document.getElementById("user-form-card").hidden = true;
+  resetUserForm();
+}
+
+function resetUserForm() {
+  document.getElementById("user-name").value = "";
+  document.getElementById("user-email").value = "";
+  document.getElementById("user-password").value = "";
+  document.getElementById("user-role").value = "professional";
+  document.getElementById("user-council-type").value = "";
+  document.getElementById("user-council-number").value = "";
+  setPasswordVisible(false);
+}
+
+function setPasswordVisible(visible) {
+  const input = document.getElementById("user-password");
+  const toggle = document.getElementById("user-password-toggle");
+  input.type = visible ? "text" : "password";
+  toggle.setAttribute("aria-pressed", String(visible));
+  toggle.setAttribute("aria-label", visible ? "Ocultar senha" : "Mostrar senha");
+}
+
+document.getElementById("user-password-toggle").addEventListener("click", () => {
+  const input = document.getElementById("user-password");
+  setPasswordVisible(input.type === "password");
+});
+
+// Gera uma senha forte e já deixa visível — o ponto de digitar uma senha às
+// cegas e não saber se acertou some quando é a própria página que gera.
+document.getElementById("user-password-generate").addEventListener("click", () => {
+  const CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%";
+  const bytes = new Uint32Array(14);
+  crypto.getRandomValues(bytes);
+  const password = Array.from(bytes, (b) => CHARS[b % CHARS.length]).join("");
+  document.getElementById("user-password").value = password;
+  setPasswordVisible(true);
+});
+
+document.getElementById("user-add-btn").addEventListener("click", () => {
+  resetUserForm();
+  openUserForm();
+});
+
+document.getElementById("user-cancel").addEventListener("click", closeUserForm);
+
+document.getElementById("user-save").addEventListener("click", async () => {
+  const status = document.getElementById("user-status");
+  status.textContent = "";
+  status.className = "form-status";
+
+  const payload = {
+    name: document.getElementById("user-name").value.trim(),
+    email: document.getElementById("user-email").value.trim(),
+    password: document.getElementById("user-password").value,
+    role: document.getElementById("user-role").value,
+    councilType: document.getElementById("user-council-type").value.trim() || null,
+    councilNumber: document.getElementById("user-council-number").value.trim() || null,
+  };
+
+  if (!payload.name || !payload.email || !payload.password) {
+    status.textContent = "Nome, e-mail e senha são obrigatórios.";
+    status.classList.add("error");
+    return;
+  }
+  if (payload.password.length < 8) {
+    status.textContent = "A senha deve ter pelo menos 8 caracteres.";
+    status.classList.add("error");
+    return;
+  }
+
+  const res = await fetch("/api/admin/users", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin",
+    body: JSON.stringify(payload),
+  });
+
+  if (res.ok) {
+    closeUserForm();
+    loadUsers();
+  } else {
+    const body = await res.json().catch(() => ({}));
+    status.textContent = body.error || "Falha ao salvar.";
+    status.classList.add("error");
+  }
+});
 
 async function loadMeds() {
   const res = await fetch("/api/admin/medications", { credentials: "same-origin" });

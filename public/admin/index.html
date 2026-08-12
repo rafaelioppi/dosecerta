@@ -18,11 +18,67 @@
 
   <main class="dashboard container" id="admin-app" hidden>
     <div class="dashboard-head">
-      <h1>Catálogo de medicamentos</h1>
-      <p>Adicionar, editar ou remover medicamentos. Nome, categoria e fonte são obrigatórios.</p>
+      <h1>Painel Admin</h1>
+      <p>Usuários e catálogo de medicamentos.</p>
     </div>
 
-    <section id="panel-meds">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn is-active" data-tab="users">Usuários</button>
+      <button class="tab-btn" data-tab="meds">Medicamentos</button>
+    </div>
+
+    <!-- ===== Usuários ===== -->
+    <section class="tab-panel is-active" id="panel-users">
+      <button class="btn btn--primary" id="user-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar usuário</button>
+
+      <div class="card form-card" id="user-form-card" style="max-width:520px; margin-bottom:var(--space-lg);" hidden>
+        <h3 style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar usuário</h3>
+        <div class="field"><label>Nome *</label><input id="user-name" required /></div>
+        <div class="field"><label>E-mail *</label><input id="user-email" type="email" required /></div>
+
+        <div class="field">
+          <label for="user-password">Senha *</label>
+          <div class="password-field">
+            <input id="user-password" type="password" autocomplete="new-password" minlength="8" required />
+            <button type="button" class="password-field__toggle" id="user-password-toggle" aria-label="Mostrar senha" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+            <button type="button" class="btn btn--ghost btn--sm" id="user-password-generate">Gerar senha</button>
+          </div>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:var(--space-2xs);">Mínimo 8 caracteres. Use "Gerar senha" pra uma senha forte já visível, pronta pra copiar e enviar.</p>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Papel *</label>
+            <select id="user-role">
+              <option value="professional">Profissional</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field"><label>Conselho (opcional)</label><input id="user-council-type" placeholder="ex.: CRO" /></div>
+        </div>
+        <div class="field"><label>Número do conselho (opcional)</label><input id="user-council-number" /></div>
+
+        <div style="display:flex; gap:var(--space-sm);">
+          <button class="btn btn--primary" id="user-save">Salvar</button>
+          <button class="btn btn--ghost" id="user-cancel">Cancelar</button>
+        </div>
+        <p class="form-status" id="user-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Criado em</th></tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== Medicamentos ===== -->
+    <section class="tab-panel" id="panel-meds">
       <button class="btn btn--primary" id="med-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar medicamento</button>
 
       <div class="card form-card" id="med-form-card" style="max-width:720px; margin-bottom:var(--space-lg);" hidden>
