@@ -27,6 +27,11 @@ const ROUTE_VOCAB = [
   "IV (via retal como alternativa se não houver acesso venoso)",
   "oral (ou IV/IM em infecções graves)", "IM profunda",
   "tópica (bochecho ou aplicação em gel com gaze/cotonete)",
+  "oral (também usado por via tópica exclusivamente local: bochecho 4,8-10% ou gel bioadesivo 8%)",
+  "oral (bochechar e manter na boca antes de engolir)",
+  "tópica oral (aplicar sobre a lesão, manter na boca o máximo possível antes de engolir)",
+  "oral tópica",
+  "intranasal (cetamina) + oral (midazolam)",
 ];
 
 function flag(list, item, msg) {
