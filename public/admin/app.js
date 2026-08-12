@@ -52,6 +52,17 @@ async function loadMeds() {
   });
 }
 
+function openMedForm() {
+  document.getElementById("med-form-card").hidden = false;
+  window.scrollTo({ top: document.getElementById("panel-meds").offsetTop - 100, behavior: "smooth" });
+  document.getElementById("med-name").focus();
+}
+
+function closeMedForm() {
+  document.getElementById("med-form-card").hidden = true;
+  resetMedForm();
+}
+
 function fillMedForm(med) {
   document.getElementById("med-form-title").textContent = "Editar medicamento";
   document.getElementById("med-id").value = med.id;
@@ -67,8 +78,7 @@ function fillMedForm(med) {
   document.getElementById("med-notes").value = med.notes || "";
   document.getElementById("med-source-name").value = med.source_name || "";
   document.getElementById("med-source-url").value = med.source_url || "";
-  document.getElementById("med-cancel").hidden = false;
-  window.scrollTo({ top: document.getElementById("panel-meds").offsetTop - 100, behavior: "smooth" });
+  openMedForm();
 }
 
 function resetMedForm() {
@@ -77,10 +87,14 @@ function resetMedForm() {
   ["name", "category", "indication", "dose", "dose-unit", "frequency", "max", "route", "presentation", "notes", "source-name", "source-url"].forEach(
     (field) => (document.getElementById(`med-${field}`).value = "")
   );
-  document.getElementById("med-cancel").hidden = true;
 }
 
-document.getElementById("med-cancel").addEventListener("click", resetMedForm);
+document.getElementById("med-add-btn").addEventListener("click", () => {
+  resetMedForm();
+  openMedForm();
+});
+
+document.getElementById("med-cancel").addEventListener("click", closeMedForm);
 
 document.getElementById("med-save").addEventListener("click", async () => {
   const status = document.getElementById("med-status");
@@ -120,9 +134,7 @@ document.getElementById("med-save").addEventListener("click", async () => {
   });
 
   if (res.ok) {
-    status.textContent = "Salvo.";
-    status.classList.add("success");
-    resetMedForm();
+    closeMedForm();
     loadMeds();
   } else {
     const body = await res.json().catch(() => ({}));

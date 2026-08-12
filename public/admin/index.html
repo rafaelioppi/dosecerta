@@ -23,7 +23,9 @@
     </div>
 
     <section id="panel-meds">
-      <div class="card form-card" style="max-width:720px; margin-bottom:var(--space-lg);">
+      <button class="btn btn--primary" id="med-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar medicamento</button>
+
+      <div class="card form-card" id="med-form-card" style="max-width:720px; margin-bottom:var(--space-lg);" hidden>
         <h3 id="med-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar medicamento</h3>
         <input type="hidden" id="med-id" />
         <div class="form-row">
@@ -50,7 +52,7 @@
         </div>
         <div style="display:flex; gap:var(--space-sm);">
           <button class="btn btn--primary" id="med-save">Salvar</button>
-          <button class="btn btn--ghost" id="med-cancel" hidden>Cancelar edição</button>
+          <button class="btn btn--ghost" id="med-cancel">Cancelar</button>
         </div>
         <p class="form-status" id="med-status" role="status" aria-live="polite"></p>
       </div>
