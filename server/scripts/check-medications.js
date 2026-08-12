@@ -32,6 +32,7 @@ const ROUTE_VOCAB = [
   "tópica oral (aplicar sobre a lesão, manter na boca o máximo possível antes de engolir)",
   "oral tópica",
   "intranasal (cetamina) + oral (midazolam)",
+  "oral (ou IV se rebaixamento de consciência)",
 ];
 
 function flag(list, item, msg) {
