@@ -3,185 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DoseCerta — Calculadora de Doses Pediátricas para Profissionais de Saúde</title>
-  <meta name="description" content="DoseCerta é a calculadora clínica de doses pediátricas, bulário, fluxogramas e prescrições prontas para médicos e enfermeiros no plantão." />
-  <meta name="theme-color" content="#12405a" />
-  <link rel="canonical" href="https://dosecerta.duckdns.org/" />
-
-  <!-- Open Graph -->
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="DoseCerta" />
-  <meta property="og:title" content="DoseCerta — Calculadora de Doses Pediátricas" />
-  <meta property="og:description" content="Calculadora clínica de doses pediátricas, bulário, fluxogramas e prescrições prontas para profissionais de saúde." />
-  <meta property="og:locale" content="pt_BR" />
-  <meta property="og:url" content="https://dosecerta.duckdns.org/" />
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="DoseCerta — Calculadora de Doses Pediátricas" />
-  <meta name="twitter:description" content="Calculadora clínica de doses pediátricas para profissionais de saúde." />
-
+  <title>DoseCerta</title>
+  <meta name="robots" content="noindex" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%2312405a'/%3E%3Cpath d='M16 6c4 4.2 7 7.9 7 11.2A7 7 0 1 1 9 17.2C9 13.9 12 10.2 16 6Z' fill='none' stroke='white' stroke-width='2'/%3E%3C/svg%3E" />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="css/reset.css" />
   <link rel="stylesheet" href="css/variables.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/responsive.css" />
-
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    "name": "DoseCerta",
-    "url": "https://dosecerta.duckdns.org/",
-    "description": "Calculadora clínica de doses pediátricas, bulário, fluxogramas e prescrições prontas para profissionais de saúde.",
-    "email": "contato@dosecerta.com.br",
-    "sameAs": []
-  }
-  </script>
 </head>
 <body>
-  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
-
-  <site-header></site-header>
-
-  <main id="conteudo">
-    <!-- ===== Hero / Início ===== -->
-    <section id="inicio" class="hero">
-      <div class="container hero__grid">
-        <div class="hero__content">
-          <span class="eyebrow" id="hero-eyebrow"></span>
-          <h1 id="hero-title"></h1>
-          <p class="lede" id="hero-lede"></p>
-          <div class="hero__actions">
-            <a class="btn btn--primary" id="hero-cta-primary" href="#contato">Começar agora</a>
-            <a class="btn btn--ghost" id="hero-cta-secondary" href="#servicos">Ver como funciona</a>
-          </div>
-          <div class="hero__badge-row" id="hero-stats"></div>
-        </div>
-        <div class="hero__visual" aria-hidden="true">
-          <svg viewBox="0 0 420 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração de calculadora clínica pediátrica">
-            <defs>
-              <linearGradient id="heroGrad" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#2a9d8f" />
-                <stop offset="1" stop-color="#12405a" />
-              </linearGradient>
-            </defs>
-            <rect x="40" y="30" width="300" height="320" rx="24" fill="url(#heroGrad)" opacity="0.12" />
-            <rect x="80" y="60" width="260" height="280" rx="18" fill="var(--color-surface)" stroke="var(--color-border)" stroke-width="1.5" />
-            <rect x="104" y="90" width="140" height="16" rx="8" fill="var(--color-primary-600)" opacity="0.9" />
-            <rect x="104" y="118" width="90" height="10" rx="5" fill="var(--color-border)" />
-            <rect x="104" y="150" width="212" height="52" rx="12" fill="var(--color-accent-500)" opacity="0.14" />
-            <rect x="120" y="166" width="80" height="10" rx="5" fill="var(--color-accent-600)" />
-            <rect x="120" y="184" width="140" height="8" rx="4" fill="var(--color-border)" />
-            <rect x="104" y="218" width="212" height="1.5" fill="var(--color-border)" />
-            <rect x="104" y="238" width="60" height="60" rx="12" fill="var(--color-bg-alt)" stroke="var(--color-border)" />
-            <rect x="176" y="238" width="60" height="60" rx="12" fill="var(--color-bg-alt)" stroke="var(--color-border)" />
-            <rect x="248" y="238" width="68" height="60" rx="12" fill="var(--color-primary-600)" opacity="0.92" />
-            <circle cx="282" cy="268" r="14" fill="none" stroke="white" stroke-width="2.5" />
-            <path d="M282 262v12M276 268h12" stroke="white" stroke-width="2.5" stroke-linecap="round" />
-          </svg>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== Sobre ===== -->
-    <section id="sobre">
-      <div class="container">
-        <div class="about__grid">
-          <div class="about__text" data-reveal>
-            <span class="eyebrow" id="about-eyebrow"></span>
-            <h2 id="about-title" style="font-family:var(--font-heading); font-size:var(--fs-2xl); color:var(--color-heading); margin-bottom:var(--space-md);"></h2>
-            <div id="about-paragraphs"></div>
-            <div class="about__notice">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
-              <p id="about-notice"></p>
-            </div>
-          </div>
-          <div class="about__visual" data-reveal>
-            <svg viewBox="0 0 480 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustração de equipe clínica revisando protocolos">
-              <rect width="480" height="380" fill="var(--color-bg-alt)" />
-              <circle cx="120" cy="150" r="46" fill="var(--color-primary-600)" opacity="0.85" />
-              <circle cx="240" cy="120" r="58" fill="var(--color-accent-500)" opacity="0.85" />
-              <circle cx="360" cy="170" r="40" fill="var(--color-primary-700)" opacity="0.8" />
-              <rect x="70" y="230" width="340" height="100" rx="16" fill="var(--color-surface)" stroke="var(--color-border)" />
-              <rect x="96" y="256" width="200" height="12" rx="6" fill="var(--color-primary-600)" opacity="0.8" />
-              <rect x="96" y="280" width="140" height="10" rx="5" fill="var(--color-border)" />
-              <rect x="96" y="300" width="170" height="10" rx="5" fill="var(--color-border)" />
-              <rect x="320" y="256" width="60" height="54" rx="10" fill="var(--color-accent-500)" opacity="0.18" />
-            </svg>
-          </div>
-        </div>
-
-        <div class="grid grid--values" id="values-grid"></div>
-      </div>
-    </section>
-
-    <!-- ===== Serviços ===== -->
-    <section id="servicos">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="eyebrow" id="services-eyebrow"></span>
-          <h2 id="services-title"></h2>
-          <p id="services-subtitle"></p>
-        </div>
-        <div class="grid grid--services" id="services-grid"></div>
-      </div>
-    </section>
-
-    <!-- ===== Equipe ===== -->
-    <section id="equipe">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="eyebrow" id="team-eyebrow"></span>
-          <h2 id="team-title"></h2>
-        </div>
-        <div class="team-note-wrap">
-          <span class="team-note" id="team-subtitle"></span>
-        </div>
-        <div class="grid grid--team" id="team-grid"></div>
-      </div>
-    </section>
-
-    <!-- ===== Contato ===== -->
-    <section id="contato">
-      <div class="container">
-        <div class="section-head" data-reveal>
-          <span class="eyebrow" id="contact-eyebrow"></span>
-          <h2 id="contact-title"></h2>
-          <p id="contact-subtitle"></p>
-        </div>
-
-        <div class="grid grid--contact">
-          <div data-reveal>
-            <contact-form></contact-form>
-          </div>
-          <div data-reveal>
-            <div class="contact-info-list" id="contact-info-list"></div>
-            <h3 style="font-family:var(--font-heading); font-size:var(--fs-sm); margin-bottom:var(--space-sm);">Redes sociais</h3>
-            <div class="social-row" id="contact-social-list"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <site-footer></site-footer>
-
-  <script src="assets/icons/icons.js"></script>
+  <!--
+    Sem site institucional: esta página só decide pra onde mandar quem chega em "/".
+    Logada -> calculadora (ou admin, se for o caso). Deslogada -> login.
+  -->
   <script src="js/session.js"></script>
-  <script src="js/content-client.js"></script>
-  <script src="js/components/site-header.js"></script>
-  <script src="js/components/site-footer.js"></script>
-  <script src="js/components/service-card.js"></script>
-  <script src="js/components/team-card.js"></script>
-  <script src="js/components/contact-form.js"></script>
-  <script src="js/render-static.js"></script>
-  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("dosecerta:session", (e) => {
+      const session = e.detail;
+      if (!session) {
+        window.location.href = "/login.html";
+      } else if (session.role === "admin") {
+        window.location.href = "/admin/";
+      } else {
+        window.location.href = "/calculadora.html";
+      }
+    });
+  </script>
 </body>
 </html>

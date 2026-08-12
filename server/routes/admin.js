@@ -1,7 +1,6 @@
 /**
  * routes/admin.js
- * Tudo aqui exige role 'admin': editar blocos de conteúdo do site, ler mensagens
- * de contato, e fazer CRUD do catálogo de medicamentos.
+ * CRUD do catálogo de medicamentos. Tudo aqui exige role 'admin'.
  */
 const express = require("express");
 const db = require("../db");
@@ -10,32 +9,6 @@ const { requireRole } = require("../middleware/auth");
 const router = express.Router();
 router.use(requireRole("admin"));
 
-// ---- Conteúdo do site ----
-router.put("/content/:key", (req, res) => {
-  const { key } = req.params;
-  const value = req.body;
-  if (value === undefined) {
-    return res.status(400).json({ error: "Corpo da requisição vazio." });
-  }
-  db.prepare(
-    `INSERT INTO content_blocks (key, value_json, updated_at) VALUES (?, ?, datetime('now'))
-     ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = datetime('now')`
-  ).run(key, JSON.stringify(value));
-  res.json({ ok: true });
-});
-
-// ---- Mensagens de contato ----
-router.get("/messages", (_req, res) => {
-  const rows = db.prepare("SELECT * FROM contact_messages ORDER BY created_at DESC").all();
-  res.json(rows);
-});
-
-router.put("/messages/:id/read", (req, res) => {
-  db.prepare("UPDATE contact_messages SET read = 1 WHERE id = ?").run(req.params.id);
-  res.json({ ok: true });
-});
-
-// ---- CRUD de medicamentos ----
 router.get("/medications", (_req, res) => {
   res.json(db.prepare("SELECT * FROM medications ORDER BY name").all());
 });

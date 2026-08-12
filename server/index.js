@@ -10,8 +10,6 @@ const session = require("express-session");
 const SqliteSessionStore = require("./session-store");
 
 const authRoutes = require("./routes/auth");
-const contentRoutes = require("./routes/content");
-const contactRoutes = require("./routes/contact");
 const medicationRoutes = require("./routes/medications");
 const adminRoutes = require("./routes/admin");
 
@@ -41,8 +39,6 @@ app.use(
 );
 
 app.use("/api/auth", authRoutes);
-app.use("/api/content", contentRoutes);
-app.use("/api/contact", contactRoutes);
 app.use("/api/medications", medicationRoutes);
 app.use("/api/admin", adminRoutes);
 

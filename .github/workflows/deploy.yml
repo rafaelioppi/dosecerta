@@ -1,0 +1,50 @@
+name: Deploy DoseCerta
+
+# Deploy automático pra VM de produção a cada push em main. Só sincroniza
+# server/, public/, seed/ etc. — nunca .env nem data/ (banco de produção),
+# que ficam intactos na VM. Depois roda o seed (não-destrutivo: só insere
+# medicamentos novos por nome) e reinicia só o serviço "dosecerta" via
+# systemd, sem tocar em outros projetos hospedados na mesma VM.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+env:
+  DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+  DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+  DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$DEPLOY_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+      - name: Sincronizar código (preserva .env e data/ de produção)
+        run: |
+          rsync -avz --delete \
+            --exclude='.git' --exclude='.github' --exclude='node_modules' \
+            --exclude='data' --exclude='.env' --exclude='*.sqlite*' --exclude='.claude' \
+            -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes" \
+            ./ "$DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/"
+
+      - name: Instalar dependências, popular catálogo e reiniciar
+        run: |
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=yes "$DEPLOY_USER@$DEPLOY_HOST" \
+            "cd '$DEPLOY_PATH' && npm install --omit=dev && npm run seed && sudo systemctl restart dosecerta && sleep 2 && sudo systemctl is-active --quiet dosecerta && echo 'serviço ativo'"
+
+      - name: Checar se o site respondeu
+        run: |
+          sleep 2
+          code=$(curl -s -o /dev/null -w "%{http_code}" "https://dosecerta.duckdns.org/login.html")
+          echo "HTTP $code"
+          test "$code" = "200"

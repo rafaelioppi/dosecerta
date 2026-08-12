@@ -1,27 +1,14 @@
 /**
  * scripts/seed.js
- * Popula content_blocks (a partir de seed/content.json) e medications (a partir de
- * seed/medications.json). Idempotente: pode ser rodado de novo com segurança —
- * content_blocks usa upsert por key; medications só insere o que ainda não existe
- * (dedup por nome), pra não sobrescrever edições feitas pelo admin.
+ * Popula medications a partir de seed/medications.json. Idempotente: pode ser
+ * rodado de novo com segurança — só insere o que ainda não existe (dedup por
+ * nome), pra não sobrescrever edições feitas pelo admin.
  */
 const fs = require("fs");
 const path = require("path");
 const db = require("../db");
 
 const SEED_DIR = path.join(__dirname, "..", "..", "seed");
-
-function seedContent() {
-  const content = JSON.parse(fs.readFileSync(path.join(SEED_DIR, "content.json"), "utf8"));
-  const upsert = db.prepare(
-    `INSERT INTO content_blocks (key, value_json, updated_at) VALUES (?, ?, datetime('now'))
-     ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = datetime('now')`
-  );
-  db.withTransaction(() => {
-    for (const [key, value] of Object.entries(content)) upsert.run(key, JSON.stringify(value));
-  });
-  console.log(`content_blocks: ${Object.keys(content).length} blocos aplicados.`);
-}
 
 function seedMedications() {
   const meds = JSON.parse(fs.readFileSync(path.join(SEED_DIR, "medications.json"), "utf8"));
@@ -62,6 +49,5 @@ function seedMedications() {
   console.log(`medications: ${inserted} inseridos, ${skipped} já existiam (mantidos como estavam).`);
 }
 
-seedContent();
 seedMedications();
 console.log("Seed concluído.");

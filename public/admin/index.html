@@ -18,38 +18,11 @@
 
   <main class="dashboard container" id="admin-app" hidden>
     <div class="dashboard-head">
-      <h1>Painel Admin</h1>
-      <p>Conteúdo do site, mensagens de contato e catálogo de medicamentos.</p>
+      <h1>Catálogo de medicamentos</h1>
+      <p>Adicionar, editar ou remover medicamentos. Nome, categoria e fonte são obrigatórios.</p>
     </div>
 
-    <div class="tabs" role="tablist">
-      <button class="tab-btn is-active" data-tab="content">Conteúdo</button>
-      <button class="tab-btn" data-tab="messages">Mensagens <span id="unread-badge"></span></button>
-      <button class="tab-btn" data-tab="meds">Medicamentos</button>
-    </div>
-
-    <!-- ===== Conteúdo ===== -->
-    <section class="tab-panel is-active" id="panel-content">
-      <p style="color:var(--color-text-muted); font-size:var(--fs-sm); margin-bottom:var(--space-md);">
-        Cada bloco é um JSON editável diretamente. Cuidado com a sintaxe — o botão "Salvar" valida antes de enviar.
-      </p>
-      <div id="content-blocks"></div>
-    </section>
-
-    <!-- ===== Mensagens ===== -->
-    <section class="tab-panel" id="panel-messages">
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Assunto</th><th>Mensagem</th><th>Status</th></tr>
-          </thead>
-          <tbody id="messages-tbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===== Medicamentos ===== -->
-    <section class="tab-panel" id="panel-meds">
+    <section id="panel-meds">
       <div class="card form-card" style="max-width:720px; margin-bottom:var(--space-lg);">
         <h3 id="med-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar medicamento</h3>
         <input type="hidden" id="med-id" />
@@ -97,7 +70,6 @@
 
   <script src="../assets/icons/icons.js"></script>
   <script src="../js/session.js"></script>
-  <script src="../js/content-client.js"></script>
   <script src="../js/components/site-header.js"></script>
   <script src="../js/components/site-footer.js"></script>
   <script src="app.js"></script>

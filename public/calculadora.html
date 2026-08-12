@@ -30,7 +30,13 @@
     <div class="card form-card" style="max-width:640px;">
       <div class="field">
         <label for="med-search">Princípio ativo</label>
-        <input type="text" id="med-search" placeholder="Buscar por princípio ativo (ex.: amoxicilina, ibuprofeno)..." autocomplete="off" />
+        <input type="text" id="med-search" placeholder="Buscar por princípio ativo (ex.: amoxicilina, articaína)..." autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="med-category-filter">Categoria</label>
+        <select id="med-category-filter">
+          <option value="">Todas as categorias</option>
+        </select>
       </div>
       <div class="field">
         <label for="med-select">Selecionado</label>
@@ -38,6 +44,7 @@
           <option value="">— Selecione um medicamento —</option>
         </select>
       </div>
+      <p class="field__error" id="med-select-warning" style="display:none; color:var(--color-alert-500); margin:-0.25rem 0 var(--space-sm);"></p>
       <div class="field">
         <label for="weight">Peso do paciente (kg)</label>
         <input type="number" id="weight" min="0.5" max="150" step="0.1" placeholder="ex.: 18.5" />
@@ -79,7 +86,6 @@
 
   <script src="assets/icons/icons.js"></script>
   <script src="js/session.js"></script>
-  <script src="js/content-client.js"></script>
   <script src="js/components/site-header.js"></script>
   <script src="js/components/site-footer.js"></script>
   <script>
@@ -87,15 +93,51 @@
 
     let allMeds = [];
 
+    // Categorias marcadas como "resgate/emergência" ou "contraindicado" ganham
+    // destaque visual na tabela e um aviso reforçado ao selecionar — são os
+    // dois casos em que confundir "cadastrado" com "recomendado" é perigoso.
+    function categoryFlag(category) {
+      const c = (category || "").toLowerCase();
+      if (c.includes("contraindicado")) return "warning";
+      if (c.includes("emergência") || c.includes("resgate")) return "rescue";
+      return null;
+    }
+
+    function categoryTag(category) {
+      const flag = categoryFlag(category);
+      const cls = flag === "warning" ? "tag tag--warning" : flag === "rescue" ? "tag tag--rescue" : "tag";
+      return `<span class="${cls}">${escapeHtml(category)}</span>`;
+    }
+
     async function loadMeds() {
       const res = await fetch("/api/medications", { credentials: "same-origin" });
       if (!res.ok) return;
       const body = await res.json();
       allMeds = body.items || [];
       document.getElementById("safety-notice").textContent = body.notice || document.getElementById("safety-notice").textContent;
-      renderSelect(allMeds);
-      renderTable(allMeds);
+      renderCategoryFilter(allMeds);
+      applyFilters();
       document.getElementById("calc-app").hidden = false;
+    }
+
+    function renderCategoryFilter(meds) {
+      const select = document.getElementById("med-category-filter");
+      const categories = [...new Set(meds.map((m) => m.category))].sort();
+      select.innerHTML =
+        '<option value="">Todas as categorias</option>' +
+        categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+    }
+
+    function applyFilters() {
+      const q = document.getElementById("med-search").value.toLowerCase();
+      const category = document.getElementById("med-category-filter").value;
+      const filtered = allMeds.filter(
+        (m) =>
+          (!category || m.category === category) &&
+          (m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q))
+      );
+      renderSelect(filtered);
+      renderTable(filtered);
     }
 
     function renderSelect(meds) {
@@ -105,6 +147,22 @@
         '<option value="">— Selecione um medicamento —</option>' +
         meds.map((m) => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.category)})</option>`).join("");
       if (meds.some((m) => String(m.id) === current)) select.value = current;
+      updateSelectWarning();
+    }
+
+    function updateSelectWarning() {
+      const warning = document.getElementById("med-select-warning");
+      const id = document.getElementById("med-select").value;
+      const med = allMeds.find((m) => String(m.id) === id);
+      if (med && categoryFlag(med.category) === "warning") {
+        warning.textContent = `⚠ ${med.name} está marcado como contraindicado — leia a nota antes de prosseguir: ${med.notes || ""}`;
+        warning.style.display = "block";
+      } else if (med && categoryFlag(med.category) === "rescue") {
+        warning.textContent = `Medicação de resgate/emergência — confirme a indicação antes de calcular.`;
+        warning.style.display = "block";
+      } else {
+        warning.style.display = "none";
+      }
     }
 
     function renderTable(meds) {
@@ -112,9 +170,9 @@
       tbody.innerHTML = meds
         .map(
           (m) => `
-        <tr>
+        <tr data-flag="${categoryFlag(m.category) || ""}">
           <td>${escapeHtml(m.name)}</td>
-          <td>${escapeHtml(m.category)}</td>
+          <td>${categoryTag(m.category)}</td>
           <td>${m.dose_mg_per_kg != null ? m.dose_mg_per_kg + " " + escapeHtml(m.dose_unit || "mg/kg") : escapeHtml(m.dose_unit || "ver notas")}</td>
           <td>${escapeHtml(m.route || "—")}</td>
           <td><a href="${m.source_url}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source_name)}</a></td>
@@ -123,14 +181,9 @@
         .join("");
     }
 
-    document.getElementById("med-search").addEventListener("input", (e) => {
-      const q = e.target.value.toLowerCase();
-      const filtered = allMeds.filter(
-        (m) => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q)
-      );
-      renderSelect(filtered);
-      renderTable(filtered);
-    });
+    document.getElementById("med-search").addEventListener("input", applyFilters);
+    document.getElementById("med-category-filter").addEventListener("change", applyFilters);
+    document.getElementById("med-select").addEventListener("change", updateSelectWarning);
 
     document.getElementById("calc-btn").addEventListener("click", async () => {
       const errorEl = document.getElementById("calc-error");
@@ -162,7 +215,10 @@
       }
 
       const { medication, result } = body;
-      document.getElementById("result-category").textContent = medication.category;
+      const categoryEl = document.getElementById("result-category");
+      const flag = categoryFlag(medication.category);
+      categoryEl.className = flag === "warning" ? "tag tag--warning" : flag === "rescue" ? "tag tag--rescue" : "tag";
+      categoryEl.textContent = medication.category;
       document.getElementById("result-dose").textContent =
         result.doseMg != null ? `${result.doseMg} mg` + (result.cappedByMax ? " (limitado à dose máxima)" : "") : "—";
       document.getElementById("result-meta").textContent =

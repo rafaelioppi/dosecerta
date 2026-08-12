@@ -197,6 +197,36 @@ section:nth-of-type(even) {
     var(--color-bg);
 }
 
+/* Login (só ele): retrato da Luna ao fundo, bem discreto — o card por cima
+   continua opaco (herda --color-surface do .card), então a legibilidade do
+   formulário não depende da foto. */
+.auth-page--tribute {
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page--tribute::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("../assets/img/luna.jpg");
+  background-size: cover;
+  background-position: center 20%;
+  opacity: 0.16;
+  filter: grayscale(15%);
+  pointer-events: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .auth-page--tribute::before {
+    opacity: 0.1;
+  }
+}
+
+:root[data-theme="dark"] .auth-page--tribute::before {
+  opacity: 0.1;
+}
+
 .auth-card {
   width: 100%;
   max-width: 440px;
@@ -226,6 +256,14 @@ section:nth-of-type(even) {
 .auth-card .auth-footer-link a {
   color: var(--color-accent-600);
   font-weight: 600;
+}
+
+.auth-card .auth-signature {
+  text-align: center;
+  margin-top: var(--space-lg);
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  opacity: 0.75;
 }
 
 .auth-notice {
@@ -382,4 +420,25 @@ section:nth-of-type(even) {
   font-weight: 600;
   background: color-mix(in srgb, var(--color-primary-600) 12%, transparent);
   color: var(--color-primary-600);
+}
+
+.tag--rescue {
+  background: color-mix(in srgb, var(--color-primary-500) 16%, transparent);
+  color: var(--color-primary-500);
+}
+
+.tag--warning {
+  background: color-mix(in srgb, var(--color-alert-500) 16%, transparent);
+  color: var(--color-alert-500);
+}
+
+/* Linhas do catálogo ganham uma faixa lateral pra sinalizar categoria sem
+   precisar ler a coluna inteira: resgate/emergência em azul, contraindicado
+   em laranja — o resto sem marcação. */
+.data-table tr[data-flag="rescue"] {
+  box-shadow: inset 3px 0 0 var(--color-primary-500);
+}
+
+.data-table tr[data-flag="warning"] {
+  box-shadow: inset 3px 0 0 var(--color-alert-500);
 }
