@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrar — DoseCerta</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2312405a%27/%3E%3Cpath d=%27M16 6c4 4.2 7 7.9 7 11.2A7 7 0 1 1 9 17.2C9 13.9 12 10.2 16 6Z%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="auth-page">
+    <div class="card auth-card">
+      <h1>Entrar</h1>
+      <p class="auth-subtitle">Acesse sua conta para usar a calculadora ou o painel administrativo.</p>
+
+      <form id="login-form" novalidate>
+        <div class="field" data-field="email">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+          <span class="field__error" id="email-error"></span>
+        </div>
+        <div class="field" data-field="password">
+          <label for="password">Senha</label>
+          <input type="password" id="password" name="password" autocomplete="current-password" required />
+          <span class="field__error" id="password-error"></span>
+        </div>
+        <button type="submit" class="btn btn--primary btn--block">Entrar</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="auth-footer-link">Ainda não tem conta? <a href="/cadastro.html">Cadastre-se</a></p>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="assets/icons/icons.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/content-client.js"></script>
+  <script src="js/components/site-header.js"></script>
+  <script src="js/components/site-footer.js"></script>
+  <script>
+    const form = document.getElementById("login-form");
+    const status = document.getElementById("form-status");
+
+    function paramsToRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get("redirect") || null;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "";
+      status.className = "form-status";
+
+      const data = Object.fromEntries(new FormData(form).entries());
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(data),
+        });
+        const body = await res.json();
+
+        if (!res.ok) {
+          status.textContent = body.error || "Não foi possível entrar.";
+          status.classList.add("error");
+          return;
+        }
+
+        const redirect = paramsToRedirect();
+        if (redirect) {
+          window.location.href = redirect;
+        } else if (body.role === "admin") {
+          window.location.href = "/admin/";
+        } else {
+          window.location.href = "/calculadora.html";
+        }
+      } catch {
+        status.textContent = "Falha de conexão. Tente novamente.";
+        status.classList.add("error");
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

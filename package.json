@@ -1,0 +1,23 @@
+{
+  "name": "dosecerta",
+  "version": "1.0.0",
+  "description": "DoseCerta — calculadora de doses pediátricas com login, admin e backend.",
+  "private": true,
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "seed": "node server/scripts/seed.js",
+    "create-admin": "node server/scripts/create-admin.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.4.0",
+    "express-session": "^1.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}

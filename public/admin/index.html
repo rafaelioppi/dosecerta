@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Admin — DoseCerta</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2312405a%27/%3E%3Cpath d=%27M16 6c4 4.2 7 7.9 7 11.2A7 7 0 1 1 9 17.2C9 13.9 12 10.2 16 6Z%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="../css/reset.css" />
+  <link rel="stylesheet" href="../css/variables.css" />
+  <link rel="stylesheet" href="../css/layout.css" />
+  <link rel="stylesheet" href="../css/components.css" />
+  <link rel="stylesheet" href="../css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="dashboard container" id="admin-app" hidden>
+    <div class="dashboard-head">
+      <h1>Painel Admin</h1>
+      <p>Conteúdo do site, mensagens de contato e catálogo de medicamentos.</p>
+    </div>
+
+    <div class="tabs" role="tablist">
+      <button class="tab-btn is-active" data-tab="content">Conteúdo</button>
+      <button class="tab-btn" data-tab="messages">Mensagens <span id="unread-badge"></span></button>
+      <button class="tab-btn" data-tab="meds">Medicamentos</button>
+    </div>
+
+    <!-- ===== Conteúdo ===== -->
+    <section class="tab-panel is-active" id="panel-content">
+      <p style="color:var(--color-text-muted); font-size:var(--fs-sm); margin-bottom:var(--space-md);">
+        Cada bloco é um JSON editável diretamente. Cuidado com a sintaxe — o botão "Salvar" valida antes de enviar.
+      </p>
+      <div id="content-blocks"></div>
+    </section>
+
+    <!-- ===== Mensagens ===== -->
+    <section class="tab-panel" id="panel-messages">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Data</th><th>Nome</th><th>E-mail</th><th>Assunto</th><th>Mensagem</th><th>Status</th></tr>
+          </thead>
+          <tbody id="messages-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== Medicamentos ===== -->
+    <section class="tab-panel" id="panel-meds">
+      <div class="card form-card" style="max-width:720px; margin-bottom:var(--space-lg);">
+        <h3 id="med-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar medicamento</h3>
+        <input type="hidden" id="med-id" />
+        <div class="form-row">
+          <div class="field"><label>Nome *</label><input id="med-name" required /></div>
+          <div class="field"><label>Categoria *</label><input id="med-category" required /></div>
+        </div>
+        <div class="field"><label>Indicação</label><input id="med-indication" /></div>
+        <div class="form-row">
+          <div class="field"><label>Dose (mg/kg)</label><input id="med-dose" type="number" step="0.01" /></div>
+          <div class="field"><label>Unidade da dose</label><input id="med-dose-unit" placeholder="mg/kg/dose" /></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Frequência</label><input id="med-frequency" /></div>
+          <div class="field"><label>Dose máxima (mg)</label><input id="med-max" type="number" step="0.01" /></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>Via</label><input id="med-route" /></div>
+          <div class="field"><label>Apresentação</label><input id="med-presentation" /></div>
+        </div>
+        <div class="field"><label>Notas / ressalvas</label><textarea id="med-notes"></textarea></div>
+        <div class="form-row">
+          <div class="field"><label>Fonte (nome) *</label><input id="med-source-name" required /></div>
+          <div class="field"><label>Fonte (URL) *</label><input id="med-source-url" required /></div>
+        </div>
+        <div style="display:flex; gap:var(--space-sm);">
+          <button class="btn btn--primary" id="med-save">Salvar</button>
+          <button class="btn btn--ghost" id="med-cancel" hidden>Cancelar edição</button>
+        </div>
+        <p class="form-status" id="med-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Nome</th><th>Categoria</th><th>Dose</th><th>Fonte</th><th></th></tr>
+          </thead>
+          <tbody id="meds-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="../assets/icons/icons.js"></script>
+  <script src="../js/session.js"></script>
+  <script src="../js/content-client.js"></script>
+  <script src="../js/components/site-header.js"></script>
+  <script src="../js/components/site-footer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

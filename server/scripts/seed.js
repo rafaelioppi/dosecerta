@@ -1,0 +1,67 @@
+/**
+ * scripts/seed.js
+ * Popula content_blocks (a partir de seed/content.json) e medications (a partir de
+ * seed/medications.json). Idempotente: pode ser rodado de novo com segurança —
+ * content_blocks usa upsert por key; medications só insere o que ainda não existe
+ * (dedup por nome), pra não sobrescrever edições feitas pelo admin.
+ */
+const fs = require("fs");
+const path = require("path");
+const db = require("../db");
+
+const SEED_DIR = path.join(__dirname, "..", "..", "seed");
+
+function seedContent() {
+  const content = JSON.parse(fs.readFileSync(path.join(SEED_DIR, "content.json"), "utf8"));
+  const upsert = db.prepare(
+    `INSERT INTO content_blocks (key, value_json, updated_at) VALUES (?, ?, datetime('now'))
+     ON CONFLICT(key) DO UPDATE SET value_json = excluded.value_json, updated_at = datetime('now')`
+  );
+  db.withTransaction(() => {
+    for (const [key, value] of Object.entries(content)) upsert.run(key, JSON.stringify(value));
+  });
+  console.log(`content_blocks: ${Object.keys(content).length} blocos aplicados.`);
+}
+
+function seedMedications() {
+  const meds = JSON.parse(fs.readFileSync(path.join(SEED_DIR, "medications.json"), "utf8"));
+  const exists = db.prepare("SELECT id FROM medications WHERE name = ?");
+  const insert = db.prepare(
+    `INSERT INTO medications
+      (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
+       route, presentation, notes, source_name, source_url)
+     VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
+             @route, @presentation, @notes, @source_name, @source_url)`
+  );
+
+  let inserted = 0;
+  let skipped = 0;
+  db.withTransaction(() => {
+    for (const m of meds) {
+      if (exists.get(m.name)) {
+        skipped++;
+        continue;
+      }
+      insert.run({
+        name: m.name,
+        category: m.category,
+        indication: m.indication || null,
+        dose_mg_per_kg: m.dose_mg_per_kg ?? null,
+        dose_unit: m.dose_unit || null,
+        frequency: m.frequency || null,
+        max_dose_mg: m.max_dose_mg ?? null,
+        route: m.route || null,
+        presentation: m.presentation || null,
+        notes: m.notes || null,
+        source_name: m.source_name,
+        source_url: m.source_url,
+      });
+      inserted++;
+    }
+  });
+  console.log(`medications: ${inserted} inseridos, ${skipped} já existiam (mantidos como estavam).`);
+}
+
+seedContent();
+seedMedications();
+console.log("Seed concluído.");

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cadastro — DoseCerta</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2312405a%27/%3E%3Cpath d=%27M16 6c4 4.2 7 7.9 7 11.2A7 7 0 1 1 9 17.2C9 13.9 12 10.2 16 6Z%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="auth-page">
+    <div class="card auth-card">
+      <h1>Cadastro de profissional</h1>
+      <p class="auth-subtitle">Acesso à calculadora é restrito a profissionais de saúde.</p>
+
+      <div class="auth-notice">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+        <span>A calculadora é uma ferramenta de apoio à decisão clínica, com fontes citadas por medicamento. Não substitui o julgamento médico nem a bula vigente.</span>
+      </div>
+
+      <form id="signup-form" novalidate>
+        <div class="field" data-field="name">
+          <label for="name">Nome completo</label>
+          <input type="text" id="name" name="name" autocomplete="name" required />
+          <span class="field__error" id="name-error"></span>
+        </div>
+        <div class="field" data-field="email">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" name="email" autocomplete="email" required />
+          <span class="field__error" id="email-error"></span>
+        </div>
+        <div class="form-row">
+          <div class="field" data-field="councilType">
+            <label for="councilType">Conselho (opcional)</label>
+            <input type="text" id="councilType" name="councilType" placeholder="ex.: CRM, COREN" />
+          </div>
+          <div class="field" data-field="councilNumber">
+            <label for="councilNumber">Número (opcional)</label>
+            <input type="text" id="councilNumber" name="councilNumber" placeholder="ex.: 123456/SP" />
+          </div>
+        </div>
+        <div class="field" data-field="password">
+          <label for="password">Senha (mínimo 8 caracteres)</label>
+          <input type="password" id="password" name="password" autocomplete="new-password" required minlength="8" />
+          <span class="field__error" id="password-error"></span>
+        </div>
+
+        <div class="field field--checkbox" data-field="acceptedDisclaimer">
+          <input type="checkbox" id="acceptedDisclaimer" name="acceptedDisclaimer" required />
+          <label for="acceptedDisclaimer">
+            Confirmo que sou profissional de saúde e estou ciente de que esta ferramenta é um apoio à
+            decisão clínica, não substituindo meu julgamento profissional nem a bula vigente.
+          </label>
+        </div>
+        <span class="field__error" id="acceptedDisclaimer-error"></span>
+
+        <button type="submit" class="btn btn--primary btn--block">Criar conta</button>
+        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+      </form>
+
+      <p class="auth-footer-link">Já tem conta? <a href="/login.html">Entrar</a></p>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="assets/icons/icons.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/content-client.js"></script>
+  <script src="js/components/site-header.js"></script>
+  <script src="js/components/site-footer.js"></script>
+  <script>
+    const form = document.getElementById("signup-form");
+    const status = document.getElementById("form-status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      status.textContent = "";
+      status.className = "form-status";
+
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+      data.acceptedDisclaimer = form.querySelector("#acceptedDisclaimer").checked;
+
+      const submitBtn = form.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+
+      try {
+        const res = await fetch("/api/auth/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(data),
+        });
+        const body = await res.json();
+
+        if (!res.ok) {
+          status.textContent = body.error || "Não foi possível criar sua conta.";
+          status.classList.add("error");
+          return;
+        }
+
+        window.location.href = "/calculadora.html";
+      } catch {
+        status.textContent = "Falha de conexão. Tente novamente.";
+        status.classList.add("error");
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

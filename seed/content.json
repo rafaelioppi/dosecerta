@@ -1,0 +1,89 @@
+{
+  "brand": {
+    "name": "DoseCerta",
+    "tagline": "Doses pediátricas certas, na hora que o plantão exige."
+  },
+  "nav": [
+    { "label": "Início", "href": "#inicio" },
+    { "label": "Sobre", "href": "#sobre" },
+    { "label": "Serviços", "href": "#servicos" },
+    { "label": "Equipe", "href": "#equipe" },
+    { "label": "Contato", "href": "#contato" }
+  ],
+  "hero": {
+    "eyebrow": "Calculadora clínica pediátrica",
+    "title": "Doses pediátricas certas, na hora que o plantão exige.",
+    "lede": "Calculadora de doses, bulário, fluxogramas clínicos e prescrições prontas — reunidos em uma ferramenta rápida e confiável para profissionais de saúde que cuidam de crianças.",
+    "ctaPrimary": { "label": "Começar agora", "href": "/cadastro.html" },
+    "ctaSecondary": { "label": "Ver como funciona", "href": "#servicos" },
+    "stats": [
+      { "value": "40+", "label": "medicamentos catalogados" },
+      { "value": "24/7", "label": "disponível no plantão" },
+      { "value": "100%", "label": "com fonte citada" }
+    ]
+  },
+  "about": {
+    "eyebrow": "Sobre",
+    "title": "Sobre a DoseCerta",
+    "paragraphs": [
+      "A DoseCerta nasceu para resolver um problema concreto do dia a dia clínico: calcular a dose certa de um medicamento pediátrico, sob pressão de tempo, sem margem para erro.",
+      "Reunimos pediatras, farmacêuticos clínicos e desenvolvedores para transformar bulas, protocolos e diretrizes em uma ferramenta rápida, confiável e sempre atualizada — pensada para quem trabalha em pronto-socorro, UBS, UTI neonatal e consultório."
+    ],
+    "notice": "Ferramenta de apoio à decisão clínica, com fontes citadas por medicamento. Não substitui o julgamento médico nem a bula vigente — confirme a dose antes de administrar.",
+    "values": [
+      { "icon": "target", "title": "Precisão clínica", "text": "Cálculos com faixas de segurança e alertas de dose máxima." },
+      { "icon": "bolt", "title": "Agilidade no plantão", "text": "Respostas em segundos, mesmo sob alta demanda." },
+      { "icon": "book", "title": "Fonte sempre citada", "text": "Cada medicamento traz a bula ou diretriz de origem." },
+      { "icon": "shield", "title": "Segurança em 1º lugar", "text": "Alertas de dose máxima e ressalvas importantes." }
+    ]
+  },
+  "services": {
+    "eyebrow": "Serviços",
+    "title": "O que a DoseCerta oferece",
+    "subtitle": "Tudo que um profissional precisa para decidir com segurança, do ambulatório à emergência.",
+    "items": [
+      { "icon": "calculator", "title": "Calculadora de Doses", "text": "Calcule doses por peso em segundos, com faixas de segurança e alertas de dose máxima." },
+      { "icon": "pill", "title": "Bulário Pediátrico", "text": "Posologia detalhada por medicamento: indicação, via de administração e apresentações." },
+      { "icon": "flow", "title": "Fluxogramas Clínicos", "text": "Protocolos visuais para emergências pediátricas — da triagem à conduta." },
+      { "icon": "clipboard", "title": "Plantão Rápido", "text": "Prescrições organizadas por patologia, para agilizar o atendimento com segurança." },
+      { "icon": "alert", "title": "Guia de Intoxicações", "text": "Antídotos, doses e condutas para as intoxicações pediátricas mais comuns." },
+      { "icon": "refresh", "title": "Fontes Auditáveis", "text": "Cada dado cadastrado cita a bula ANVISA ou diretriz de origem, revisável pelo admin." }
+    ]
+  },
+  "team": {
+    "eyebrow": "Equipe",
+    "title": "Quem está por trás da DoseCerta",
+    "subtitle": "Equipe ilustrativa — substitua pelos dados reais da sua organização.",
+    "members": [
+      { "name": "Dra. Camila Andrade", "role": "Fundadora & Diretora Médica", "bio": "Pediatra, 15 anos de emergência pediátrica.", "initials": "CA" },
+      { "name": "Dr. Rafael Nogueira", "role": "Coordenador Clínico", "bio": "Pediatra emergencista, curadoria de protocolos.", "initials": "RN" },
+      { "name": "Bianca Souza", "role": "Farmacêutica Clínica", "bio": "Responsável pela curadoria de doses e posologia.", "initials": "BS" },
+      { "name": "Lucas Tavares", "role": "CTO & Desenvolvedor Full-Stack", "bio": "Arquitetura e segurança da plataforma.", "initials": "LT" }
+    ]
+  },
+  "contact": {
+    "eyebrow": "Contato",
+    "title": "Fale com a gente",
+    "subtitle": "Dúvidas, parcerias ou sugestões de conteúdo clínico — respondemos rápido.",
+    "info": [
+      { "icon": "mail", "title": "E-mail", "value": "contato@dosecerta.com.br" },
+      { "icon": "phone", "title": "Telefone", "value": "(11) 4000-0000" },
+      { "icon": "pin", "title": "Endereço", "value": "Av. Exemplo, 1000 — São Paulo, SP" }
+    ],
+    "social": [
+      { "icon": "linkedin", "label": "LinkedIn", "href": "#" },
+      { "icon": "instagram", "label": "Instagram", "href": "#" }
+    ]
+  },
+  "footer": {
+    "description": "Calculadora clínica de doses pediátricas para profissionais de saúde.",
+    "linksTitle": "Navegação",
+    "contactTitle": "Contato",
+    "legalTitle": "Legal",
+    "legalLinks": [
+      { "label": "Termos de Uso", "href": "#" },
+      { "label": "Política de Privacidade", "href": "#" }
+    ],
+    "disclaimer": "Marca e equipe são ilustrativas. Os dados de medicamentos citam fonte, mas exigem validação clínica antes de uso real."
+  }
+}

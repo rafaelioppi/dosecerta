@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora de Doses — DoseCerta</title>
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2312405a%27/%3E%3Cpath d=%27M16 6c4 4.2 7 7.9 7 11.2A7 7 0 1 1 9 17.2C9 13.9 12 10.2 16 6Z%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272%27/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <site-header></site-header>
+
+  <main class="dashboard container" id="calc-app" hidden>
+    <div class="dashboard-head">
+      <h1>Calculadora de Doses</h1>
+      <p>Selecione o medicamento e informe o peso para calcular a dose.</p>
+    </div>
+
+    <div class="auth-notice">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+      <span id="safety-notice">Ferramenta de apoio à decisão clínica. Não substitui o julgamento médico nem a bula vigente — confirme a dose antes de administrar.</span>
+    </div>
+
+    <div class="card form-card" style="max-width:640px;">
+      <div class="field">
+        <label for="med-search">Princípio ativo</label>
+        <input type="text" id="med-search" placeholder="Buscar por princípio ativo (ex.: amoxicilina, ibuprofeno)..." autocomplete="off" />
+      </div>
+      <div class="field">
+        <label for="med-select">Selecionado</label>
+        <select id="med-select">
+          <option value="">— Selecione um medicamento —</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="weight">Peso do paciente (kg)</label>
+        <input type="number" id="weight" min="0.5" max="150" step="0.1" placeholder="ex.: 18.5" />
+        <span class="field__error" id="calc-error"></span>
+      </div>
+      <button class="btn btn--primary btn--block" id="calc-btn">Calcular dose</button>
+    </div>
+
+    <div class="result-box" id="result-box" hidden>
+      <p class="tag" id="result-category"></p>
+      <p class="dose-value" id="result-dose"></p>
+      <p class="dose-meta" id="result-meta"></p>
+      <p class="dose-meta" id="result-notes"></p>
+      <p class="dose-meta">Fonte: <a id="result-source" href="#" target="_blank" rel="noopener noreferrer"></a></p>
+    </div>
+
+    <div style="margin-top:var(--space-2xl);">
+      <h2 style="font-family:var(--font-heading); font-size:var(--fs-lg); color:var(--color-heading); margin-bottom:var(--space-md);">
+        Catálogo completo
+      </h2>
+      <div class="table-wrap">
+        <table class="data-table" id="catalog-table">
+          <thead>
+            <tr>
+              <th>Medicamento</th>
+              <th>Categoria</th>
+              <th>Dose</th>
+              <th>Via</th>
+              <th>Fonte</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <site-footer></site-footer>
+
+  <script src="assets/icons/icons.js"></script>
+  <script src="js/session.js"></script>
+  <script src="js/content-client.js"></script>
+  <script src="js/components/site-header.js"></script>
+  <script src="js/components/site-footer.js"></script>
+  <script>
+    dosecertaRequireAuth(); // qualquer papel autenticado pode usar a calculadora
+
+    let allMeds = [];
+
+    async function loadMeds() {
+      const res = await fetch("/api/medications", { credentials: "same-origin" });
+      if (!res.ok) return;
+      const body = await res.json();
+      allMeds = body.items || [];
+      document.getElementById("safety-notice").textContent = body.notice || document.getElementById("safety-notice").textContent;
+      renderSelect(allMeds);
+      renderTable(allMeds);
+      document.getElementById("calc-app").hidden = false;
+    }
+
+    function renderSelect(meds) {
+      const select = document.getElementById("med-select");
+      const current = select.value;
+      select.innerHTML =
+        '<option value="">— Selecione um medicamento —</option>' +
+        meds.map((m) => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.category)})</option>`).join("");
+      if (meds.some((m) => String(m.id) === current)) select.value = current;
+    }
+
+    function renderTable(meds) {
+      const tbody = document.querySelector("#catalog-table tbody");
+      tbody.innerHTML = meds
+        .map(
+          (m) => `
+        <tr>
+          <td>${escapeHtml(m.name)}</td>
+          <td>${escapeHtml(m.category)}</td>
+          <td>${m.dose_mg_per_kg != null ? m.dose_mg_per_kg + " " + escapeHtml(m.dose_unit || "mg/kg") : escapeHtml(m.dose_unit || "ver notas")}</td>
+          <td>${escapeHtml(m.route || "—")}</td>
+          <td><a href="${m.source_url}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source_name)}</a></td>
+        </tr>`
+        )
+        .join("");
+    }
+
+    document.getElementById("med-search").addEventListener("input", (e) => {
+      const q = e.target.value.toLowerCase();
+      const filtered = allMeds.filter(
+        (m) => m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q)
+      );
+      renderSelect(filtered);
+      renderTable(filtered);
+    });
+
+    document.getElementById("calc-btn").addEventListener("click", async () => {
+      const errorEl = document.getElementById("calc-error");
+      errorEl.textContent = "";
+      const medicationId = document.getElementById("med-select").value;
+      const weightKg = document.getElementById("weight").value;
+
+      if (!medicationId) {
+        errorEl.textContent = "Selecione um medicamento.";
+        return;
+      }
+      if (!weightKg || Number(weightKg) <= 0) {
+        errorEl.textContent = "Informe um peso válido.";
+        return;
+      }
+
+      const res = await fetch("/api/medications/calculate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ medicationId, weightKg }),
+      });
+      const body = await res.json();
+
+      if (!res.ok) {
+        errorEl.textContent = body.error || "Não foi possível calcular.";
+        document.getElementById("result-box").hidden = true;
+        return;
+      }
+
+      const { medication, result } = body;
+      document.getElementById("result-category").textContent = medication.category;
+      document.getElementById("result-dose").textContent =
+        result.doseMg != null ? `${result.doseMg} mg` + (result.cappedByMax ? " (limitado à dose máxima)" : "") : "—";
+      document.getElementById("result-meta").textContent =
+        `${medication.name} • ${medication.frequency || ""} • via ${medication.route || "—"} • ${medication.presentation || ""}`;
+      document.getElementById("result-notes").textContent = medication.notes || "";
+      const sourceLink = document.getElementById("result-source");
+      sourceLink.textContent = medication.source_name;
+      sourceLink.href = medication.source_url;
+      document.getElementById("result-box").hidden = false;
+    });
+
+    function escapeHtml(str) {
+      return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    document.addEventListener("dosecerta:session", (e) => {
+      if (e.detail) loadMeds();
+    });
+  </script>
+</body>
+</html>
