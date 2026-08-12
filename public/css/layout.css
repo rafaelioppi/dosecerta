@@ -211,20 +211,24 @@ section:nth-of-type(even) {
   inset: 0;
   background-image: url("../assets/img/luna.jpg");
   background-size: cover;
-  background-position: center 20%;
-  opacity: 0.16;
+  background-position: center center;
+  background-repeat: no-repeat;
+  opacity: 0.26;
   filter: grayscale(15%);
   pointer-events: none;
+  /* .auth-page--tribute já tem overflow:hidden, então isto fica preso à área
+     de login — o rodapé é um <site-footer> separado, com fundo sólido próprio
+     (--color-primary-900), e não é afetado por este pseudo-elemento. */
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .auth-page--tribute::before {
-    opacity: 0.1;
+    opacity: 0.18;
   }
 }
 
 :root[data-theme="dark"] .auth-page--tribute::before {
-  opacity: 0.1;
+  opacity: 0.18;
 }
 
 .auth-card {
@@ -392,39 +396,22 @@ section:nth-of-type(even) {
   }
 }
 
-.result-box {
-  margin-top: var(--space-lg);
-  padding: var(--space-lg);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-accent-500) 25%, transparent);
-}
-
-.result-box .dose-value {
-  font-family: var(--font-heading);
-  font-size: var(--fs-2xl);
-  color: var(--color-accent-600);
-}
-
-.result-box .dose-meta {
-  color: var(--color-text-muted);
-  font-size: var(--fs-sm);
-  margin-top: var(--space-xs);
-}
-
+/* Etiqueta de categoria. A cor vem dos tokens "strong" (variables.css) porque
+   os tons crus 500/600 viram texto ilegível no tema escuro. */
 .tag {
   display: inline-block;
   padding: 0.15rem 0.55rem;
   border-radius: var(--radius-pill);
   font-size: var(--fs-xs);
   font-weight: 600;
-  background: color-mix(in srgb, var(--color-primary-600) 12%, transparent);
-  color: var(--color-primary-600);
+  line-height: 1.4;
+  background: color-mix(in srgb, var(--color-primary-strong) 14%, transparent);
+  color: var(--color-primary-strong);
 }
 
 .tag--rescue {
-  background: color-mix(in srgb, var(--color-primary-500) 16%, transparent);
-  color: var(--color-primary-500);
+  background: color-mix(in srgb, var(--color-primary-strong) 18%, transparent);
+  color: var(--color-primary-strong);
 }
 
 .tag--warning {
@@ -436,7 +423,7 @@ section:nth-of-type(even) {
    precisar ler a coluna inteira: resgate/emergência em azul, contraindicado
    em laranja — o resto sem marcação. */
 .data-table tr[data-flag="rescue"] {
-  box-shadow: inset 3px 0 0 var(--color-primary-500);
+  box-shadow: inset 3px 0 0 var(--color-primary-strong);
 }
 
 .data-table tr[data-flag="warning"] {
