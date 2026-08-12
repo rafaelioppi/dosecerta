@@ -8,6 +8,7 @@
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
     "seed": "node server/scripts/seed.js",
+    "check-medications": "node server/scripts/check-medications.js",
     "create-admin": "node server/scripts/create-admin.js"
   },
   "dependencies": {
