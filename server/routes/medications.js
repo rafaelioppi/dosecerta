@@ -12,20 +12,23 @@ const router = express.Router();
 const SAFETY_NOTICE =
   "Ferramenta de apoio à decisão clínica, com fontes citadas por medicamento. Não substitui o julgamento médico nem a bula vigente — confirme a dose antes de administrar.";
 
+// `notes` vai junto na listagem porque 21 dos 58 itens não têm dose por kg:
+// para eles a nota da fonte é o próprio resultado que a calculadora mostra,
+// e não há POST /calculate a fazer (não existe peso a informar).
 router.get("/", requireAuth, (req, res) => {
   const q = (req.query.q || "").toString().trim();
   const rows = q
     ? db
         .prepare(
           `SELECT id, name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-                  route, presentation, source_name, source_url
+                  route, presentation, notes, source_name, source_url
            FROM medications WHERE name LIKE ? OR category LIKE ? ORDER BY name`
         )
         .all(`%${q}%`, `%${q}%`)
     : db
         .prepare(
           `SELECT id, name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-                  route, presentation, source_name, source_url
+                  route, presentation, notes, source_name, source_url
            FROM medications ORDER BY name`
         )
         .all();

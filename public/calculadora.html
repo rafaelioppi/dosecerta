@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/variables.css" />
   <link rel="stylesheet" href="css/layout.css" />
   <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/calculadora.css" />
   <link rel="stylesheet" href="css/responsive.css" />
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
 </head>
@@ -18,68 +19,165 @@
 
   <main class="dashboard container" id="calc-app" hidden>
     <div class="dashboard-head">
-      <h1>Calculadora de Doses</h1>
-      <p>Selecione o medicamento e informe o peso para calcular a dose.</p>
+      <h1>Calculadora de doses</h1>
+      <p>Escolha o medicamento, informe o peso e confira a dose com a fonte ao lado.</p>
     </div>
 
     <div class="auth-notice">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
       <span id="safety-notice">Ferramenta de apoio à decisão clínica. Não substitui o julgamento médico nem a bula vigente — confirme a dose antes de administrar.</span>
     </div>
 
-    <div class="card form-card" style="max-width:640px;">
-      <div class="field">
-        <label for="med-search">Princípio ativo</label>
-        <input type="text" id="med-search" placeholder="Buscar por princípio ativo (ex.: amoxicilina, articaína)..." autocomplete="off" />
-      </div>
-      <div class="field">
-        <label for="med-category-filter">Categoria</label>
-        <select id="med-category-filter">
-          <option value="">Todas as categorias</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="med-select">Selecionado</label>
-        <select id="med-select">
-          <option value="">— Selecione um medicamento —</option>
-        </select>
-      </div>
-      <p class="field__error" id="med-select-warning" style="display:none; color:var(--color-alert-500); margin:-0.25rem 0 var(--space-sm);"></p>
-      <div class="field">
-        <label for="weight">Peso do paciente (kg)</label>
-        <input type="number" id="weight" min="0.5" max="150" step="0.1" placeholder="ex.: 18.5" />
-        <span class="field__error" id="calc-error"></span>
-      </div>
-      <button class="btn btn--primary btn--block" id="calc-btn">Calcular dose</button>
+    <div class="calc-layout">
+      <!-- ===================== Entrada ===================== -->
+      <form class="card calc-form" id="calc-form" novalidate>
+        <!-- Passo 1: um único controle faz busca e seleção (combobox ARIA) -->
+        <div class="calc-step" id="step-med">
+          <span class="calc-step__num" aria-hidden="true">1</span>
+          <div>
+            <label class="calc-label" for="med-search">Medicamento</label>
+            <div class="combo" id="med-combo">
+              <div class="combo__inputwrap">
+                <svg class="combo__icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                <input
+                  class="combo__input"
+                  id="med-search"
+                  type="text"
+                  role="combobox"
+                  aria-expanded="false"
+                  aria-controls="med-listbox"
+                  aria-autocomplete="list"
+                  aria-describedby="med-help"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="Buscar princípio ativo, categoria ou indicação"
+                />
+                <button type="button" class="combo__clear" id="med-clear" hidden aria-label="Limpar medicamento selecionado">
+                  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+                </button>
+              </div>
+              <ul class="combo__list" id="med-listbox" role="listbox" aria-label="Medicamentos encontrados" hidden></ul>
+            </div>
+            <p class="calc-help" id="med-help">Comece a digitar e escolha na lista. Use ↑ ↓ e Enter.</p>
+
+            <div class="recent-row" id="recent-row" hidden>
+              <span class="recent-row__label" id="recent-label">Recentes:</span>
+            </div>
+
+            <div class="med-chosen" id="med-chosen" hidden>
+              <p class="med-chosen__name" id="chosen-name"></p>
+              <p class="med-chosen__meta" id="chosen-meta"></p>
+              <p class="med-chosen__alert" id="chosen-alert" hidden></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Passo 2: peso -->
+        <div class="calc-step" id="step-weight">
+          <span class="calc-step__num" aria-hidden="true">2</span>
+          <div>
+            <label class="calc-label" for="weight">Peso do paciente</label>
+            <div class="weight-input">
+              <input
+                id="weight"
+                type="text"
+                inputmode="decimal"
+                autocomplete="off"
+                aria-describedby="weight-help"
+                placeholder="18,5"
+              />
+              <span class="weight-input__unit" aria-hidden="true">kg</span>
+            </div>
+            <p class="calc-help" id="weight-help">De 0,5 a 150 kg. Pode usar vírgula.</p>
+          </div>
+        </div>
+
+        <p class="calc-alert" id="calc-error" role="alert" hidden>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 7v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16.5" r="1" fill="currentColor"/></svg>
+          <span id="calc-error-text"></span>
+        </p>
+
+        <button class="btn btn--primary btn--block" id="calc-btn" type="submit">Calcular dose</button>
+      </form>
+
+      <!-- ===================== Resultado ===================== -->
+      <section class="calc-result-col" aria-labelledby="result-heading">
+        <h2 id="result-heading" class="sr-only">Resultado do cálculo</h2>
+        <p class="sr-only" id="result-status" role="status" aria-live="polite"></p>
+
+        <div class="dose-empty" id="dose-empty">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 7h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 12h3M8 16.5h3M14 12h2M14 16.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <span>O resultado aparece aqui, com a conta feita, a frequência e a fonte usada.</span>
+        </div>
+
+        <article class="dose-card" id="dose-card" hidden tabindex="-1" data-flag="">
+          <header class="dose-card__head">
+            <p class="dose-card__name" id="result-name"></p>
+            <span class="tag" id="result-category"></span>
+          </header>
+
+          <p class="dose-flag" id="result-flag" hidden>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 3 2 20h20L12 3Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
+            <span id="result-flag-text"></span>
+          </p>
+
+          <!-- Leitura principal (medicamentos com dose por kg) -->
+          <div id="dose-readout-wrap" hidden>
+            <div class="dose-readout">
+              <p class="dose-readout__label"><span class="dose-readout__kindicon" id="dose-kind-icon" aria-hidden="true">💊</span><span id="dose-kind">por dose</span></p>
+              <p class="dose-readout__value"><span id="dose-number">—</span><span class="dose-readout__unit">mg</span></p>
+              <p class="dose-readout__calc" id="dose-calc"></p>
+            </div>
+
+            <p class="dose-flag dose-flag--cap" id="dose-cap" hidden>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"/></svg>
+              <span id="dose-cap-text"></span>
+            </p>
+
+            <p class="dose-flag dose-flag--info" id="dose-kind-hint" hidden>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor"/></svg>
+              <span id="dose-kind-hint-text"></span>
+            </p>
+          </div>
+
+          <!-- Leitura alternativa (não é mg/kg) -->
+          <div class="dose-rule" id="dose-rule" hidden>
+            <p class="dose-rule__label"><span aria-hidden="true">📌</span> Não é calculado por peso</p>
+            <p class="dose-rule__text" id="dose-rule-text"></p>
+            <p class="dose-rule__hint" id="dose-rule-hint"></p>
+          </div>
+
+          <dl class="dose-facts" id="dose-facts">
+            <div><dt><span class="fact-icon" aria-hidden="true">🎯</span>Indicação</dt><dd id="fact-indication">—</dd></div>
+            <div><dt><span class="fact-icon" aria-hidden="true">🕐</span>Frequência</dt><dd id="fact-frequency">—</dd></div>
+            <div><dt><span class="fact-icon" aria-hidden="true">💉</span>Via</dt><dd id="fact-route">—</dd></div>
+            <div><dt><span class="fact-icon" aria-hidden="true">🧴</span>Apresentação</dt><dd id="fact-presentation">—</dd></div>
+          </dl>
+
+          <details class="dose-notes" id="dose-notes" hidden>
+            <summary><span aria-hidden="true">📝</span> Notas da fonte <span class="dose-notes__count" id="notes-count"></span></summary>
+            <ul class="note-list" id="fact-notes"></ul>
+          </details>
+
+          <p class="dose-source"><span aria-hidden="true">📚</span> Fonte: <a id="result-source" href="#" target="_blank" rel="noopener noreferrer"></a></p>
+        </article>
+      </section>
     </div>
 
-    <div class="result-box" id="result-box" hidden>
-      <p class="tag" id="result-category"></p>
-      <p class="dose-value" id="result-dose"></p>
-      <p class="dose-meta" id="result-meta"></p>
-      <p class="dose-meta" id="result-notes"></p>
-      <p class="dose-meta">Fonte: <a id="result-source" href="#" target="_blank" rel="noopener noreferrer"></a></p>
-    </div>
-
-    <div style="margin-top:var(--space-2xl);">
-      <h2 style="font-family:var(--font-heading); font-size:var(--fs-lg); color:var(--color-heading); margin-bottom:var(--space-md);">
-        Catálogo completo
-      </h2>
-      <div class="table-wrap">
-        <table class="data-table" id="catalog-table">
-          <thead>
-            <tr>
-              <th>Medicamento</th>
-              <th>Categoria</th>
-              <th>Dose</th>
-              <th>Via</th>
-              <th>Fonte</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+    <!-- ===================== Catálogo ===================== -->
+    <section class="catalog" aria-labelledby="catalog-heading">
+      <div class="catalog__head">
+        <h2 id="catalog-heading">Catálogo completo</h2>
+        <p class="catalog__count" id="catalog-count"></p>
       </div>
-    </div>
+
+      <div class="chip-row" id="catalog-filters" role="group" aria-label="Filtrar catálogo por grupo"></div>
+
+      <div id="catalog-body"></div>
+
+      <p class="empty-state" id="catalog-empty" hidden>Nenhum medicamento neste grupo.</p>
+    </section>
   </main>
 
   <site-footer></site-footer>
@@ -91,149 +189,768 @@
   <script>
     dosecertaRequireAuth(); // qualquer papel autenticado pode usar a calculadora
 
+    // ---------------------------------------------------------------------
+    // Estado
+    // ---------------------------------------------------------------------
+    const RECENTS_KEY = "dosecerta:recentes";
+    const RECENTS_MAX = 5;
+
     let allMeds = [];
+    let selectedMed = null;
+    let comboResults = [];
+    let activeIndex = -1;
+    let activeBucket = "all";
 
-    // Categorias marcadas como "resgate/emergência" ou "contraindicado" ganham
-    // destaque visual na tabela e um aviso reforçado ao selecionar — são os
-    // dois casos em que confundir "cadastrado" com "recomendado" é perigoso.
-    function categoryFlag(category) {
-      const c = (category || "").toLowerCase();
-      if (c.includes("contraindicado")) return "warning";
-      if (c.includes("emergência") || c.includes("resgate")) return "rescue";
-      return null;
-    }
+    const $ = (id) => document.getElementById(id);
+    const nf = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 });
 
-    function categoryTag(category) {
-      const flag = categoryFlag(category);
-      const cls = flag === "warning" ? "tag tag--warning" : flag === "rescue" ? "tag tag--rescue" : "tag";
-      return `<span class="${cls}">${escapeHtml(category)}</span>`;
-    }
-
-    async function loadMeds() {
-      const res = await fetch("/api/medications", { credentials: "same-origin" });
-      if (!res.ok) return;
-      const body = await res.json();
-      allMeds = body.items || [];
-      document.getElementById("safety-notice").textContent = body.notice || document.getElementById("safety-notice").textContent;
-      renderCategoryFilter(allMeds);
-      applyFilters();
-      document.getElementById("calc-app").hidden = false;
-    }
-
-    function renderCategoryFilter(meds) {
-      const select = document.getElementById("med-category-filter");
-      const categories = [...new Set(meds.map((m) => m.category))].sort();
-      select.innerHTML =
-        '<option value="">Todas as categorias</option>' +
-        categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
-    }
-
-    function applyFilters() {
-      const q = document.getElementById("med-search").value.toLowerCase();
-      const category = document.getElementById("med-category-filter").value;
-      const filtered = allMeds.filter(
-        (m) =>
-          (!category || m.category === category) &&
-          (m.name.toLowerCase().includes(q) || m.category.toLowerCase().includes(q))
-      );
-      renderSelect(filtered);
-      renderTable(filtered);
-    }
-
-    function renderSelect(meds) {
-      const select = document.getElementById("med-select");
-      const current = select.value;
-      select.innerHTML =
-        '<option value="">— Selecione um medicamento —</option>' +
-        meds.map((m) => `<option value="${m.id}">${escapeHtml(m.name)} (${escapeHtml(m.category)})</option>`).join("");
-      if (meds.some((m) => String(m.id) === current)) select.value = current;
-      updateSelectWarning();
-    }
-
-    function updateSelectWarning() {
-      const warning = document.getElementById("med-select-warning");
-      const id = document.getElementById("med-select").value;
-      const med = allMeds.find((m) => String(m.id) === id);
-      if (med && categoryFlag(med.category) === "warning") {
-        warning.textContent = `⚠ ${med.name} está marcado como contraindicado — leia a nota antes de prosseguir: ${med.notes || ""}`;
-        warning.style.display = "block";
-      } else if (med && categoryFlag(med.category) === "rescue") {
-        warning.textContent = `Medicação de resgate/emergência — confirme a indicação antes de calcular.`;
-        warning.style.display = "block";
-      } else {
-        warning.style.display = "none";
-      }
-    }
-
-    function renderTable(meds) {
-      const tbody = document.querySelector("#catalog-table tbody");
-      tbody.innerHTML = meds
-        .map(
-          (m) => `
-        <tr data-flag="${categoryFlag(m.category) || ""}">
-          <td>${escapeHtml(m.name)}</td>
-          <td>${categoryTag(m.category)}</td>
-          <td>${m.dose_mg_per_kg != null ? m.dose_mg_per_kg + " " + escapeHtml(m.dose_unit || "mg/kg") : escapeHtml(m.dose_unit || "ver notas")}</td>
-          <td>${escapeHtml(m.route || "—")}</td>
-          <td><a href="${m.source_url}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source_name)}</a></td>
-        </tr>`
-        )
-        .join("");
-    }
-
-    document.getElementById("med-search").addEventListener("input", applyFilters);
-    document.getElementById("med-category-filter").addEventListener("change", applyFilters);
-    document.getElementById("med-select").addEventListener("change", updateSelectWarning);
-
-    document.getElementById("calc-btn").addEventListener("click", async () => {
-      const errorEl = document.getElementById("calc-error");
-      errorEl.textContent = "";
-      const medicationId = document.getElementById("med-select").value;
-      const weightKg = document.getElementById("weight").value;
-
-      if (!medicationId) {
-        errorEl.textContent = "Selecione um medicamento.";
-        return;
-      }
-      if (!weightKg || Number(weightKg) <= 0) {
-        errorEl.textContent = "Informe um peso válido.";
-        return;
-      }
-
-      const res = await fetch("/api/medications/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify({ medicationId, weightKg }),
-      });
-      const body = await res.json();
-
-      if (!res.ok) {
-        errorEl.textContent = body.error || "Não foi possível calcular.";
-        document.getElementById("result-box").hidden = true;
-        return;
-      }
-
-      const { medication, result } = body;
-      const categoryEl = document.getElementById("result-category");
-      const flag = categoryFlag(medication.category);
-      categoryEl.className = flag === "warning" ? "tag tag--warning" : flag === "rescue" ? "tag tag--rescue" : "tag";
-      categoryEl.textContent = medication.category;
-      document.getElementById("result-dose").textContent =
-        result.doseMg != null ? `${result.doseMg} mg` + (result.cappedByMax ? " (limitado à dose máxima)" : "") : "—";
-      document.getElementById("result-meta").textContent =
-        `${medication.name} • ${medication.frequency || ""} • via ${medication.route || "—"} • ${medication.presentation || ""}`;
-      document.getElementById("result-notes").textContent = medication.notes || "";
-      const sourceLink = document.getElementById("result-source");
-      sourceLink.textContent = medication.source_name;
-      sourceLink.href = medication.source_url;
-      document.getElementById("result-box").hidden = false;
-    });
-
+    // ---------------------------------------------------------------------
+    // Utilidades
+    // ---------------------------------------------------------------------
     function escapeHtml(str) {
       return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
+    // Busca sem acento: "articaina" precisa achar "Articaína".
+    function norm(str) {
+      return String(str ?? "")
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function fmt(n) {
+      return n == null || Number.isNaN(Number(n)) ? "—" : nf.format(Number(n));
+    }
+
+    // Categorias de "resgate/emergência" e "contraindicado" ganham destaque
+    // visual em todo lugar — são os dois casos em que confundir "cadastrado"
+    // com "recomendado" é perigoso.
+    function categoryFlag(category) {
+      const c = norm(category);
+      if (c.includes("contraindicado")) return "warning";
+      if (c.includes("emergencia") || c.includes("resgate")) return "rescue";
+      return null;
+    }
+
+    // Grupos de navegação do catálogo: 15 categorias cruas viram 4 baldes que
+    // batem com o jeito de pensar de quem atende (geral, odonto, e os dois
+    // grupos críticos).
+    const BUCKETS = [
+      { id: "all", label: "Todos" },
+      { id: "geral", label: "Pediatria geral" },
+      { id: "odonto", label: "Odontopediatria" },
+      { id: "rescue", label: "Emergência / resgate" },
+      { id: "warning", label: "Contraindicados" },
+    ];
+
+    function bucketOf(med) {
+      const flag = categoryFlag(med.category);
+      if (flag) return flag;
+      return norm(med.category).includes("odontopediatria") ? "odonto" : "geral";
+    }
+
+    // Ordem dos grupos na listagem: rotina primeiro, críticos por último.
+    const BUCKET_ORDER = { geral: 0, odonto: 1, rescue: 2, warning: 3 };
+
+    function tagClass(category) {
+      const flag = categoryFlag(category);
+      return flag === "warning" ? "tag tag--warning" : flag === "rescue" ? "tag tag--rescue" : "tag";
+    }
+
+    // "mg/kg/dia" e "mg/kg/dose" são clinicamente diferentes: um é o total de
+    // 24 h, o outro é o que se administra de uma vez. O resultado precisa
+    // dizer qual dos dois está na tela.
+    function doseKind(unit) {
+      const u = norm(unit);
+      if (u.includes("/dia")) {
+        return {
+          icon: "📅",
+          label: "total no dia",
+          hint: "Este número é a dose de 24 horas. Divida pelas tomadas indicadas na frequência abaixo.",
+        };
+      }
+      if (u.includes("/dose")) return { icon: "💊", label: "por dose", hint: null };
+      if (u.includes("maxim")) {
+        return {
+          icon: "⚠️",
+          label: "dose máxima",
+          hint: "Este é o teto para o peso informado, não a dose de rotina. Confira a dose usual nas notas da fonte.",
+        };
+      }
+      return { icon: "💊", label: "dose calculada", hint: null };
+    }
+
+    // ---------------------------------------------------------------------
+    // Notas da fonte: o campo vem do banco como um parágrafo corrido de 3 a 5
+    // frases técnicas. Quebrar em linhas curtas com um pictograma por TIPO de
+    // informação torna a leitura escaneável entre um paciente e outro.
+    // ---------------------------------------------------------------------
+
+    // Abreviações que terminam em ponto e não encerram frase ("máx. 0,3 mg").
+    const ABBR = ["ex", "máx", "max", "mín", "min", "aprox", "obs", "etc", "dr", "dra", "sr", "sra", "no", "nº", "cerca", "pág", "vs", "art", "fig", "cap", "seg"];
+
+    function splitNotes(text) {
+      const s = String(text || "").replace(/\s+/g, " ").trim();
+      if (!s) return [];
+      const parts = [];
+      let buf = "";
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        buf += ch;
+        if (ch !== "." && ch !== "!" && ch !== "?") continue;
+        if (s[i + 1] !== " ") continue; // "1:100.000" e "250.000 UI" não quebram
+        if (!/[A-ZÀ-ÞÁÉÍÓÚÂÊÔÃÕÇ0-9(]/.test(s[i + 2] || "")) continue;
+        const lastWord = buf.slice(0, -1).split(/[\s(]+/).pop().toLowerCase();
+        if (ABBR.includes(lastWord)) continue;
+        parts.push(buf.trim());
+        buf = "";
+        i++;
+      }
+      if (buf.trim()) parts.push(buf.trim());
+      return parts.filter((p) => p.replace(/[^\wÀ-ÿ]/g, "").length > 1);
+    }
+
+    // Um ícone por TIPO de informação (não por substantivo). A ordem importa:
+    // proibição e alerta ganham de qualquer outra leitura da mesma frase.
+    const NOTE_ICONS = [
+      { icon: "⛔", tone: "stop", re: /contraindicad|proibid|nunca|jamais|não prescrever|não administrar|retirad[oa] do mercado|uso vedado/i },
+      { icon: "⚠️", tone: "warn", re: /\bm[áa]x\b|m[áa]xim|dose fixa|calcular por peso|conferir|confirmar|ajustar dose|ajuste renal|reduzir dose|insufici[êe]ncia|não prolongar|reavaliar|encaminhar|alerta|risco|cuidado|aten[cç][ãa]o|t[óo]xic|intoxica|erro de dose|ultrapass|exceder|limite|teto|evitar|grave|[óo]bito|depress[ãa]o|fatal|rea[cç][ãa]o|efeito adverso|arritmia/i },
+      { icon: "📏", tone: "", re: /regra pr[áa]tica|tubete|gotas?\b|equival|c[áa]lculo|calcular|mg\/kg|dose por peso|convers[ãa]o/i },
+      { icon: "💉", tone: "", re: /aspirar|injet|infiltra|intramuscular|endovenos|\bIM\b|\bIV\b|aplica[cç][ãa]o|t[ée]cnica|bloqueio|agulha|infus[ãa]o|nebuliza[cç]|espa[cç]ador|bochech|pingar|colher\b/i },
+      { icon: "🕐", tone: "", re: /minutos?\b|horas?\b|\bdias\b|intervalo|repetir|dura[cç][ãa]o|in[íi]cio de a[cç][ãa]o|a cada|24 ?h\b/i },
+      { icon: "👶", tone: "", re: /\banos\b|\bmeses\b|lactente|beb[êe]|crian[cç]a|idade|faixa et[áa]ria|neonat|prematur|abaixo de \d/i },
+      { icon: "🧪", tone: "", re: /concentra[cç][ãa]o|solu[cç][ãa]o|dilu|frasco|suspens[ãa]o|xarope|comprimid|1:\d|mg\/mL|apresenta[cç][ãa]o|amp[oô]la|seringa/i },
+      { icon: "📋", tone: "", re: /protocolo|consult[óo]rio|equipe|monitoriza|registro|prescri[cç]|receita|bula|ANVISA|CFO|SBP/i },
+    ];
+
+    function noteIcon(text) {
+      for (const n of NOTE_ICONS) if (n.re.test(text)) return n;
+      return { icon: "ℹ️", tone: "" };
+    }
+
+    // "mg/kg/dose (faixa de 0,2 a 0,3 mg/kg IV)" -> "mg/kg/dose"
+    function shortUnit(unit) {
+      return String(unit || "mg/kg").split(" (")[0].trim();
+    }
+
+    function isPerKg(med) {
+      return med && med.dose_mg_per_kg != null;
+    }
+
+    // ---------------------------------------------------------------------
+    // Carregamento
+    // ---------------------------------------------------------------------
+    async function loadMeds() {
+      $("calc-app").hidden = false;
+      try {
+        const res = await fetch("/api/medications", { credentials: "same-origin" });
+        if (!res.ok) throw new Error("http " + res.status);
+        const body = await res.json();
+        allMeds = body.items || [];
+        if (body.notice) $("safety-notice").textContent = body.notice;
+      } catch {
+        $("catalog-body").innerHTML = "";
+        const empty = $("catalog-empty");
+        empty.textContent = "Não foi possível carregar o catálogo. Verifique a conexão e recarregue a página.";
+        empty.hidden = false;
+        $("catalog-count").textContent = "";
+        return;
+      }
+      renderFilters();
+      renderCatalog();
+      renderRecents();
+      $("med-help").textContent = `${allMeds.length} medicamentos disponíveis. Use ↑ ↓ e Enter para escolher.`;
+    }
+
+    // ---------------------------------------------------------------------
+    // Combobox de medicamento
+    // ---------------------------------------------------------------------
+    const searchInput = $("med-search");
+    const listbox = $("med-listbox");
+
+    function searchMeds(term) {
+      const q = norm(term).trim();
+      if (!q) return allMeds;
+      const words = q.split(/\s+/);
+      return allMeds.filter((m) => {
+        const haystack = norm(`${m.name} ${m.category} ${m.indication || ""}`);
+        return words.every((w) => haystack.includes(w));
+      });
+    }
+
+    function openCombo(results, activeId) {
+      comboResults = results;
+      const preferred = activeId != null ? results.findIndex((m) => String(m.id) === String(activeId)) : -1;
+      activeIndex = results.length ? (preferred >= 0 ? preferred : 0) : -1;
+      renderCombo();
+      listbox.hidden = false;
+      searchInput.setAttribute("aria-expanded", "true");
+      updateActiveOption();
+    }
+
+    function closeCombo() {
+      listbox.hidden = true;
+      searchInput.setAttribute("aria-expanded", "false");
+      searchInput.removeAttribute("aria-activedescendant");
+      activeIndex = -1;
+    }
+
+    function renderCombo() {
+      if (!comboResults.length) {
+        const term = searchInput.value.trim();
+        listbox.innerHTML = `<li class="combo__empty" role="presentation">Nenhum medicamento encontrado para <strong>${escapeHtml(term)}</strong>.<br />Tente só o começo do nome, sem acento.</li>`;
+        return;
+      }
+      listbox.innerHTML = comboResults
+        .map((m, i) => {
+          const dose = isPerKg(m) ? `${fmt(m.dose_mg_per_kg)} ${escapeHtml(shortUnit(m.dose_unit))}` : "não é por peso";
+          return `<li class="combo__option" id="med-opt-${m.id}" role="option" aria-selected="${i === activeIndex}" data-id="${m.id}" data-flag="${categoryFlag(m.category) || ""}">
+            <span class="combo__option-name">${escapeHtml(m.name)}</span>
+            <span class="combo__option-meta"><span>${escapeHtml(m.category)}</span><span>·</span><span>${dose}</span></span>
+          </li>`;
+        })
+        .join("");
+    }
+
+    function updateActiveOption() {
+      const options = listbox.querySelectorAll(".combo__option");
+      options.forEach((el, i) => el.setAttribute("aria-selected", String(i === activeIndex)));
+      const active = options[activeIndex];
+      if (active) {
+        searchInput.setAttribute("aria-activedescendant", active.id);
+        active.scrollIntoView({ block: "nearest" });
+      } else {
+        searchInput.removeAttribute("aria-activedescendant");
+      }
+    }
+
+    function moveActive(delta) {
+      if (listbox.hidden) {
+        openCombo(searchMeds(searchInput.value));
+        return;
+      }
+      if (!comboResults.length) return;
+      activeIndex = (activeIndex + delta + comboResults.length) % comboResults.length;
+      updateActiveOption();
+    }
+
+    function selectMed(id, opts = {}) {
+      const med = allMeds.find((m) => String(m.id) === String(id));
+      if (!med) return;
+      selectedMed = med;
+      searchInput.value = med.name;
+      closeCombo();
+      $("med-clear").hidden = false;
+      $("step-med").classList.remove("is-invalid");
+      // Resultado anterior some junto: dose de um medicamento nunca pode
+      // ficar na tela ao lado do nome de outro.
+      hideResult();
+      renderChosen();
+      updateWeightStep();
+      pushRecent(med.id);
+      hideError();
+      if (opts.focusWeight !== false) {
+        if (isPerKg(med)) {
+          $("weight").focus();
+          $("weight").select();
+        } else {
+          $("calc-btn").focus();
+        }
+      }
+      markSelectedInCatalog();
+    }
+
+    function clearMed() {
+      selectedMed = null;
+      searchInput.value = "";
+      $("med-clear").hidden = true;
+      $("med-chosen").hidden = true;
+      updateWeightStep();
+      markSelectedInCatalog();
+      hideResult();
+      closeCombo();
+      searchInput.focus();
+    }
+
+    function renderChosen() {
+      const box = $("med-chosen");
+      const flag = categoryFlag(selectedMed.category);
+      box.dataset.flag = flag || "";
+      $("chosen-name").textContent = selectedMed.name;
+      const bits = [selectedMed.category];
+      if (selectedMed.route) bits.push(`via ${selectedMed.route}`);
+      bits.push(isPerKg(selectedMed) ? `${fmt(selectedMed.dose_mg_per_kg)} ${shortUnit(selectedMed.dose_unit)}` : "sem dose por kg");
+      $("chosen-meta").textContent = bits.join(" · ");
+
+      // O alerta aparece já na escolha, antes de calcular: quem selecionou por
+      // engano precisa saber disso agora, não depois do número na tela.
+      const alertEl = $("chosen-alert");
+      if (flag === "warning") {
+        alertEl.textContent = "Contraindicado em odontopediatria — está no catálogo só para consulta.";
+        alertEl.hidden = false;
+      } else if (flag === "rescue") {
+        alertEl.textContent = "Medicação de emergência — confirme a indicação e o protocolo.";
+        alertEl.hidden = false;
+      } else {
+        alertEl.hidden = true;
+      }
+
+      box.hidden = false;
+    }
+
+    // Medicamento sem dose por kg não precisa de peso: o passo 2 fica apagado
+    // e o botão muda de rótulo, em vez de pedir um número que não será usado.
+    function updateWeightStep() {
+      const perKg = !selectedMed || isPerKg(selectedMed);
+      $("step-weight").classList.toggle("is-dimmed", !perKg);
+      $("weight").disabled = !perKg;
+      $("weight-help").textContent = perKg
+        ? "De 0,5 a 150 kg. Pode usar vírgula."
+        : "Este medicamento não é dosado por peso — pode seguir direto.";
+      $("weight-help").classList.toggle("calc-help--attention", !perKg);
+      $("calc-btn").textContent = perKg ? "Calcular dose" : "Ver orientação da fonte";
+    }
+
+    searchInput.addEventListener("input", () => {
+      selectedMed = null;
+      $("med-chosen").hidden = true;
+      $("med-clear").hidden = !searchInput.value;
+      hideResult();
+      updateWeightStep();
+      markSelectedInCatalog();
+      openCombo(searchMeds(searchInput.value));
+    });
+
+    // Voltar ao campo com algo já escolhido abre a lista inteira, com o item
+    // atual em destaque, e deixa o texto pronto para ser substituído.
+    searchInput.addEventListener("focus", () => {
+      if (selectedMed) {
+        searchInput.select();
+        openCombo(allMeds, selectedMed.id);
+      } else {
+        openCombo(searchMeds(searchInput.value));
+      }
+    });
+
+    // Trocar o peso invalida o número que está na tela.
+    $("weight").addEventListener("input", () => {
+      if (!$("dose-card").hidden) hideResult();
+      $("step-weight").classList.remove("is-invalid");
+    });
+
+    searchInput.addEventListener("keydown", (e) => {
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          moveActive(1);
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          moveActive(-1);
+          break;
+        case "Home":
+          if (!listbox.hidden && comboResults.length) {
+            e.preventDefault();
+            activeIndex = 0;
+            updateActiveOption();
+          }
+          break;
+        case "End":
+          if (!listbox.hidden && comboResults.length) {
+            e.preventDefault();
+            activeIndex = comboResults.length - 1;
+            updateActiveOption();
+          }
+          break;
+        case "Enter":
+          if (!listbox.hidden && activeIndex >= 0 && comboResults[activeIndex]) {
+            e.preventDefault();
+            selectMed(comboResults[activeIndex].id);
+          }
+          break;
+        case "Escape":
+          if (!listbox.hidden) {
+            e.preventDefault();
+            closeCombo();
+          }
+          break;
+      }
+    });
+
+    // mousedown segura o foco no input; a seleção acontece no click.
+    listbox.addEventListener("mousedown", (e) => e.preventDefault());
+    listbox.addEventListener("click", (e) => {
+      const option = e.target.closest(".combo__option");
+      if (option) selectMed(option.dataset.id);
+    });
+
+    $("med-combo").addEventListener("focusout", (e) => {
+      if (!e.relatedTarget || !$("med-combo").contains(e.relatedTarget)) closeCombo();
+    });
+
+    $("med-clear").addEventListener("click", clearMed);
+
+    // ---------------------------------------------------------------------
+    // Recentes (o consultório repete os mesmos 4 ou 5 no dia)
+    // ---------------------------------------------------------------------
+    function readRecents() {
+      try {
+        const raw = JSON.parse(localStorage.getItem(RECENTS_KEY) || "[]");
+        return Array.isArray(raw) ? raw : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function pushRecent(id) {
+      try {
+        const list = [id, ...readRecents().filter((x) => String(x) !== String(id))].slice(0, RECENTS_MAX);
+        localStorage.setItem(RECENTS_KEY, JSON.stringify(list));
+      } catch {
+        /* localStorage bloqueado: recentes é um extra, nunca um requisito */
+      }
+      renderRecents();
+    }
+
+    function renderRecents() {
+      const row = $("recent-row");
+      const meds = readRecents()
+        .map((id) => allMeds.find((m) => String(m.id) === String(id)))
+        .filter(Boolean);
+      if (!meds.length) {
+        row.hidden = true;
+        return;
+      }
+      row.innerHTML =
+        '<span class="recent-row__label">Recentes:</span>' +
+        meds
+          .map((m) => `<button type="button" class="recent-chip" data-id="${m.id}" title="${escapeHtml(m.name)}">${escapeHtml(m.name)}</button>`)
+          .join("");
+      row.hidden = false;
+    }
+
+    $("recent-row").addEventListener("click", (e) => {
+      const chip = e.target.closest(".recent-chip");
+      if (chip) selectMed(chip.dataset.id);
+    });
+
+    // ---------------------------------------------------------------------
+    // Cálculo
+    // ---------------------------------------------------------------------
+    function showError(msg, field) {
+      $("calc-error-text").textContent = msg;
+      $("calc-error").hidden = false;
+      $("step-med").classList.toggle("is-invalid", field === "med");
+      $("step-weight").classList.toggle("is-invalid", field === "weight");
+    }
+
+    function hideError() {
+      $("calc-error").hidden = true;
+      $("step-med").classList.remove("is-invalid");
+      $("step-weight").classList.remove("is-invalid");
+    }
+
+    function hideResult() {
+      $("dose-card").hidden = true;
+      $("dose-empty").hidden = false;
+    }
+
+    function parseWeight(raw) {
+      const value = String(raw || "").trim().replace(",", ".");
+      if (!value || !/^\d*\.?\d+$/.test(value)) return null;
+      const n = Number(value);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    $("calc-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideError();
+
+      if (!selectedMed) {
+        showError(
+          searchInput.value.trim()
+            ? "Nenhum medicamento escolhido ainda — clique em um item da lista de sugestões."
+            : "Escolha um medicamento no passo 1.",
+          "med"
+        );
+        searchInput.focus();
+        return;
+      }
+
+      // Sem dose por kg: 21 dos 58 itens. Não faz sentido exigir peso.
+      if (!isPerKg(selectedMed)) {
+        renderRule(selectedMed);
+        return;
+      }
+
+      const weight = parseWeight($("weight").value);
+      if (weight === null) {
+        showError("Informe o peso em kg usando números (ex.: 18,5).", "weight");
+        $("weight").focus();
+        return;
+      }
+      if (weight < 0.5 || weight > 150) {
+        showError(`Peso fora da faixa aceita: ${fmt(weight)} kg. Use um valor entre 0,5 e 150 kg.`, "weight");
+        $("weight").focus();
+        return;
+      }
+
+      let res, body;
+      try {
+        res = await fetch("/api/medications/calculate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify({ medicationId: selectedMed.id, weightKg: weight }),
+        });
+        body = await res.json();
+      } catch {
+        showError("Falha de conexão com o servidor. Tente novamente.");
+        return;
+      }
+
+      if (res.status === 422) {
+        renderRule(body.medication || selectedMed);
+        return;
+      }
+      if (!res.ok) {
+        showError(body.error || "Não foi possível calcular a dose.");
+        hideResult();
+        return;
+      }
+
+      renderDose(body.medication, body.result, weight);
+    });
+
+    // Cabeçalho comum aos dois tipos de resultado.
+    function renderHead(med) {
+      const flag = categoryFlag(med.category);
+      const card = $("dose-card");
+      card.dataset.flag = flag || "";
+      $("result-name").textContent = med.name;
+      const categoryEl = $("result-category");
+      categoryEl.className = tagClass(med.category);
+      categoryEl.textContent = med.category;
+
+      const flagEl = $("result-flag");
+      if (flag === "warning") {
+        $("result-flag-text").innerHTML =
+          "<strong>Contraindicado em odontopediatria.</strong> Está no catálogo para consulta, não como opção de conduta — leia as notas antes de qualquer decisão.";
+        flagEl.className = "dose-flag dose-flag--warning";
+        flagEl.hidden = false;
+      } else if (flag === "rescue") {
+        $("result-flag-text").innerHTML =
+          "<strong>Medicação de emergência.</strong> Confirme indicação, via e protocolo de atendimento antes de administrar.";
+        flagEl.className = "dose-flag dose-flag--rescue";
+        flagEl.hidden = false;
+      } else {
+        flagEl.hidden = true;
+      }
+
+      const base = allMeds.find((m) => String(m.id) === String(med.id)) || {};
+      $("fact-indication").textContent = med.indication || base.indication || "—";
+      $("fact-frequency").textContent = med.frequency || "—";
+      $("fact-route").textContent = med.route || "—";
+      $("fact-presentation").textContent = med.presentation || "—";
+
+      renderNotes(med.notes || base.notes || "");
+
+      $("result-source").textContent = med.source_name || "fonte não informada";
+      $("result-source").href = med.source_url || "#";
+    }
+
+    // Nota corrida vira lista escaneável, com o pictograma marcando o tipo de
+    // informação. Fica aberta por padrão: é conteúdo de segurança, não detalhe.
+    function renderNotes(text) {
+      const box = $("dose-notes");
+      const list = $("fact-notes");
+      const items = splitNotes(text);
+
+      if (!items.length) {
+        list.innerHTML = "";
+        box.hidden = true;
+        return;
+      }
+
+      list.innerHTML = items
+        .map((t) => {
+          const n = noteIcon(t);
+          return `<li class="note-item${n.tone ? " note-item--" + n.tone : ""}">
+            <span class="note-item__icon" aria-hidden="true">${n.icon}</span>
+            <span>${escapeHtml(t)}</span>
+          </li>`;
+        })
+        .join("");
+      $("notes-count").textContent = `${items.length} ${items.length === 1 ? "item" : "itens"}`;
+      box.hidden = false;
+      box.open = true;
+    }
+
+    function revealCard(statusText) {
+      $("dose-empty").hidden = true;
+      const card = $("dose-card");
+      card.hidden = false;
+      $("result-status").textContent = statusText;
+      card.focus({ preventScroll: true });
+      // No celular o resultado nasce abaixo do formulário; no desktop já está
+      // ao lado, então não faz sentido mexer no scroll.
+      if (window.matchMedia("(max-width: 899px)").matches) {
+        card.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
+    function renderDose(med, result, weight) {
+      renderHead(med);
+      const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
+      const kind = doseKind(base.dose_unit);
+
+      $("dose-rule").hidden = true;
+      $("dose-readout-wrap").hidden = false;
+      $("dose-kind").textContent = kind.label;
+      $("dose-kind-icon").textContent = kind.icon;
+      $("dose-number").textContent = fmt(result.doseMg);
+      $("dose-calc").textContent = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg`;
+
+      const cap = $("dose-cap");
+      if (result.cappedByMax) {
+        const raw = Math.round(Number(base.dose_mg_per_kg) * weight * 100) / 100;
+        $("dose-cap-text").innerHTML = `<strong>Limitado ao teto de ${escapeHtml(fmt(result.maxDoseMg))} mg.</strong> O cálculo por peso daria ${escapeHtml(fmt(raw))} mg — o teto da fonte prevalece.`;
+        cap.hidden = false;
+      } else {
+        cap.hidden = true;
+      }
+
+      const hint = $("dose-kind-hint");
+      if (kind.hint) {
+        $("dose-kind-hint-text").textContent = kind.hint;
+        hint.hidden = false;
+      } else {
+        hint.hidden = true;
+      }
+
+      revealCard(
+        `${med.name}: ${fmt(result.doseMg)} miligramas, ${kind.label}, para ${fmt(weight)} quilos.` +
+          (result.cappedByMax ? " Valor limitado à dose máxima." : "")
+      );
+    }
+
+    function renderRule(med) {
+      renderHead(med);
+      const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
+      const rule = med.dose_unit || base.dose_unit || "consulte a fonte";
+
+      $("dose-readout-wrap").hidden = true;
+      $("dose-rule").hidden = false;
+      $("dose-rule-text").textContent = rule;
+      $("dose-rule-hint").textContent =
+        "Este item não tem dose em mg/kg cadastrada, então não há número a calcular. A regra acima vem da fonte citada — confirme nela e nas notas antes de prescrever.";
+
+      revealCard(`${med.name} não é calculado por peso. Regra da fonte: ${rule}.`);
+    }
+
+    // ---------------------------------------------------------------------
+    // Catálogo agrupado
+    // ---------------------------------------------------------------------
+    function renderFilters() {
+      const counts = { all: allMeds.length };
+      allMeds.forEach((m) => {
+        const b = bucketOf(m);
+        counts[b] = (counts[b] || 0) + 1;
+      });
+      $("catalog-filters").innerHTML = BUCKETS.filter((b) => counts[b.id])
+        .map(
+          (b) =>
+            `<button type="button" class="chip" data-bucket="${b.id}" aria-pressed="${b.id === activeBucket}">${b.label}<span class="chip__count">${counts[b.id]}</span></button>`
+        )
+        .join("");
+    }
+
+    $("catalog-filters").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      activeBucket = chip.dataset.bucket;
+      $("catalog-filters")
+        .querySelectorAll(".chip")
+        .forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.bucket === activeBucket)));
+      renderCatalog();
+    });
+
+    function renderCatalog() {
+      const meds = allMeds.filter((m) => activeBucket === "all" || bucketOf(m) === activeBucket);
+      $("catalog-count").textContent = `${meds.length} de ${allMeds.length} medicamentos`;
+
+      if (!meds.length) {
+        $("catalog-body").innerHTML = "";
+        $("catalog-empty").hidden = false;
+        return;
+      }
+      $("catalog-empty").hidden = true;
+
+      // Agrupa por categoria: rotina primeiro, emergência e contraindicados no
+      // fim, cada bloco com a faixa de cor da sua criticidade.
+      const groups = new Map();
+      meds.forEach((m) => {
+        if (!groups.has(m.category)) groups.set(m.category, []);
+        groups.get(m.category).push(m);
+      });
+
+      const ordered = [...groups.entries()].sort((a, b) => {
+        const oa = BUCKET_ORDER[bucketOf(a[1][0])] ?? 0;
+        const ob = BUCKET_ORDER[bucketOf(b[1][0])] ?? 0;
+        return oa - ob || a[0].localeCompare(b[0], "pt-BR");
+      });
+
+      $("catalog-body").innerHTML = ordered
+        .map(([category, items]) => {
+          const flag = categoryFlag(category) || "";
+          const rows = items
+            .map((m) => {
+              const dose = isPerKg(m)
+                ? `<span class="catalog-dose">${fmt(m.dose_mg_per_kg)} ${escapeHtml(shortUnit(m.dose_unit))}</span>`
+                : `<span class="catalog-dose catalog-dose--none">${escapeHtml(m.dose_unit || "ver notas")}</span>`;
+              return `<tr data-flag="${flag}" data-row-id="${m.id}">
+                <td data-label="Medicamento">
+                  <button type="button" class="catalog-pick" data-id="${m.id}">${escapeHtml(m.name)}</button>
+                  ${m.indication ? `<span class="catalog-ind">${escapeHtml(m.indication)}</span>` : ""}
+                </td>
+                <td data-label="Dose">${dose}</td>
+                <td data-label="Via">${escapeHtml(m.route || "—")}</td>
+                <td data-label="Fonte"><a href="${escapeHtml(m.source_url || "#")}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source_name || "—")}</a></td>
+              </tr>`;
+            })
+            .join("");
+
+          return `<div class="catalog-group" data-flag="${flag}">
+            <h3 class="catalog-group__title">${escapeHtml(category)}<span class="catalog-group__count">${items.length} ${items.length === 1 ? "item" : "itens"}</span></h3>
+            <table class="data-table catalog-table">
+              <colgroup><col style="width:42%" /><col style="width:20%" /><col style="width:14%" /><col style="width:24%" /></colgroup>
+              <thead><tr><th scope="col">Medicamento</th><th scope="col">Dose</th><th scope="col">Via</th><th scope="col">Fonte</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>`;
+        })
+        .join("");
+
+      markSelectedInCatalog();
+    }
+
+    function markSelectedInCatalog() {
+      document.querySelectorAll("#catalog-body tr[data-row-id]").forEach((tr) => {
+        tr.classList.toggle("is-selected", Boolean(selectedMed) && String(selectedMed.id) === tr.dataset.rowId);
+      });
+    }
+
+    // Clicar no nome no catálogo carrega o medicamento no formulário lá em cima.
+    $("catalog-body").addEventListener("click", (e) => {
+      const pick = e.target.closest(".catalog-pick");
+      if (!pick) return;
+      selectMed(pick.dataset.id, { focusWeight: false });
+      document.querySelector(".calc-layout").scrollIntoView({ behavior: "smooth", block: "start" });
+      (isPerKg(selectedMed) ? $("weight") : $("calc-btn")).focus({ preventScroll: true });
+    });
+
+    // ---------------------------------------------------------------------
     document.addEventListener("dosecerta:session", (e) => {
       if (e.detail) loadMeds();
     });
