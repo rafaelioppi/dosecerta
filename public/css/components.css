@@ -49,6 +49,36 @@ site-header {
   gap: var(--space-md);
 }
 
+/* Celular estreito: logo + até 3 botões de conta (Calculadora/Admin/Sair)
+   não cabem numa linha só — sobravam ~130px pra eles e o texto quebrava,
+   ficando cortado pelo header fixo de altura travada (achado real ao medir
+   com viewport de 320-414px). Vira duas linhas, e --header-height cresce
+   junto pra nada nascer embaixo do header ficar coberto. */
+@media (max-width: 480px) {
+  :root {
+    --header-height: 112px;
+  }
+
+  .site-header {
+    height: auto;
+    min-height: var(--header-height);
+    padding-block: var(--space-sm);
+  }
+
+  .site-header__bar {
+    flex-wrap: wrap;
+    row-gap: var(--space-xs);
+  }
+
+  .nav__extra-cta {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-xs);
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -540,6 +570,21 @@ contact-form {
 .password-field__toggle svg {
   width: 18px;
   height: 18px;
+}
+
+/* Celular estreito: input + olho + "Gerar senha" numa linha só sobravam
+   ~30px pro campo de senha (medido em 320px) — inutilizável pra ler a
+   senha gerada. O botão de gerar cai pra linha de baixo; input e olho
+   continuam juntos em cima, com folga de verdade. */
+@media (max-width: 480px) {
+  .password-field {
+    flex-wrap: wrap;
+    row-gap: var(--space-xs);
+  }
+
+  .password-field > .btn {
+    flex: 1 1 100%;
+  }
 }
 
 .field__error {

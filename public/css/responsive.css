@@ -1,118 +1,25 @@
 /* ---------------------------------------------------
-   Responsividade — mobile-first breakpoints
+   Responsividade — ajustes que sobram depois que layout.css e
+   calculadora.css já cobrem cada componente sozinhos.
+
+   Nota: isto já foi o breakpoint set do site institucional (menu mobile,
+   grades de serviços/equipe/valores, hero). Removido em 2026-08-12 junto
+   com a limpeza desta página — nada daquele markup existe mais (ver
+   site-header.js, que não renderiza mais .nav__list/.menu-toggle). Uma das
+   regras órfãs (`.nav__extra-cta { display: none }`) tinha ficado ativa e
+   escondia a área de conta do header (Entrar/Cadastrar, ou
+   Calculadora/Admin/Sair) em qualquer tela ≤860px — ou seja, em todo
+   celular e tablet em retrato. Corrigido removendo o bloco todo.
 --------------------------------------------------- */
 
-/* ≤ 1024px: reduz grades para 2 colunas, ajusta hero */
-@media (max-width: 1024px) {
-  .grid--services {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid--team {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .grid--values {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .hero__grid,
-  .about__grid,
-  .grid--contact {
-    grid-template-columns: 1fr;
-  }
-
-  .hero__grid {
-    text-align: center;
-  }
-
-  .hero__content .lede {
-    margin-inline: auto;
-  }
-
-  .hero__actions,
-  .hero__badge-row {
-    justify-content: center;
-  }
-
-  .about__visual {
-    order: -1;
-  }
-
-  .footer__grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-/* ≤ 860px: ativa o menu mobile */
-@media (max-width: 860px) {
-  .nav__list {
-    position: fixed;
-    inset: var(--header-height) 0 auto 0;
-    flex-direction: column;
-    background: var(--color-surface);
-    padding: var(--space-lg);
-    gap: var(--space-md);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-12px);
-    opacity: 0;
-    visibility: hidden;
-    transition: transform var(--transition-base), opacity var(--transition-base), visibility var(--transition-base);
-  }
-
-  .nav.is-open .nav__list {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .nav__link {
-    font-size: var(--fs-md);
-  }
-
-  .nav__cta {
-    display: none;
-  }
-
-  .nav.is-open .nav__cta {
-    display: inline-flex;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .menu-toggle {
-    display: inline-flex;
-  }
-
-  .nav__extra-cta {
-    display: none;
-  }
-}
-
-/* ≤ 640px: colunas únicas, formulário empilhado */
+/* ≤ 640px: formulário empilhado, título de erro menor */
 @media (max-width: 640px) {
   :root {
-    --fs-3xl: 2.25rem;
     --fs-2xl: 1.75rem;
-  }
-
-  .grid--services,
-  .grid--team,
-  .grid--values {
-    grid-template-columns: 1fr;
   }
 
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .footer__grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero {
-    padding-top: calc(var(--header-height) + var(--space-lg));
   }
 
   section {
