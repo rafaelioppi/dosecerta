@@ -51,6 +51,18 @@ select {
   color: inherit;
 }
 
+/* Placeholder é exemplo, nunca pode se passar por valor real digitado —
+   sem isto ele herdava o mesmo peso/tamanho do texto real do campo (grave
+   no peso do paciente, que usa fonte grande em negrito). Cor apagada e
+   peso normal em qualquer input/textarea do site, mesmo que o campo real
+   seja customizado. */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted, #55606b);
+  opacity: 1;
+  font-weight: 400;
+}
+
 button {
   cursor: pointer;
   background: none;

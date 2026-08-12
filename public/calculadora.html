@@ -196,6 +196,7 @@
     const RECENTS_MAX = 5;
 
     let allMeds = [];
+    let medsLoaded = false; // true só depois que o catálogo chega — evita "nenhum encontrado" falso
     let selectedMed = null;
     let comboResults = [];
     let activeIndex = -1;
@@ -348,6 +349,7 @@
         if (!res.ok) throw new Error("http " + res.status);
         const body = await res.json();
         allMeds = body.items || [];
+        medsLoaded = true;
         if (body.notice) $("safety-notice").textContent = body.notice;
       } catch {
         $("catalog-body").innerHTML = "";
@@ -361,6 +363,10 @@
       renderCatalog();
       renderRecents();
       $("med-help").textContent = `${allMeds.length} medicamentos disponíveis. Use ↑ ↓ e Enter para escolher.`;
+      // Em rede lenta o combobox pode ter sido aberto (tocado/focado) antes do
+      // catálogo chegar — se ainda estiver aberto, atualiza de "carregando"
+      // pros resultados de verdade, sem exigir que o usuário toque de novo.
+      if (!listbox.hidden) openCombo(searchMeds(searchInput.value));
     }
 
     // ---------------------------------------------------------------------
@@ -398,6 +404,13 @@
 
     function renderCombo() {
       if (!comboResults.length) {
+        // Catálogo ainda não chegou (rede lenta): sem isto, tocar/focar o
+        // campo antes do fetch terminar mostrava "nenhum medicamento
+        // encontrado" — parecia a lista inteira sumida, não um carregamento.
+        if (!medsLoaded) {
+          listbox.innerHTML = `<li class="combo__empty" role="presentation">Carregando catálogo…</li>`;
+          return;
+        }
         const term = searchInput.value.trim();
         listbox.innerHTML = `<li class="combo__empty" role="presentation">Nenhum medicamento encontrado para <strong>${escapeHtml(term)}</strong>.<br />Tente só o começo do nome, sem acento.</li>`;
         return;

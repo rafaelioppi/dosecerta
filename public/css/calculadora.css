@@ -336,6 +336,16 @@
   outline: none;
 }
 
+/* O reset já apaga a cor do placeholder, mas aqui o campo real usa fonte de
+   título grande e em negrito (é o peso do paciente — precisa se destacar).
+   Sem isto o "18,5" de exemplo ficava com o MESMO tamanho/peso do valor
+   real, parecendo um peso já preenchido. */
+.weight-input input::placeholder {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 400;
+}
+
 .weight-input__unit {
   font-size: var(--fs-sm);
   font-weight: 600;

@@ -29,7 +29,12 @@
         </div>
         <div class="field" data-field="password">
           <label for="password">Senha</label>
-          <input type="password" id="password" name="password" autocomplete="current-password" required />
+          <div class="password-field">
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
+            <button type="button" class="password-field__toggle" id="password-toggle" aria-label="Mostrar senha" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+            </button>
+          </div>
           <span class="field__error" id="password-error"></span>
         </div>
         <button type="submit" class="btn btn--primary btn--block">Entrar</button>
@@ -37,7 +42,7 @@
       </form>
 
       <p class="auth-footer-link">Ainda não tem conta? <a href="/cadastro.html">Cadastre-se</a></p>
-      <p class="auth-signature">feito com carinho para Oara · 🐾 em homenagem à Luna</p>
+      <p class="auth-signature">Feito com amor e carinho para Oara ❤· 🐾 em homenagem à Luna</p>
     </div>
   </main>
 
@@ -50,6 +55,16 @@
   <script>
     const form = document.getElementById("login-form");
     const status = document.getElementById("form-status");
+
+    // Mostrar/ocultar senha — mesmo padrão do campo de senha do admin.
+    document.getElementById("password-toggle").addEventListener("click", () => {
+      const input = document.getElementById("password");
+      const toggle = document.getElementById("password-toggle");
+      const visible = input.type === "password";
+      input.type = visible ? "text" : "password";
+      toggle.setAttribute("aria-pressed", String(visible));
+      toggle.setAttribute("aria-label", visible ? "Ocultar senha" : "Mostrar senha");
+    });
 
     function paramsToRedirect() {
       const params = new URLSearchParams(window.location.search);

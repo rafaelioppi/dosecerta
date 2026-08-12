@@ -32,12 +32,13 @@
       <button class="btn btn--primary" id="user-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar usuário</button>
 
       <div class="card form-card" id="user-form-card" style="max-width:520px; margin-bottom:var(--space-lg);" hidden>
-        <h3 style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar usuário</h3>
+        <h3 id="user-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar usuário</h3>
+        <input type="hidden" id="user-id" />
         <div class="field"><label>Nome *</label><input id="user-name" required /></div>
         <div class="field"><label>E-mail *</label><input id="user-email" type="email" required /></div>
 
         <div class="field">
-          <label for="user-password">Senha *</label>
+          <label for="user-password" id="user-password-label">Senha *</label>
           <div class="password-field">
             <input id="user-password" type="password" autocomplete="new-password" minlength="8" required />
             <button type="button" class="password-field__toggle" id="user-password-toggle" aria-label="Mostrar senha" aria-pressed="false">
@@ -45,7 +46,7 @@
             </button>
             <button type="button" class="btn btn--ghost btn--sm" id="user-password-generate">Gerar senha</button>
           </div>
-          <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:var(--space-2xs);">Mínimo 8 caracteres. Use "Gerar senha" pra uma senha forte já visível, pronta pra copiar e enviar.</p>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:var(--space-2xs);" id="user-password-hint">Mínimo 8 caracteres. Use "Gerar senha" pra uma senha forte já visível, pronta pra copiar e enviar.</p>
         </div>
 
         <div class="form-row">
@@ -70,7 +71,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Criado em</th></tr>
+            <tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Criado em</th><th></th></tr>
           </thead>
           <tbody id="users-tbody"></tbody>
         </table>

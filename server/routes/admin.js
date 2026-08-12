@@ -58,6 +58,49 @@ router.post("/users", async (req, res) => {
   res.status(201).json({ id: result.lastInsertRowid, name: String(name).trim(), email: normalizedEmail, role });
 });
 
+// Edita um usuário existente — o único jeito de "resetar login": nome, papel,
+// conselho e (opcionalmente) senha. Sem isto, um profissional que esquece a
+// senha ficava sem saída, já que só existia criação, nunca edição.
+router.put("/users/:id", async (req, res) => {
+  const { name, email, password, role, councilType, councilNumber } = req.body || {};
+
+  const existing = db.prepare("SELECT id FROM users WHERE id = ?").get(req.params.id);
+  if (!existing) return res.status(404).json({ error: "Usuário não encontrado." });
+
+  if (!name || String(name).trim().length < 2) {
+    return res.status(400).json({ error: "Informe um nome válido." });
+  }
+  if (!email || !EMAIL_RE.test(String(email))) {
+    return res.status(400).json({ error: "Informe um e-mail válido." });
+  }
+  if (role !== "admin" && role !== "professional") {
+    return res.status(400).json({ error: "Papel inválido — use 'admin' ou 'professional'." });
+  }
+  if (password && String(password).length < 8) {
+    return res.status(400).json({ error: "A senha deve ter pelo menos 8 caracteres." });
+  }
+
+  const normalizedEmail = String(email).trim().toLowerCase();
+  const emailTaken = db.prepare("SELECT id FROM users WHERE email = ? AND id != ?").get(normalizedEmail, req.params.id);
+  if (emailTaken) {
+    return res.status(409).json({ error: "Já existe uma conta com este e-mail." });
+  }
+
+  const name2 = String(name).trim();
+  if (password) {
+    const passwordHash = await bcrypt.hash(String(password), SALT_ROUNDS);
+    db.prepare(
+      "UPDATE users SET name = ?, email = ?, role = ?, council_type = ?, council_number = ?, password_hash = ? WHERE id = ?"
+    ).run(name2, normalizedEmail, role, councilType || null, councilNumber || null, passwordHash, req.params.id);
+  } else {
+    db.prepare(
+      "UPDATE users SET name = ?, email = ?, role = ?, council_type = ?, council_number = ? WHERE id = ?"
+    ).run(name2, normalizedEmail, role, councilType || null, councilNumber || null, req.params.id);
+  }
+
+  res.json({ id: Number(req.params.id), name: name2, email: normalizedEmail, role });
+});
+
 router.get("/medications", (_req, res) => {
   res.json(db.prepare("SELECT * FROM medications ORDER BY name").all());
 });

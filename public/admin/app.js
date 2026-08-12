@@ -45,9 +45,19 @@ async function loadUsers() {
       <td>${escapeHtml(u.email)}</td>
       <td><span class="tag${u.role === "admin" ? " tag--rescue" : ""}">${u.role === "admin" ? "Admin" : "Profissional"}</span></td>
       <td>${new Date(u.created_at).toLocaleDateString("pt-BR")}</td>
+      <td style="white-space:nowrap;">
+        <button class="btn btn--ghost btn--sm" data-edit-user="${u.id}">Editar</button>
+      </td>
     </tr>`
     )
     .join("");
+
+  document.querySelectorAll("[data-edit-user]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const user = users.find((u) => String(u.id) === btn.dataset.editUser);
+      fillUserForm(user);
+    });
+  });
 }
 
 function openUserForm() {
@@ -61,10 +71,36 @@ function closeUserForm() {
   resetUserForm();
 }
 
+// Editar usuário existente: é o único jeito de resetar a senha de alguém que
+// esqueceu — a senha some do formulário (não dá pra mostrar a atual, só o
+// hash fica salvo) e fica opcional: em branco, mantém a senha de antes.
+function fillUserForm(user) {
+  document.getElementById("user-form-title").textContent = "Editar usuário";
+  document.getElementById("user-id").value = user.id;
+  document.getElementById("user-name").value = user.name || "";
+  document.getElementById("user-email").value = user.email || "";
+  document.getElementById("user-role").value = user.role || "professional";
+  document.getElementById("user-council-type").value = user.council_type || "";
+  document.getElementById("user-council-number").value = user.council_number || "";
+  document.getElementById("user-password").value = "";
+  document.getElementById("user-password").required = false;
+  document.getElementById("user-password-label").textContent = "Nova senha (opcional)";
+  document.getElementById("user-password-hint").textContent =
+    'Deixe em branco pra manter a senha atual. Pra resetar, digite uma nova (mín. 8 caracteres) ou use "Gerar senha".';
+  setPasswordVisible(false);
+  openUserForm();
+}
+
 function resetUserForm() {
+  document.getElementById("user-form-title").textContent = "Adicionar usuário";
+  document.getElementById("user-id").value = "";
   document.getElementById("user-name").value = "";
   document.getElementById("user-email").value = "";
   document.getElementById("user-password").value = "";
+  document.getElementById("user-password").required = true;
+  document.getElementById("user-password-label").textContent = "Senha *";
+  document.getElementById("user-password-hint").textContent =
+    'Mínimo 8 caracteres. Use "Gerar senha" pra uma senha forte já visível, pronta pra copiar e enviar.';
   document.getElementById("user-role").value = "professional";
   document.getElementById("user-council-type").value = "";
   document.getElementById("user-council-number").value = "";
@@ -107,28 +143,41 @@ document.getElementById("user-save").addEventListener("click", async () => {
   status.textContent = "";
   status.className = "form-status";
 
+  const id = document.getElementById("user-id").value;
+  const password = document.getElementById("user-password").value;
+
   const payload = {
     name: document.getElementById("user-name").value.trim(),
     email: document.getElementById("user-email").value.trim(),
-    password: document.getElementById("user-password").value,
+    password,
     role: document.getElementById("user-role").value,
     councilType: document.getElementById("user-council-type").value.trim() || null,
     councilNumber: document.getElementById("user-council-number").value.trim() || null,
   };
 
-  if (!payload.name || !payload.email || !payload.password) {
+  if (!payload.name || !payload.email) {
+    status.textContent = "Nome e e-mail são obrigatórios.";
+    status.classList.add("error");
+    return;
+  }
+  // Criando: senha é obrigatória. Editando: só valida se digitou algo.
+  if (!id && !payload.password) {
     status.textContent = "Nome, e-mail e senha são obrigatórios.";
     status.classList.add("error");
     return;
   }
-  if (payload.password.length < 8) {
+  if (payload.password && payload.password.length < 8) {
     status.textContent = "A senha deve ter pelo menos 8 caracteres.";
     status.classList.add("error");
     return;
   }
+  if (!payload.password) delete payload.password; // editando sem trocar senha
 
-  const res = await fetch("/api/admin/users", {
-    method: "POST",
+  const url = id ? `/api/admin/users/${id}` : "/api/admin/users";
+  const method = id ? "PUT" : "POST";
+
+  const res = await fetch(url, {
+    method,
     headers: { "Content-Type": "application/json" },
     credentials: "same-origin",
     body: JSON.stringify(payload),
