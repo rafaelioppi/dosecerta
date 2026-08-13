@@ -478,6 +478,10 @@
       // Resultado anterior some junto: dose de um medicamento nunca pode
       // ficar na tela ao lado do nome de outro.
       hideResult();
+      // Peso do cálculo anterior também some: dose de um paciente nunca pode
+      // ser calculada com o peso de outro (bug grave de confusão).
+      $("weight").value = "";
+      $("step-weight").classList.remove("is-invalid");
       renderChosen();
       renderPresentationPicker();
       updateWeightStep();
@@ -746,6 +750,14 @@
     function hideResult() {
       $("dose-card").hidden = true;
       $("dose-empty").hidden = false;
+      // Nenhum resíduo do cálculo anterior pode sobreviver à troca: badge de
+      // concentração, equivalência, teto e nota de concentração voltam ao estado
+      // inicial — o próximo medicamento renderiza os seus do zero.
+      $("dose-conc-badge").hidden = true;
+      $("dose-conc-note").hidden = true;
+      $("dose-equiv").hidden = true;
+      $("dose-cap").hidden = true;
+      $("dose-kind-hint").hidden = true;
     }
 
     function parseWeight(raw) {
