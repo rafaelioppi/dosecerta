@@ -549,8 +549,8 @@
 }
 
 /* Badge de concentração: o dado vital que decide o volume em mL. Quer atenção
-   quase tanto quanto o número grande — destaque com preenchimento sólido,
-   borda e tipografia maior que o restante da nota. */
+   quase tanto quanto o número grande — destaque com preenchimento sólido e
+   borda, mas com tipografia contida (o rótulo da embalagem é longo). */
 .dose-conc-badge {
   display: inline-flex;
   align-items: baseline;
@@ -565,7 +565,7 @@
 
 .dose-conc-badge__label {
   font-family: var(--font-heading);
-  font-size: var(--fs-xs);
+  font-size: var(--fs-2xs);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -574,9 +574,9 @@
 
 .dose-conc-badge__value {
   font-family: var(--font-heading);
-  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-size: var(--fs-md);
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.2;
   color: var(--color-accent-strong);
 }
 
