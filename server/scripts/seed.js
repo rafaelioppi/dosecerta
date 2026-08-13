@@ -16,17 +16,28 @@ function seedMedications() {
   const insert = db.prepare(
     `INSERT INTO medications
       (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-       route, presentation, notes, source_name, source_url)
+       route, presentation, notes, source_name, source_url, presentations)
      VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
-             @route, @presentation, @notes, @source_name, @source_url)`
+             @route, @presentation, @notes, @source_name, @source_url, @presentations)`
   );
+  const backfill = db.prepare(
+    `UPDATE medications SET presentations = ? WHERE id = ? AND (presentations IS NULL OR presentations = '')`
+  );
+
+  const toJson = (m) => JSON.stringify(Array.isArray(m.presentations) ? m.presentations : []);
 
   let inserted = 0;
   let skipped = 0;
+  let backfilled = 0;
   db.withTransaction(() => {
     for (const m of meds) {
-      if (exists.get(m.name)) {
+      const existing = exists.get(m.name);
+      if (existing) {
         skipped++;
+        // Backfill não-destrutivo: preenche presentations só se o registro no
+        // banco ainda não tiver nenhuma (nunca sobrescreve edição do admin).
+        const result = backfill.run(toJson(m), existing.id);
+        if (result.changes) backfilled++;
         continue;
       }
       insert.run({
@@ -42,11 +53,14 @@ function seedMedications() {
         notes: m.notes || null,
         source_name: m.source_name,
         source_url: m.source_url,
+        presentations: toJson(m),
       });
       inserted++;
     }
   });
-  console.log(`medications: ${inserted} inseridos, ${skipped} já existiam (mantidos como estavam).`);
+  console.log(
+    `medications: ${inserted} inseridos, ${skipped} já existiam, ${backfilled} com presentations preenchidas (backfill não-destrutivo).`
+  );
 }
 
 seedMedications();

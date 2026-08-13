@@ -103,6 +103,11 @@
           <div class="field"><label>Apresentação</label><input id="med-presentation" /></div>
         </div>
         <div class="field"><label>Notas / ressalvas</label><textarea id="med-notes"></textarea></div>
+        <div class="field">
+          <label>Apresentações líquidas (concentração)</label>
+          <textarea id="med-presentations" placeholder="Uma por linha, no formato: rótulo | mg/mL&#10;ex.: Suspensão oral 100 mg/mL | 100&#10;ex.: Suspensão oral 32 mg/mL | 32" style="min-height:88px;"></textarea>
+          <p style="font-size:var(--fs-xs); color:var(--color-text-muted); margin-top:var(--space-2xs);">O resultado da calculadora sai em mL destas concentrações. Medicamento sem linha aqui mostra o resultado em mg.</p>
+        </div>
         <div class="form-row">
           <div class="field"><label>Fonte (nome) *</label><input id="med-source-name" required /></div>
           <div class="field"><label>Fonte (URL) *</label><input id="med-source-url" required /></div>

@@ -38,6 +38,13 @@ criado só via script acima — não existe rota HTTP pública pra virar admin).
   [seed/medications.json](seed/medications.json) e rodando `npm run seed` de novo. Nome,
   categoria, fonte e URL da fonte são obrigatórios — o formulário do admin não deixa
   salvar sem fonte, de propósito.
+- **Resultado em mL (xarope)**: quando o medicamento tem apresentação líquida com
+  concentração conhecida, a calculadora mostra o resultado em **mL da apresentação
+  escolhida** (o profissional seleciona o frasco em mãos; mg continua visível ao lado).
+  As concentrações ficam no campo `presentations` de cada item — array de
+  `{ label, concentration_mg_per_ml }`, editável no admin (uma linha por apresentação
+  no formato `rótulo | mg/mL`) ou direto no seed. Medicamento sem `presentations`
+  cai em mg, como antes.
 - **Cores/tipografia**: tokens em [css/variables.css](public/css/variables.css).
 
 ## Estrutura
@@ -63,7 +70,8 @@ data/                        # dosecerta.sqlite (gerado, fora do controle de ver
 
 ## Modelo de dados (SQLite)
 
-`users` (admin/professional, senha com bcrypt) · `medications` (dose, fonte obrigatória) ·
+`users` (admin/professional, senha com bcrypt) · `medications` (dose, fonte obrigatória,
+`presentations` = JSON de `{ label, concentration_mg_per_ml }` para resultado em mL) ·
 `sessions` (sessão de login).
 
 ## Segurança e limitações conhecidas

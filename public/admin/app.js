@@ -31,6 +31,43 @@ function escapeHtml(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Apresentações líquidas: array [{label, concentration_mg_per_ml}] <-> textarea
+// no formato "rótulo | mg/mL" (uma linha por apresentação). A calculadora usa
+// estas concentrações pra mostrar o resultado em mL.
+function serializePresentations(value) {
+  let arr = value;
+  if (typeof arr === "string") {
+    try {
+      arr = JSON.parse(arr);
+    } catch {
+      arr = [];
+    }
+  }
+  if (!Array.isArray(arr)) arr = [];
+  return arr
+    .map((p) => {
+      const c = Number(p.concentration_mg_per_ml);
+      return `${p.label || ""} | ${Number.isFinite(c) ? c : ""}`.trim();
+    })
+    .filter(Boolean)
+    .join("\n");
+}
+
+function parsePresentationsText(text) {
+  return String(text || "")
+    .split("\n")
+    .map((line) => line.split("|"))
+    .filter((parts) => parts.length >= 2 && parts[0].trim())
+    .map((parts) => {
+      const conc = Number(String(parts[1] ?? "").trim().replace(",", "."));
+      return {
+        label: parts[0].trim(),
+        concentration_mg_per_ml: Number.isFinite(conc) && conc > 0 ? conc : null,
+      };
+    })
+    .filter((p) => p.concentration_mg_per_ml != null);
+}
+
 /* ===== Usuários ===== */
 async function loadUsers() {
   const res = await fetch("/api/admin/users", { credentials: "same-origin" });
@@ -254,6 +291,7 @@ function fillMedForm(med) {
   document.getElementById("med-route").value = med.route || "";
   document.getElementById("med-presentation").value = med.presentation || "";
   document.getElementById("med-notes").value = med.notes || "";
+  document.getElementById("med-presentations").value = serializePresentations(med.presentations);
   document.getElementById("med-source-name").value = med.source_name || "";
   document.getElementById("med-source-url").value = med.source_url || "";
   openMedForm();
@@ -262,7 +300,7 @@ function fillMedForm(med) {
 function resetMedForm() {
   document.getElementById("med-form-title").textContent = "Adicionar medicamento";
   document.getElementById("med-id").value = "";
-  ["name", "category", "indication", "dose", "dose-unit", "frequency", "max", "route", "presentation", "notes", "source-name", "source-url"].forEach(
+  ["name", "category", "indication", "dose", "dose-unit", "frequency", "max", "route", "presentation", "notes", "presentations", "source-name", "source-url"].forEach(
     (field) => (document.getElementById(`med-${field}`).value = "")
   );
 }
@@ -291,6 +329,7 @@ document.getElementById("med-save").addEventListener("click", async () => {
     route: document.getElementById("med-route").value.trim() || null,
     presentation: document.getElementById("med-presentation").value.trim() || null,
     notes: document.getElementById("med-notes").value.trim() || null,
+    presentations: parsePresentationsText(document.getElementById("med-presentations").value),
     source_name: document.getElementById("med-source-name").value.trim(),
     source_url: document.getElementById("med-source-url").value.trim(),
   };

@@ -17,6 +17,24 @@ const db = new DatabaseSync(DB_PATH);
 db.exec("PRAGMA journal_mode = WAL");
 db.exec("PRAGMA foreign_keys = ON");
 
+/**
+ * Migração idempotente: adiciona colunas que ainda não existem em tabelas já
+ * criadas (CREATE TABLE IF NOT EXISTS não altera tabela existente — em
+ * produção a tabela medications já existe há tempo). Roda em todo boot.
+ */
+function ensureColumn(table, column, ddl) {
+  const cols = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${ddl}`);
+  }
+}
+
+ensureColumn("medications", "presentations", "TEXT");
+// presentations = JSON array de { label, concentration_mg_per_ml } das
+// apresentações líquidas do medicamento (xarope/suspensão/solução/gotas).
+// O calculador usa estas concentrações pra converter mg -> mL. NULL = o
+// medicamento não tem apresentação líquida com concentração conhecida.
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

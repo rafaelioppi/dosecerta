@@ -105,6 +105,30 @@ router.get("/medications", (_req, res) => {
   res.json(db.prepare("SELECT * FROM medications ORDER BY name").all());
 });
 
+// Normaliza presentations: aceita array [{label, concentration_mg_per_ml}] ou
+// string JSON. Validação mínima de formato; valores numéricos de concentração
+// positivos e label presente. Concentração ausente/inválida vira [] (sem mL).
+function normalizePresentations(value) {
+  if (typeof value === "string") {
+    try {
+      value = JSON.parse(value);
+    } catch {
+      return [];
+    }
+  }
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((p) => p && typeof p.label === "string" && p.label.trim())
+    .map((p) => {
+      const c = Number(p.concentration_mg_per_ml);
+      return {
+        label: p.label.trim(),
+        concentration_mg_per_ml: Number.isFinite(c) && c > 0 ? c : null,
+      };
+    })
+    .filter((p) => p.concentration_mg_per_ml != null);
+}
+
 router.post("/medications", (req, res) => {
   const m = req.body || {};
   if (!m.name || !m.category || !m.source_name || !m.source_url) {
@@ -114,9 +138,9 @@ router.post("/medications", (req, res) => {
     .prepare(
       `INSERT INTO medications
         (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-         route, presentation, notes, source_name, source_url, created_by)
+         route, presentation, notes, source_name, source_url, presentations, created_by)
        VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
-               @route, @presentation, @notes, @source_name, @source_url, @created_by)`
+               @route, @presentation, @notes, @source_name, @source_url, @presentations, @created_by)`
     )
     .run({
       name: m.name,
@@ -131,6 +155,7 @@ router.post("/medications", (req, res) => {
       notes: m.notes || null,
       source_name: m.source_name,
       source_url: m.source_url,
+      presentations: JSON.stringify(normalizePresentations(m.presentations)),
       created_by: req.session.userId,
     });
   res.status(201).json({ id: result.lastInsertRowid });
@@ -146,7 +171,8 @@ router.put("/medications/:id", (req, res) => {
        name = @name, category = @category, indication = @indication,
        dose_mg_per_kg = @dose_mg_per_kg, dose_unit = @dose_unit, frequency = @frequency,
        max_dose_mg = @max_dose_mg, route = @route, presentation = @presentation, notes = @notes,
-       source_name = @source_name, source_url = @source_url, updated_at = datetime('now')
+       source_name = @source_name, source_url = @source_url, presentations = @presentations,
+       updated_at = datetime('now')
      WHERE id = @id`
   ).run({
     id: req.params.id,
@@ -162,6 +188,7 @@ router.put("/medications/:id", (req, res) => {
     notes: m.notes || null,
     source_name: m.source_name,
     source_url: m.source_url,
+    presentations: JSON.stringify(normalizePresentations(m.presentations)),
   });
   res.json({ ok: true });
 });

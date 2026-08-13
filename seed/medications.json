@@ -11,7 +11,21 @@
     "presentation": "Solução oral gotas 200 mg/mL (1 gota = 10 mg); suspensão 100 mg/mL; suspensão 32 mg/mL; comprimidos 500/750 mg",
     "notes": "Faixa da bula: 10 a 15 mg/kg/dose. Máximo diário de 50-75 mg/kg/dia, não ultrapassando 4000 mg/dia (max_dose_mg = dose máxima DIÁRIA absoluta). Regra prática da bula em gotas: 1 gota/kg até 35 gotas/dose. Abaixo de 11 kg ou 2 anos, só sob orientação médica. A ANVISA emitiu alerta específico sobre erro de dose com paracetamol suspensão em bebês (confusão entre apresentações 100 mg/mL e 32 mg/mL) — sempre conferir a concentração do frasco.",
     "source_name": "Bula ANVISA - Paracetamol (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/paracetamol/bula"
+    "source_url": "https://consultaremedios.com.br/paracetamol/bula",
+    "presentations": [
+      {
+        "label": "Solução oral gotas 200 mg/mL",
+        "concentration_mg_per_ml": 200
+      },
+      {
+        "label": "Suspensão oral 100 mg/mL",
+        "concentration_mg_per_ml": 100
+      },
+      {
+        "label": "Suspensão oral 32 mg/mL",
+        "concentration_mg_per_ml": 32
+      }
+    ]
   },
   {
     "name": "Dipirona sódica (metamizol)",
@@ -25,7 +39,17 @@
     "presentation": "Solução oral gotas 500 mg/mL (1 mL = 20 gotas, 1 gota = 25 mg); solução oral 50 mg/mL; comprimidos 500 mg",
     "notes": "HÁ DIVERGÊNCIA ENTRE FONTES: BVS/APS (Ministério da Saúde) indica 20 mg/kg até 4x/dia; outras referências citam 10-15 mg/kg/dose. A bula não traz mg/kg — usa tabela por faixa de peso em gotas. ATENÇÃO: a prescrição tradicional de '1 gota/kg' equivale a ~25 mg/kg e configura SUPERDOSAGEM; prefira mL com seringa dosadora. CONTRAINDICADO abaixo de 3 meses ou peso < 5 kg. max_dose_mg = dose máxima diária de referência.",
     "source_name": "BVS Atenção Primária em Saúde (Ministério da Saúde) + Bula ANVISA - Dipirona Iquego",
-    "source_url": "https://aps-repo.bvs.br/aps/qual-e-a-dosagem-de-dipirona-indicada-para-criancas-2/"
+    "source_url": "https://aps-repo.bvs.br/aps/qual-e-a-dosagem-de-dipirona-indicada-para-criancas-2/",
+    "presentations": [
+      {
+        "label": "Solução oral gotas 500 mg/mL",
+        "concentration_mg_per_ml": 500
+      },
+      {
+        "label": "Solução oral 50 mg/mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Ibuprofeno",
@@ -39,7 +63,21 @@
     "presentation": "Suspensão gotas 100 mg/mL (1 gota = 10 mg); suspensão gotas 50 mg/mL; suspensão oral 30 mg/mL",
     "notes": "max_dose_mg = 800 mg/dia é o teto para menores de 12 anos (adulto: 3200 mg/dia). Uso a partir de 6 meses de idade. Evitar em desidratação, sangramento ou suspeita de dengue.",
     "source_name": "Bula ANVISA - Ibuprofeno (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/ibuprofeno/bula"
+    "source_url": "https://consultaremedios.com.br/ibuprofeno/bula",
+    "presentations": [
+      {
+        "label": "Suspensão gotas 100 mg/mL",
+        "concentration_mg_per_ml": 100
+      },
+      {
+        "label": "Suspensão gotas 50 mg/mL",
+        "concentration_mg_per_ml": 50
+      },
+      {
+        "label": "Suspensão oral 30 mg/mL",
+        "concentration_mg_per_ml": 30
+      }
+    ]
   },
   {
     "name": "Amoxicilina",
@@ -53,7 +91,17 @@
     "presentation": "Pó para suspensão oral 250 mg/5 mL e 500 mg/5 mL; cápsulas 500 mg",
     "notes": "Faixa da bula (< 40 kg): 20 a 50 mg/kg/dia em 3 tomadas, teto de 150 mg/kg/dia. Sem valor absoluto em mg — não preencher max_dose_mg com estimativa. Ajuste renal necessário em ClCr baixo.",
     "source_name": "Bula ANVISA - Amoxicilina (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/amoxicilina/bula"
+    "source_url": "https://consultaremedios.com.br/amoxicilina/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 250 mg/5 mL",
+        "concentration_mg_per_ml": 50
+      },
+      {
+        "label": "Suspensão oral 500 mg/5 mL",
+        "concentration_mg_per_ml": 100
+      }
+    ]
   },
   {
     "name": "Amoxicilina + Clavulanato de potássio",
@@ -67,7 +115,17 @@
     "presentation": "Suspensão oral 125mg+31,25mg/5mL; suspensão 250mg+62,5mg/5mL",
     "notes": "Dose expressa como componente amoxicilina. Leve/moderada: 20/5 a 40/10 mg/kg/dia; graves: 40/10 a 60/15 mg/kg/dia. Sem dados clínicos acima de 40/10 mg/kg/dia em menores de 2 anos. Comprimidos não recomendados abaixo de 12 anos.",
     "source_name": "Bula ANVISA - Amoxicilina + Clavulanato de Potássio (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/amoxicilina-clavulanato-de-potassio/bula"
+    "source_url": "https://consultaremedios.com.br/amoxicilina-clavulanato-de-potassio/bula",
+    "presentations": [
+      {
+        "label": "Suspensão 125 mg + 31,25 mg/5 mL",
+        "concentration_mg_per_ml": 25
+      },
+      {
+        "label": "Suspensão 250 mg + 62,5 mg/5 mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Azitromicina",
@@ -81,7 +139,13 @@
     "presentation": "Pó para suspensão oral 200 mg/5 mL; comprimidos 500 mg",
     "notes": "Esquema padrão 10 mg/kg/dia por 3 dias (total 30 mg/kg). Dose total máxima por tratamento: 1500 mg. Otite média aguda pode usar 30 mg/kg em dose única. Comprimidos só acima de 45 kg.",
     "source_name": "Bula ANVISA - Azitromicina (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/azitromicina/bula"
+    "source_url": "https://consultaremedios.com.br/azitromicina/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 200 mg/5 mL",
+        "concentration_mg_per_ml": 40
+      }
+    ]
   },
   {
     "name": "Cefalexina",
@@ -95,7 +159,17 @@
     "presentation": "Suspensão oral 250 mg/5 mL; suspensão gotas 100 mg/mL; cápsulas 500 mg",
     "notes": "Faixa 25-50 mg/kg/dia; otite média usa 75-100 mg/kg/dia em 4 doses. Estreptococo beta-hemolítico: tratar por no mínimo 10 dias.",
     "source_name": "Bula ANVISA - Cefalexina (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/cefalexina/bula"
+    "source_url": "https://consultaremedios.com.br/cefalexina/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 250 mg/5 mL",
+        "concentration_mg_per_ml": 50
+      },
+      {
+        "label": "Suspensão gotas 100 mg/mL",
+        "concentration_mg_per_ml": 100
+      }
+    ]
   },
   {
     "name": "Benzilpenicilina benzatina (Penicilina G benzatina)",
@@ -109,7 +183,8 @@
     "presentation": "Suspensão injetável 600.000 UI e 1.200.000 UI",
     "notes": "DOSE EM UNIDADES INTERNACIONAIS, não em mg — o motor de cálculo por mg/kg NÃO se aplica aqui. Bula: infecções estreptocócicas até 27 kg = 300.000-600.000 UI dose única; maiores = 900.000 UI. Prática comum no Brasil: 600.000 UI (<27kg) / 1.200.000 UI (≥27kg) — confirme com protocolo do serviço. EXCLUSIVAMENTE IM profunda — aplicação IV é fatal.",
     "source_name": "Bula ANVISA - Benzetacil (benzilpenicilina benzatina)",
-    "source_url": "https://consultaremedios.com.br/benzetacil/bula"
+    "source_url": "https://consultaremedios.com.br/benzetacil/bula",
+    "presentations": []
   },
   {
     "name": "Sulfametoxazol + Trimetoprima (SMZ-TMP)",
@@ -123,7 +198,17 @@
     "presentation": "Suspensão oral 200mg+40mg/5mL; 400mg+80mg/5mL; comprimidos 400mg+80mg",
     "notes": "dose_mg_per_kg refere-se à trimetoprima (6 mg/kg/dia), equivalente a 30 mg/kg/dia de sulfametoxazol. CONTRAINDICADO em prematuros e RN nas primeiras 6 semanas de vida. Infecções graves: aumentar até 50%.",
     "source_name": "Bula ANVISA - Sulfametoxazol + Trimetoprima (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/sulfametoxazol-trimetoprima/bula"
+    "source_url": "https://consultaremedios.com.br/sulfametoxazol-trimetoprima/bula",
+    "presentations": [
+      {
+        "label": "Suspensão 200 mg + 40 mg/5 mL (dose em trimetoprima)",
+        "concentration_mg_per_ml": 8
+      },
+      {
+        "label": "Suspensão 400 mg + 80 mg/5 mL (dose em trimetoprima)",
+        "concentration_mg_per_ml": 16
+      }
+    ]
   },
   {
     "name": "Claritromicina",
@@ -137,7 +222,17 @@
     "presentation": "Pó para suspensão oral 125 mg/5 mL e 250 mg/5 mL",
     "notes": "7,5 mg/kg por dose 2x/dia (=15 mg/kg/dia). CONTRAINDICADA abaixo de 6 meses. Duração usual 5-10 dias. Atenção a interações via CYP3A4.",
     "source_name": "Bula ANVISA - Klaricid / Klaricid Pediátrico (claritromicina)",
-    "source_url": "https://consultaremedios.com.br/klaricid/bula"
+    "source_url": "https://consultaremedios.com.br/klaricid/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 125 mg/5 mL",
+        "concentration_mg_per_ml": 25
+      },
+      {
+        "label": "Suspensão oral 250 mg/5 mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Ceftriaxona sódica",
@@ -151,7 +246,8 @@
     "presentation": "Pó liofilizado para solução injetável 500 mg e 1 g",
     "notes": "RN até 14 dias: 20-50 mg/kg/dia (não ultrapassar 50 mg/kg). RN/lactentes/crianças 15 dias-12 anos: 20-80 mg/kg/dia. Meningite: iniciar 100 mg/kg/dia (máx 4g/dia). Infusão lenta (≥30min) em doses ≥50mg/kg. Não administrar com soluções de cálcio em neonatos.",
     "source_name": "Bula ANVISA - Ceftriaxona Sódica (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/ceftriaxona-sodica/bula"
+    "source_url": "https://consultaremedios.com.br/ceftriaxona-sodica/bula",
+    "presentations": []
   },
   {
     "name": "Benzilpenicilina potássica (Penicilina G cristalina)",
@@ -165,7 +261,8 @@
     "presentation": "Pó para solução injetável 1.000.000 / 5.000.000 / 10.000.000 UI",
     "notes": "DOSE EM UNIDADES INTERNACIONAIS — o motor de cálculo por mg/kg NÃO se aplica aqui. Crianças: 100.000-250.000 UI/kg/dia a cada 6h. Meningite: 250.000 UI/kg/dia. Requer ajuste renal e atenção à carga de potássio.",
     "source_name": "Bula ANVISA - Benzilpenicilina Potássica (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/benzilpenicilina-potassica/bula"
+    "source_url": "https://consultaremedios.com.br/benzilpenicilina-potassica/bula",
+    "presentations": []
   },
   {
     "name": "Oxacilina sódica",
@@ -179,7 +276,8 @@
     "presentation": "Pó para solução injetável 500 mg",
     "notes": "Para crianças < 40 kg. Leve/moderada: 50 mg/kg/dia a cada 6h. Grave: 100 mg/kg/dia ou mais a cada 4-6h. Prematuros/RN: 25 mg/kg/dia com monitorização de níveis séricos (função renal incompleta).",
     "source_name": "Bula ANVISA - Oxacilina Sódica (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/oxacilina-sodica/bula"
+    "source_url": "https://consultaremedios.com.br/oxacilina-sodica/bula",
+    "presentations": []
   },
   {
     "name": "Prednisolona",
@@ -193,7 +291,13 @@
     "presentation": "Solução oral 3 mg/mL",
     "notes": "Faixa 1-2 mg/kg/dia. Máximo 40 mg/DIA. Cursos curtos (3-5 dias) não exigem desmame. Via oral tão eficaz quanto IV — preferir oral se a criança tolera.",
     "source_name": "SBP - Documento Científico nº 220 (2025): Uso de corticosteroides sistêmicos em doenças alérgicas em Pediatria",
-    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/24860b-DC_-_Uso_Corticosteroides_Sistemicos_em_DcsAlergicas_em_Pediatria.pdf"
+    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/24860b-DC_-_Uso_Corticosteroides_Sistemicos_em_DcsAlergicas_em_Pediatria.pdf",
+    "presentations": [
+      {
+        "label": "Solução oral 3 mg/mL",
+        "concentration_mg_per_ml": 3
+      }
+    ]
   },
   {
     "name": "Prednisona",
@@ -207,7 +311,8 @@
     "presentation": "Comprimidos 5 mg e 20 mg",
     "notes": "Faixa 1-2 mg/kg/dia, máximo 40 mg/dia (posicionamento conjunto ASBAI/SBP; um protocolo municipal admite até 60 mg/dia — preferir o teto mais conservador). Cursos curtos de 5 dias não exigem desmame.",
     "source_name": "Guia Prático ASBAI/SBP - Exacerbação de asma em crianças e adolescentes (Arq Asma Alerg Imunol 2021;5(4):322-45)",
-    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf"
+    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf",
+    "presentations": []
   },
   {
     "name": "Dexametasona (crise asmática)",
@@ -221,7 +326,8 @@
     "presentation": "Solução oral / comprimido",
     "notes": "0,6 mg/kg por 1-2 dias, com benefício semelhante à prednisolona e menor risco de intolerância oral. NÃO prolongar além de 2 dias por efeitos metabólicos. Sem teto absoluto definido na fonte — validar com protocolo institucional.",
     "source_name": "Guia Prático ASBAI/SBP - Exacerbação de asma em crianças e adolescentes",
-    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf"
+    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf",
+    "presentations": []
   },
   {
     "name": "Dexametasona (crupe/laringite viral)",
@@ -235,7 +341,8 @@
     "presentation": "Solução oral ou apresentação injetável (oral preferencial)",
     "notes": "Dose escalonada pela gravidade: leve 0,15-0,3 mg/kg; moderado 0,3-0,6 mg/kg; grave 0,6 mg/kg. Dose única, sem desmame. Sem teto absoluto definido na fonte.",
     "source_name": "SBP - Guia Prático de Conduta: Crupe Viral e Bacteriano",
-    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf"
+    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf",
+    "presentations": []
   },
   {
     "name": "Budesonida inalatória (crupe)",
@@ -249,7 +356,8 @@
     "presentation": "Suspensão para inalação por nebulização",
     "notes": "DOSE FIXA de 2 mg em dose única nebulizada — não varia por peso. Eficácia semelhante à dexametasona em crupe leve/moderado. Evitar nebulizar se a criança ficar agitada (choro piora o colapso da via aérea).",
     "source_name": "SBP - Guia Prático de Conduta: Crupe Viral e Bacteriano",
-    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf"
+    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf",
+    "presentations": []
   },
   {
     "name": "Hidrocortisona (succinato sódico)",
@@ -263,7 +371,8 @@
     "presentation": "Frasco-ampola 500 mg (pó para solução injetável)",
     "notes": "Faixa 2-4 mg/kg/dose, máximo 250 mg POR DOSE. Terceira opção — diretrizes preferem prednisolona oral (eficácia equivalente). Reservar via IV para quem não tolera oral ou está indo para IOT/VNI.",
     "source_name": "Prefeitura de Ribeirão Preto - Protocolo de manejo de crise asmática em crianças e adolescentes (2023)",
-    "source_url": "https://www.ribeiraopreto.sp.gov.br/portal/pdf/saude594202310.pdf"
+    "source_url": "https://www.ribeiraopreto.sp.gov.br/portal/pdf/saude594202310.pdf",
+    "presentations": []
   },
   {
     "name": "Metilprednisolona (succinato sódico)",
@@ -277,7 +386,8 @@
     "presentation": "Pó liofilizado para solução injetável",
     "notes": "Faixa 1-2 mg/kg/dia, máximo 60 mg/dia. IV/IM não têm vantagem significativa sobre via oral — preferir prednisolona oral quando houver tolerância à ingestão.",
     "source_name": "Ministério da Saúde - Linhas de Cuidado: Asma, manejo da exacerbação",
-    "source_url": "https://linhasdecuidado.saude.gov.br/portal/asma/servico-de-atendimento-movel/manejo-inicial/"
+    "source_url": "https://linhasdecuidado.saude.gov.br/portal/asma/servico-de-atendimento-movel/manejo-inicial/",
+    "presentations": []
   },
   {
     "name": "Salbutamol spray (aerossol com espaçador)",
@@ -291,7 +401,8 @@
     "presentation": "Aerossol dosimetrado 100 mcg/jato, sempre com espaçador",
     "notes": "Dose por peso em JATOS: 5-10kg=4 jatos; 10-20kg=6 jatos; >20kg=8 jatos, a cada 20min na 1ª hora. MDI+espaçador é preferido sobre nebulização em crise leve/moderada. Mais de 6 jatos sem alívio: reavaliar/encaminhar.",
     "source_name": "Guia Prático ASBAI/SBP - Exacerbação de asma em crianças e adolescentes",
-    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf"
+    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf",
+    "presentations": []
   },
   {
     "name": "Salbutamol solução para nebulização",
@@ -305,7 +416,8 @@
     "presentation": "Solução para nebulização 5 mg/mL, frasco 10 mL",
     "notes": "Menores de 12 anos: 0,5 mL (2,5 mg) diluído em 2,0-2,5 mL de SF; algumas crianças podem precisar de até 5 mg. Eficácia incerta abaixo de 18 meses — risco de hipoxemia transitória, considerar O2 suplementar.",
     "source_name": "Bula profissional Aerolin solução para nebulização (GSK Brasil)",
-    "source_url": "https://br.gsk.com/media/424lg2cp/aerolin-solu%C3%A7%C3%A3o-para-nebuliza%C3%A7%C3%A3o.pdf"
+    "source_url": "https://br.gsk.com/media/424lg2cp/aerolin-solu%C3%A7%C3%A3o-para-nebuliza%C3%A7%C3%A3o.pdf",
+    "presentations": []
   },
   {
     "name": "Brometo de ipratrópio",
@@ -319,7 +431,8 @@
     "presentation": "Solução para nebulização (cada gota = 0,0125 mg)",
     "notes": "Menores de 4 anos: 125-250 mcg/dose (10-20 gotas); ≥4 anos: 250-500 mcg/dose (20-40 gotas). max_dose_mg=0,5 é o teto por dose. NÃO usar isolado — sempre associado ao salbutamol; reduz risco de internação em até 25% em crises graves.",
     "source_name": "Guia Prático ASBAI/SBP - Exacerbação de asma em crianças e adolescentes",
-    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf"
+    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf",
+    "presentations": []
   },
   {
     "name": "Sulfato de magnésio",
@@ -333,7 +446,13 @@
     "presentation": "Solução injetável (ex.: ampola 10%, 10 mL)",
     "notes": "Faixa 25-75 mg/kg/dose, máximo 2-2,5 g por dose. Restrito a maiores de 2 anos com crise grave refratária ao tratamento inicial — não é uso de rotina. Exige monitorização contínua durante a infusão.",
     "source_name": "Guia Prático ASBAI/SBP - Exacerbação de asma em crianças e adolescentes",
-    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf"
+    "source_url": "https://aaai-asbai.org.br/article/10.5935/2526-5393.20210053/pdf/aaai-5-4-322.pdf",
+    "presentations": [
+      {
+        "label": "Solução injetável 10% (100 mg/mL)",
+        "concentration_mg_per_ml": 100
+      }
+    ]
   },
   {
     "name": "Epinefrina inalatória (crupe)",
@@ -347,7 +466,8 @@
     "presentation": "Epinefrina 1:1000 (1mg/mL), não diluída",
     "notes": "0,5 mL/kg até máximo de 5 mL (5 ampolas) por dose — dose em VOLUME, não em mg/kg. Efeito rápido mas transitório: obriga observação de pelo menos 2h. Sempre associar ao corticoide. Relatos raros de taquicardia ventricular/infarto em crupe grave.",
     "source_name": "SBP - Guia Prático de Conduta: Crupe Viral e Bacteriano",
-    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf"
+    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/2017/01/Emergncia-Crupe-Viral-e-Bacteriano.pdf",
+    "presentations": []
   },
   {
     "name": "Ondansetrona (via oral)",
@@ -361,7 +481,13 @@
     "presentation": "Solução oral 4mg/5mL; comprimido orodispersível 4 e 8mg",
     "notes": "Faixa 0,2-0,4 mg/kg com doses fixas por faixa: 6m-2anos=2mg; >2-10anos(até 30kg)=4mg; >10anos(>30kg)=8mg. max_dose_mg=8mg por dose. ALERTA: ANVISA libera apenas a partir de 2 anos; risco de prolongamento de QT dose-dependente — corrigir hipocalemia/hipomagnesemia antes; evitar na síndrome do QT longo congênito.",
     "source_name": "SBP - Guia Prático: Diarreia Aguda Infecciosa",
-    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/sbp/2023/junho/14/24048aPRESS-GPA-Diarreia_Aguda_Infecciosa-pSITE.pdf"
+    "source_url": "https://www.sbp.com.br/fileadmin/user_upload/sbp/2023/junho/14/24048aPRESS-GPA-Diarreia_Aguda_Infecciosa-pSITE.pdf",
+    "presentations": [
+      {
+        "label": "Solução oral 4 mg/5 mL",
+        "concentration_mg_per_ml": 0.8
+      }
+    ]
   },
   {
     "name": "Ondansetrona (injetável)",
@@ -375,7 +501,13 @@
     "presentation": "Solução injetável 2mg/mL",
     "notes": "Quimioterapia (6m-17anos): 0,15mg/kg, máx 8mg/dose. Pós-operatório: dose diferente, 0,1mg/kg IV lenta, máx 4mg/dose (1 mês-17 anos). ALERTA: prolonga QT dose-dependente, relatos de Torsades de Pointes. Contraindicado em síndrome do QT longo; corrigir hipocalemia/hipomagnesemia antes.",
     "source_name": "Bula ANVISA - Cloridrato de Ondansetrona injetável",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-ondansetrona-injetavel/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-ondansetrona-injetavel/bula",
+    "presentations": [
+      {
+        "label": "Solução injetável 2 mg/mL",
+        "concentration_mg_per_ml": 2
+      }
+    ]
   },
   {
     "name": "Metoclopramida",
@@ -389,7 +521,8 @@
     "presentation": "Comprimido 10mg; solução oral/gotas; injetável 10mg/2mL",
     "notes": "ALERTA REGULATÓRIO: CONTRAINDICADO abaixo de 1 ano (risco de distúrbios extrapiramidais); uso de 1-18 anos NÃO É RECOMENDADO pela bula ANVISA. Por isso não há dose pediátrica em mg/kg — não extrapolar. max_dose_mg=30mg/dia é posologia ADULTA. Duração máxima 5 dias.",
     "source_name": "Bula ANVISA - Cloridrato de Metoclopramida",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-metoclopramida/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-metoclopramida/bula",
+    "presentations": []
   },
   {
     "name": "Bromoprida (gotas pediátricas)",
@@ -403,7 +536,13 @@
     "presentation": "Solução oral gotas pediátricas 4mg/mL",
     "notes": "Bula expressa em gotas: 1-2 gotas/kg 3x/dia (24 gotas=1mL; 1 gota=0,17mg) ≈ 0,5-1,0 mg/kg/dia. CONTRAINDICADO abaixo de 1 ano (risco de agitação, irritabilidade, convulsões). Sem teto em mg definido na bula. Reações extrapiramidais possíveis mesmo em dose única.",
     "source_name": "Bula ANVISA - Bromoprida gotas pediátricas 4mg/mL",
-    "source_url": "https://bula.com.br/original/bromoprida-gotas-pediatricas-4-mgml"
+    "source_url": "https://bula.com.br/original/bromoprida-gotas-pediatricas-4-mgml",
+    "presentations": [
+      {
+        "label": "Solução oral gotas pediátricas 4 mg/mL",
+        "concentration_mg_per_ml": 4
+      }
+    ]
   },
   {
     "name": "Domperidona (suspensão oral)",
@@ -417,7 +556,13 @@
     "presentation": "Suspensão oral 1mg/mL",
     "notes": "2,5mL/10kg = 0,25mg/kg/dose. Teto: 35mg/dia OU 1,0mg/kg/dia — usar o menor. Eficácia NÃO estabelecida em lactentes e <12 anos com peso <35kg. Comprimidos só acima de 35kg. ALERTA: risco de prolongamento de QT/arritmia; contraindicado com inibidores de CYP3A4 que prolongam QT.",
     "source_name": "Bula ANVISA - Domperidona suspensão oral 1mg/mL",
-    "source_url": "https://consultaremedios.com.br/domperidona/bula"
+    "source_url": "https://consultaremedios.com.br/domperidona/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 1 mg/mL",
+        "concentration_mg_per_ml": 1
+      }
+    ]
   },
   {
     "name": "Dimenidrinato + piridoxina (gotas orais)",
@@ -431,7 +576,13 @@
     "presentation": "Solução oral gotas 25mg/mL dimenidrinato + 5mg/mL piridoxina (1 gota=1,25mg)",
     "notes": "Regra prática: 1 gota/kg por dose. max_dose_mg=75mg/dia é o teto para <6 anos; 150mg/dia (6-12 anos); 400mg/dia (>12 anos) — ajustar por idade. NÃO usar em menores de 2 anos (gotas) nem menores de 12 anos (comprimidos). Não pingar direto na boca — usar colher. Contraindicado em intolerância hereditária à frutose.",
     "source_name": "Bula ANVISA - Dimenidrinato + Piridoxina Multilab",
-    "source_url": "https://bula.com.br/dimenidrinato-cloridrato-de-piridoxina-multilab"
+    "source_url": "https://bula.com.br/dimenidrinato-cloridrato-de-piridoxina-multilab",
+    "presentations": [
+      {
+        "label": "Solução oral gotas 25 mg/mL (dimenidrinato)",
+        "concentration_mg_per_ml": 25
+      }
+    ]
   },
   {
     "name": "Dimenidrinato + piridoxina (injetável)",
@@ -445,7 +596,13 @@
     "presentation": "Solução injetável, ampola 10mL (3mg/mL dimenidrinato + 5mg/mL piridoxina)",
     "notes": "1,25mg/kg diluído em 10mL SF 0,9%, administrado LENTAMENTE em ≥2 minutos. Máx 300mg/dia. Via exclusivamente IV. CONTRAINDICADO abaixo de 2 anos. Contraindicado em intolerância hereditária à frutose (pode ser fatal).",
     "source_name": "Bula ANVISA - Dramin B6 DL injetável",
-    "source_url": "https://bula.com.br/original/dramin-b6-dl-injetavel"
+    "source_url": "https://bula.com.br/original/dramin-b6-dl-injetavel",
+    "presentations": [
+      {
+        "label": "Solução injetável 3 mg/mL (dimenidrinato)",
+        "concentration_mg_per_ml": 3
+      }
+    ]
   },
   {
     "name": "Dexclorfeniramina (xarope)",
@@ -459,7 +616,8 @@
     "presentation": "Xarope 2mg/5mL",
     "notes": "2-6 anos: 1,25mL/dose 3x/dia, máx 3mg/dia. 6-12 anos: 2,5mL/dose 3x/dia, máx 6mg/dia. CONTRAINDICADO abaixo de 2 anos. Pode causar excitação paradoxal em crianças.",
     "source_name": "Bula ANVISA - Maleato de Dexclorfeniramina 2mg/5mL xarope (Cimed genérico)",
-    "source_url": "https://www.cliquefarma.com.br/medicamentos/medicamentos-a-z/maleato-de-dexclorfeniramina-2mg-5-ml-xarope-120-ml-cimed-generico/bula"
+    "source_url": "https://www.cliquefarma.com.br/medicamentos/medicamentos-a-z/maleato-de-dexclorfeniramina-2mg-5-ml-xarope-120-ml-cimed-generico/bula",
+    "presentations": []
   },
   {
     "name": "Prometazina injetável (Fenergan)",
@@ -473,7 +631,8 @@
     "presentation": "Solução injetável 25mg/mL; comprimido 25mg",
     "notes": "ALERTA CRÍTICO: CONTRAINDICADO em menores de 2 anos — risco de depressão respiratória FATAL. Bula não estabelece posologia pediátrica em mg/kg para maiores de 2 anos; não extrapolar. Posologia da bula é só adulta (25-50mg IM). Via IV não recomendada (risco de necrose/gangrena em injeção intra-arterial inadvertida).",
     "source_name": "Bula ANVISA - Fenergan injetável (Sanofi Medley)",
-    "source_url": "https://consultaremedios.com.br/fenergan-injetavel/bula"
+    "source_url": "https://consultaremedios.com.br/fenergan-injetavel/bula",
+    "presentations": []
   },
   {
     "name": "Loratadina (xarope)",
@@ -487,7 +646,8 @@
     "presentation": "Xarope 1mg/mL",
     "notes": "2-12 anos com peso <30kg: 5mL(5mg)/dia. 2-12 anos com peso ≥30kg e >12 anos: 10mL(10mg)/dia. CONTRAINDICADO abaixo de 2 anos. Reduzir dose em doença hepática/renal (10mg em dias alternados). Contém açúcar.",
     "source_name": "Bula ANVISA - Loratadina xarope 1mg/mL",
-    "source_url": "https://bula.com.br/original/loratadina-xarope-1-mgml"
+    "source_url": "https://bula.com.br/original/loratadina-xarope-1-mgml",
+    "presentations": []
   },
   {
     "name": "Cetirizina (solução oral)",
@@ -501,7 +661,8 @@
     "presentation": "Solução oral 1mg/mL",
     "notes": "2-6 anos: 2,5mL(2,5mg) 2x/dia. 6-12 anos: 5mL(5mg) 2x/dia OU 10mL(10mg) 1x/dia. ≥12 anos: 10mL(10mg) 1x/dia. CONTRAINDICADO abaixo de 2 anos. Ajustar dose em insuficiência renal pediátrica.",
     "source_name": "Bula ANVISA - Dicloridrato de Cetirizina solução oral (Medley)",
-    "source_url": "https://consultaremedios.com.br/dicloridrato-de-cetirizina-solucao-oral-medley/bula"
+    "source_url": "https://consultaremedios.com.br/dicloridrato-de-cetirizina-solucao-oral-medley/bula",
+    "presentations": []
   },
   {
     "name": "Hidroxizina (solução oral)",
@@ -515,7 +676,13 @@
     "presentation": "Solução oral/xarope 2mg/mL",
     "notes": "0,7mg/kg/dose a cada 8h. Teto: 50mg/dia (até 40kg) OU 2mg/kg/dia — usar o menor. Acima de 40kg segue posologia adulta. ALERTA: risco de prolongamento de QT e Torsades de Pointes; contraindicado com arritmia prévia ou uso concomitante de outras drogas que prolongam QT. Crianças mais suscetíveis a eventos de SNC (convulsões, tremores).",
     "source_name": "Bula ANVISA - Hixizine (dicloridrato de hidroxizina) 2mg/mL (Theraskin)",
-    "source_url": "https://www.panvel.com/panvel/hixizine-cloridrato-hidroxizina-2mg-ml-solucao-oral-120ml/395099/bula"
+    "source_url": "https://www.panvel.com/panvel/hixizine-cloridrato-hidroxizina-2mg-ml-solucao-oral-120ml/395099/bula",
+    "presentations": [
+      {
+        "label": "Solução oral/xarope 2 mg/mL",
+        "concentration_mg_per_ml": 2
+      }
+    ]
   },
   {
     "name": "Desloratadina (xarope)",
@@ -529,7 +696,8 @@
     "presentation": "Xarope 0,5mg/mL",
     "notes": "6-11 meses: 2mL(1mg)/dia. 1-5 anos: 2,5mL(1,25mg)/dia. 6-11 anos: 5mL(2,5mg)/dia. ≥12 anos: 10mL(5mg)/dia. Eficácia e segurança NÃO estabelecidas abaixo de 6 meses.",
     "source_name": "Bula ANVISA - Desloratadina xarope 0,5mg/mL",
-    "source_url": "https://bula.com.br/original/desloratadina-xarope-05-mgml"
+    "source_url": "https://bula.com.br/original/desloratadina-xarope-05-mgml",
+    "presentations": []
   },
   {
     "name": "Fexofenadina (suspensão oral pediátrica)",
@@ -543,7 +711,8 @@
     "presentation": "Suspensão oral 6mg/mL",
     "notes": "6 meses-2 anos (até 10,5kg): 15mg(2,5mL) 2x/dia — só para urticária. 2-11 anos (>10,5kg): 30mg(5mL) 2x/dia. Eficácia/segurança NÃO estabelecidas abaixo de 2 anos (rinite) ou 6 meses (urticária). Não administrar com suco de fruta ou alimentos gordurosos (reduz absorção).",
     "source_name": "Bula ANVISA - Allexofedrin (fexofenadina) Pediátrico 6mg/mL",
-    "source_url": "https://www.panvel.com/panvel/allexofedrin-fexofenadina-pediatrico-suspensao-oral-6mg-ml-60ml/107557/bula"
+    "source_url": "https://www.panvel.com/panvel/allexofedrin-fexofenadina-pediatrico-suspensao-oral-6mg-ml-60ml/107557/bula",
+    "presentations": []
   },
   {
     "name": "Difenidramina injetável",
@@ -557,7 +726,13 @@
     "presentation": "Solução injetável 50mg/mL",
     "notes": "5mg/kg/dia dividido em 3-4 doses. Máx 300mg/dia. Via IV ou IM profunda. Posologia pediátrica a partir de 2 anos; NÃO usar em neonatos e prematuros. Pode causar excitação paradoxal em crianças — monitorar.",
     "source_name": "Bula ANVISA - Cloridrato de Difenidramina injetável",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-difenidramina/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-difenidramina/bula",
+    "presentations": [
+      {
+        "label": "Solução injetável 50 mg/mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Cloridrato de Lidocaína + Epinefrina (anestésico odontológico)",
@@ -571,7 +746,13 @@
     "presentation": "Tubete odontológico 1,8 mL — lidocaína 2% (20 mg/mL) + epinefrina 1:100.000 ou 1:200.000",
     "notes": "Cada tubete de lidocaína 2% tem ~36 mg do anestésico (regra prática: ~1 tubete a cada 9 kg). Em menores de 10 anos, SEMPRE calcular por peso — não usar dose fixa de adulto. Dose máxima de epinefrina associada: 0,2 mg. Preferir 1:100.000 em crianças até 3 anos sem comorbidades. Aspirar sempre antes de injetar.",
     "source_name": "Bula ANVISA - Alphacaine (cloridrato de lidocaína + epinefrina, DFL) via Consulta Remédios",
-    "source_url": "https://consultaremedios.com.br/alphacaine/bula"
+    "source_url": "https://consultaremedios.com.br/alphacaine/bula",
+    "presentations": [
+      {
+        "label": "Tubete 1,8 mL — lidocaína 2% (20 mg/mL)",
+        "concentration_mg_per_ml": 20
+      }
+    ]
   },
   {
     "name": "Cloridrato de Articaína + Epinefrina (anestésico odontológico)",
@@ -585,7 +766,13 @@
     "presentation": "Tubete odontológico 1,8 mL — articaína 4% (40 mg/mL) + epinefrina 1:100.000 ou 1:200.000",
     "notes": "CONTRAINDICADA em menores de 4 anos pela bula. Dose máxima geral de 400 mg (~11 tubetes) é referência adulta — na prática pediátrica o teto por kg é sempre o limitante real. Menos tóxica ao SNC/cardiovascular que a lidocaína, mas evitar bloqueio mandibular bilateral simultâneo pelo risco de parestesia prolongada de língua/lábio.",
     "source_name": "Bula ANVISA - Cloridrato de Articaína + Epinefrina (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-articaina-epinefrina/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-articaina-epinefrina/bula",
+    "presentations": [
+      {
+        "label": "Tubete 1,8 mL — articaína 4% (40 mg/mL)",
+        "concentration_mg_per_ml": 40
+      }
+    ]
   },
   {
     "name": "Cloridrato de Mepivacaína (anestésico odontológico)",
@@ -599,7 +786,17 @@
     "presentation": "Tubete odontológico 1,8 mL — mepivacaína 3% sem vasoconstritor ou 2% com epinefrina 1:100.000",
     "notes": "Uso pediátrico recomendado só acima de 4 anos. HÁ DIVERGÊNCIA ENTRE FONTES: guias odontopediátricos internacionais citam até 4,4 mg/kg, mas a bula do produto orienta não ultrapassar 2 tubetes (132 mg) em crianças — usar o teto mais conservador (bula). Sem vasoconstritor a duração é mais curta (~20-40 min), exigindo controle do tempo de procedimento.",
     "source_name": "Bula ANVISA - Cloridrato de Mepivacaína (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-mepivacaina/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-mepivacaina/bula",
+    "presentations": [
+      {
+        "label": "Tubete 1,8 mL — mepivacaína 3% (30 mg/mL)",
+        "concentration_mg_per_ml": 30
+      },
+      {
+        "label": "Tubete 1,8 mL — mepivacaína 2% (20 mg/mL)",
+        "concentration_mg_per_ml": 20
+      }
+    ]
   },
   {
     "name": "Cloridrato de Prilocaína + Felipressina (anestésico odontológico)",
@@ -613,7 +810,13 @@
     "presentation": "Carpule 1,8 mL — prilocaína 3% (30 mg/mL) + felipressina 0,03 UI/mL",
     "notes": "Bula: dose máxima geral 4,5 mg/kg, não excedendo 400 mg. Em CRIANÇAS MENORES DE 10 ANOS a bula recomenda não ultrapassar 1 carpule (54 mg) por sessão — mais restritivo que o cálculo por peso; usar sempre o menor dos dois limites. Felipressina não é catecolamina — opção em cardiopatas, mas evitar em gestantes pelo efeito ocitocina-símile.",
     "source_name": "Bula ANVISA - Cloridrato de Prilocaína + Felipressina (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/cloridrato-de-prilocaina-felipressina/bula"
+    "source_url": "https://consultaremedios.com.br/cloridrato-de-prilocaina-felipressina/bula",
+    "presentations": [
+      {
+        "label": "Carpule 1,8 mL — prilocaína 3% (30 mg/mL)",
+        "concentration_mg_per_ml": 30
+      }
+    ]
   },
   {
     "name": "Midazolam (via oral, sedação odontopediátrica)",
@@ -627,7 +830,13 @@
     "presentation": "Solução injetável 5 mg/mL administrada por via oral (uso off-label da forma injetável, prática comum)",
     "notes": "ED50 ~0,63 mg/kg e ED95 ~0,80 mg/kg em pré-escolares nos estudos revisados; a maioria dos protocolos usa 0,3-0,5 mg/kg. USO RESTRITO a profissional com treinamento em sedação e equipamento de monitorização/resgate (oxímetro, O2, flumazenil disponível) — risco de depressão respiratória, principalmente se associado a outros sedativos (hidrato de cloral, óxido nitroso). Substância sujeita a controle especial (notificação de receita B1).",
     "source_name": "AAPD/PMC - Conscious Sedation Efficacy of Oral Midazolam for Pediatric Dental Treatment + Bula ANVISA Cloridrato de Midazolam",
-    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5139927/"
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5139927/",
+    "presentations": [
+      {
+        "label": "Solução injetável 5 mg/mL por via oral",
+        "concentration_mg_per_ml": 5
+      }
+    ]
   },
   {
     "name": "Hidrato de cloral (sedação odontopediátrica)",
@@ -641,7 +850,8 @@
     "presentation": "Solução/xarope de formulação magistral (não há especialidade industrializada registrada no Brasil)",
     "notes": "Faixa de dose 25-75 mg/kg. Dose TOTAL máxima (somando repetições): 1 g em lactentes (<1 ano) e 2 g em crianças maiores — nunca ultrapassar mesmo somando doses. Produz sedação/ansiólise SEM analgesia — associar sempre anestesia local adequada ao procedimento. Uso exige ambiente com monitorização contínua (oximetria) pelo risco de depressão respiratória e obstrução de via aérea superior. Sujeito a controle especial; por não ter apresentação industrializada, depende de manipulação — validar concentração do frasco antes de calcular o volume.",
     "source_name": "Formulário terapêutico Hidrato de Cloral (Formularium) + literatura de sedação odontopediátrica",
-    "source_url": "https://www.formularium.com.br/inform/wp-content/uploads/2023/08/hidrato-de-cloral.pdf"
+    "source_url": "https://www.formularium.com.br/inform/wp-content/uploads/2023/08/hidrato-de-cloral.pdf",
+    "presentations": []
   },
   {
     "name": "Diazepam injetável (crise convulsiva - emergência)",
@@ -655,7 +865,13 @@
     "presentation": "Solução injetável 5 mg/mL",
     "notes": "Velocidade máxima de infusão: 1 mg/kg/min, sem diluir. Sem valor absoluto em mg definido para pediatria na bula — não preencher max_dose_mg com estimativa, sempre calcular por peso. Deve constar do protocolo de emergência de qualquer consultório que realize sedação odontológica, junto com O2, monitorização e equipe treinada em suporte básico de vida. Risco de depressão respiratória somado a outros sedativos usados no mesmo atendimento (midazolam, hidrato de cloral).",
     "source_name": "Bula ANVISA - Compaz (diazepam) solução injetável (Cristália)",
-    "source_url": "https://www.cristalia.com.br/produto/209/bula-profissional"
+    "source_url": "https://www.cristalia.com.br/produto/209/bula-profissional",
+    "presentations": [
+      {
+        "label": "Solução injetável 5 mg/mL",
+        "concentration_mg_per_ml": 5
+      }
+    ]
   },
   {
     "name": "Adrenalina (epinefrina) IM — anafilaxia",
@@ -669,7 +885,13 @@
     "presentation": "Ampola 1 mg/mL (solução 1:1000)",
     "notes": "Dose prática por faixa etária (referência ANVISA/protocolos de anafilaxia): <5 meses e 5 meses-6 anos = 0,15 mL; 5-12 anos = 0,3 mL; >12 anos = 0,5 mL da solução 1:1000. TODO consultório odontológico que atende crianças deveria manter adrenalina e um protocolo de anafilaxia acessíveis — reações graves a anestésico local/látex são raras, mas são verdadeira emergência. Aplicar sempre IM (nunca IV em bolus) e acionar suporte de emergência imediatamente.",
     "source_name": "ANVISA - Bula Epinefrina 1 mg/mL solução injetável + Protocolo de Anafilaxia (SES-DF)",
-    "source_url": "https://antigo.anvisa.gov.br/documents/33868/6263864/Epinefrina+1+mgmL+Solu%C3%A7%C3%A3o+injet%C3%A1vel+%28ampola+de+1+mL%29+DEMO+S.A.+Pharmaceutical+Industry+%28Gr%C3%A9cia%29/ed11c47b-50f1-4bb2-8fec-84b3b1a6a4a1"
+    "source_url": "https://antigo.anvisa.gov.br/documents/33868/6263864/Epinefrina+1+mgmL+Solu%C3%A7%C3%A3o+injet%C3%A1vel+%28ampola+de+1+mL%29+DEMO+S.A.+Pharmaceutical+Industry+%28Gr%C3%A9cia%29/ed11c47b-50f1-4bb2-8fec-84b3b1a6a4a1",
+    "presentations": [
+      {
+        "label": "Ampola 1 mg/mL (1:1000)",
+        "concentration_mg_per_ml": 1
+      }
+    ]
   },
   {
     "name": "Clindamicina (infecção odontogênica)",
@@ -683,7 +905,13 @@
     "presentation": "Suspensão oral 75 mg/5 mL; cápsulas 150/300 mg; solução injetável 150 mg/mL",
     "notes": "Faixa 8-40 mg/kg/dia dividida em 3-4 doses; teto de 40 mg/kg/dia em menores de 16 anos — sem valor absoluto em mg definido na bula, não preencher max_dose_mg com estimativa. Boa opção em infecção odontogênica com componente anaeróbio ou em paciente alérgico a betalactâmicos. Risco de colite associada a C. difficile — orientar sinais de alerta (diarreia persistente/com sangue).",
     "source_name": "Bula ANVISA - Fosfato de Clindamicina (União Química)",
-    "source_url": "https://www.uniaoquimica.com.br/wp-content/uploads/2020/01/2021.07.19-fosfato_de_clindamicina_Bula_Paciente.pdf"
+    "source_url": "https://www.uniaoquimica.com.br/wp-content/uploads/2020/01/2021.07.19-fosfato_de_clindamicina_Bula_Paciente.pdf",
+    "presentations": [
+      {
+        "label": "Suspensão oral 75 mg/5 mL",
+        "concentration_mg_per_ml": 15
+      }
+    ]
   },
   {
     "name": "Metronidazol (infecção odontogênica anaeróbia)",
@@ -697,7 +925,13 @@
     "presentation": "Suspensão oral 40 mg/mL; comprimidos 250/400 mg",
     "notes": "Faixa 15-50 mg/kg/dia dividida em 2-3 doses. Em odontologia, comumente associado à amoxicilina (esquema 'AM') em infecções odontogênicas com componente anaeróbio, pericoronarite de terceiro molar ou abscesso com disseminação a espaços fasciais. Evitar álcool durante e até 48h após o tratamento (efeito dissulfiram-símile). Sabor metálico é comum e pode reduzir adesão em crianças — associar orientação sobre isso aos pais.",
     "source_name": "Bula ANVISA - Metronidazol Suspensão Oral FURP (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/metronidazol-suspensao-oral-furp/bula"
+    "source_url": "https://consultaremedios.com.br/metronidazol-suspensao-oral-furp/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 40 mg/mL",
+        "concentration_mg_per_ml": 40
+      }
+    ]
   },
   {
     "name": "Nimesulida (contraindicada em Odontopediatria)",
@@ -711,7 +945,8 @@
     "presentation": "Comprimidos 100 mg; solução oral/gotas 50 mg/mL",
     "notes": "ALERTA REGULATÓRIO ANVISA: nimesulida é CONTRAINDICADA em menores de 12 anos no Brasil (risco de reações hepáticas graves e casos compatíveis com Síndrome de Reye). Mantida no catálogo só como alerta de segurança — para analgesia pós-exodontia em criança usar paracetamol, dipirona ou ibuprofeno (já cadastrados neste catálogo). NÃO PRESCREVER para pacientes pediátricos.",
     "source_name": "Bula ANVISA - Nimesulida (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/nimesulida/bula"
+    "source_url": "https://consultaremedios.com.br/nimesulida/bula",
+    "presentations": []
   },
   {
     "name": "Verniz fluoretado / Gel de flúor (aplicação profissional)",
@@ -725,7 +960,8 @@
     "presentation": "Verniz fluoretado a 5% (22.600 ppm F) ou gel de flúor fosfato acidulado (APF) 1,23%",
     "notes": "NÃO é medicamento dosado por peso — é procedimento preventivo tópico, não calculável pela calculadora de mg/kg. Indicação por estratificação de risco: baixo risco = apenas escovação supervisionada com creme dental fluoretado; risco moderado/alto = aplicação profissional de verniz ou gel. Aplicar preferencialmente após refeições; orientar dieta leve/líquida e não escovar nas 12h seguintes. Atenção à quantidade de pasta fluoretada usada em casa (risco de fluorose por ingestão em menores de 6 anos) — não confundir com o produto de uso profissional.",
     "source_name": "Ministério da Saúde - Guia de Recomendações para o Uso de Fluoretos no Brasil (Secretaria de Atenção Primária à Saúde)",
-    "source_url": "https://www.gov.br/saude/pt-br/acesso-a-informacao/participacao-social/consultas-publicas/2024/consulta-publica-guia-de-recomendacoes-para-o-uso-de-fluoretos-no-brasil/guia-de-recomendacoes-para-uso-de-fluoretos-no-brasil.pdf"
+    "source_url": "https://www.gov.br/saude/pt-br/acesso-a-informacao/participacao-social/consultas-publicas/2024/consulta-publica-guia-de-recomendacoes-para-o-uso-de-fluoretos-no-brasil/guia-de-recomendacoes-para-uso-de-fluoretos-no-brasil.pdf",
+    "presentations": []
   },
   {
     "name": "Benzocaína gel 20% (anestésico tópico odontológico)",
@@ -739,7 +975,8 @@
     "presentation": "Gel 20%",
     "notes": "CONTRAINDICADA em menores de 2 anos pelo risco de metahemoglobinemia. Sintomas por gravidade: cianose (15-20% de metahemoglobina), fadiga/cefaleia/taquicardia (20-45%), alteração de consciência (>55%) — tratamento é azul de metileno 1% IV, 0,1 mL/kg em 5 min. Risco aumenta com área extensa de aplicação ou mucosa lesada — usar sempre a menor quantidade eficaz, nunca cobrindo área grande.",
     "source_name": "Bula ANVISA - Topigel (benzocaína gel) + alerta regulatório sobre metahemoglobinemia por benzocaína tópica (SEFH)",
-    "source_url": "https://www.mymedfarma.com/pt/principios-ativos/257-benzocaina/104-gel/3382-topigel-gel"
+    "source_url": "https://www.mymedfarma.com/pt/principios-ativos/257-benzocaina/104-gel/3382-topigel-gel",
+    "presentations": []
   },
   {
     "name": "Tetraciclinas (contraindicadas em Odontopediatria)",
@@ -753,7 +990,8 @@
     "presentation": "Cápsulas/comprimidos (tetraciclina, doxiciclina)",
     "notes": "CONTRAINDICADAS em menores de 8 anos e em gestantes/lactantes: depositam-se na dentina e no esmalte em formação, causando manchamento amarelo/marrom/acinzentado PERMANENTE — período crítico de exposição entre 4 meses e 7 anos de vida (mineralização dentária). Parte da literatura recente considera baixo o risco de cursos curtos de doxiciclina (<21 dias), mas a recomendação padrão no Brasil segue sendo evitar a classe nessa faixa etária — preferir amoxicilina, azitromicina ou clindamicina (já cadastradas). Incluída só como alerta de segurança, não como opção de dose.",
     "source_name": "MSD Manuals - Tetraciclinas (uso profissional) + literatura odontológica sobre manchamento dentário por tetraciclina",
-    "source_url": "https://www.msdmanuals.com/pt/profissional/doen%C3%A7as-infecciosas/bact%C3%A9rias-e-medicamentos-antibacterianos/tetraciclinas"
+    "source_url": "https://www.msdmanuals.com/pt/profissional/doen%C3%A7as-infecciosas/bact%C3%A9rias-e-medicamentos-antibacterianos/tetraciclinas",
+    "presentations": []
   },
   {
     "name": "Óxido nitroso/oxigênio (sedação inalatória)",
@@ -767,7 +1005,8 @@
     "presentation": "Mistura gasosa N2O/O2 por equipamento dedicado com válvula de segurança",
     "notes": "Concentração de N2O titulada de 10% até no máximo 70%, sempre com pelo menos 30% de O2 na mistura. NÃO é dose por peso — é titulação por resposta clínica com monitorização contínua de sinais vitais. Evitar em obstrução nasal significativa e doença pulmonar obstrutiva grave. Método considerado seguro e eficaz para manejo de comportamento em odontopediatria quando aplicado por profissional treinado, com boa reversibilidade ao suspender.",
     "source_name": "SciELO Brasil - Uso do óxido nitroso em pediatria + Revista de Odontologia (sedação consciente N2O/O2 em odontopediatria)",
-    "source_url": "https://www.scielo.br/j/rba/a/s3Jskz77m5y7RHnHZXvJ9rg/"
+    "source_url": "https://www.scielo.br/j/rba/a/s3Jskz77m5y7RHnHZXvJ9rg/",
+    "presentations": []
   },
   {
     "name": "Amoxicilina (profilaxia de endocardite infecciosa)",
@@ -781,7 +1020,13 @@
     "presentation": "Suspensão oral 250 mg/5 mL; cápsulas 500 mg",
     "notes": "REGIME DIFERENTE do uso terapêutico de amoxicilina já cadastrado neste catálogo: aqui é DOSE ÚNICA pré-procedimento, não um esquema de vários dias — não confundir os dois ao calcular. Indicada só nos grupos de alto risco cardíaco definidos por diretriz cardiológica, não é rotina para qualquer criança. Em alérgico à penicilina, usar clindamicina (20 mg/kg dose única, já cadastrada), azitromicina ou cefalexina. Dose pós-procedimento não é mais recomendada — só a dose pré.",
     "source_name": "Revista Médica HSE / literatura odontológica - Profilaxia antibiótica da endocardite infecciosa em procedimentos odontológicos",
-    "source_url": "http://www.hse.rj.saude.gov.br/profissional/revista/33/profis.asp"
+    "source_url": "http://www.hse.rj.saude.gov.br/profissional/revista/33/profis.asp",
+    "presentations": [
+      {
+        "label": "Suspensão oral 250 mg/5 mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Ácido acetilsalicílico - AAS (contraindicado em Odontopediatria)",
@@ -795,7 +1040,8 @@
     "presentation": "Comprimidos 100/500 mg",
     "notes": "CONTRAINDICADO em crianças e adolescentes (<16 anos) durante quadro viral (gripe, resfriado, catapora) pelo risco de Síndrome de Reye — doença rara e grave, com lesão hepática e encefalopatia, potencialmente fatal. Sinais de alerta: vômitos persistentes, letargia, confusão, convulsão. Para dor pós-procedimento odontológico ou febre em criança, usar paracetamol, dipirona ou ibuprofeno (já cadastrados) — nunca AAS. Incluído aqui só como alerta, não como opção de dose.",
     "source_name": "Agência Fiocruz de Notícias - Salicilatos em infecções virais aumentam o risco de Síndrome de Reye",
-    "source_url": "https://agencia.fiocruz.br/salicilatos-em-infeccoes-virais-aumentam-risco-de-sindrome-de-reye"
+    "source_url": "https://agencia.fiocruz.br/salicilatos-em-infeccoes-virais-aumentam-risco-de-sindrome-de-reye",
+    "presentations": []
   },
   {
     "name": "Clorexidina 0,12% (colutório/antisséptico bucal)",
@@ -809,7 +1055,8 @@
     "presentation": "Solução 0,12% (colutório); gel 0,12-1%",
     "notes": "Bochecho convencional só é seguro em crianças que já cospem com confiança (geralmente ≥6 anos), pelo risco de ingestão acidental. Em menores de 6 anos, aplicar apenas quantidade do tamanho de uma ervilha com gaze ou cotonete, sob supervisão de um adulto — nunca como bochecho livre. Uso contínuo acima de 14-15 dias pode manchar dentes/restaurações e alterar o paladar — é terapêutico por período curto definido pelo dentista, não para uso diário indefinido.",
     "source_name": "BVS Atenção Primária em Saúde (Ministério da Saúde) - Efeitos adversos do uso crônico de colutórios de clorexidina",
-    "source_url": "https://aps-repo.bvs.br/aps/quais-os-efeitos-adversos-do-uso-cronico-de-enxaguatorios-bucais-em-especial-os-colutorios-a-base-de-clorexidina-como-deve-ser-recomendado-o-uso-frequencia-e-tempo-de-duracao-para-minimizar-esse-e/"
+    "source_url": "https://aps-repo.bvs.br/aps/quais-os-efeitos-adversos-do-uso-cronico-de-enxaguatorios-bucais-em-especial-os-colutorios-a-base-de-clorexidina-como-deve-ser-recomendado-o-uso-frequencia-e-tempo-de-duracao-para-minimizar-esse-e/",
+    "presentations": []
   },
   {
     "name": "Ácido tranexâmico (hemostasia em extração dentária)",
@@ -823,7 +1070,8 @@
     "presentation": "Comprimidos 250 mg; solução injetável 50 mg/mL (base para preparo de bochecho/gel tópico, uso off-label da via)",
     "notes": "SEMPRE em conjunto com o hematologista e o protocolo da coagulopatia do paciente — não é conduta isolada do dentista. Faixa 25-30 mg/kg/dose a cada 8h por via oral. A via TÓPICA (bochecho ou compressa embebida no sítio cirúrgico) é preferida quando possível, por concentrar o efeito local e reduzir exposição sistêmica. Reduz necessidade de reposição de fator de coagulação em cirurgias odontológicas de pacientes hemofílicos.",
     "source_name": "SESA-PR - Manual de Atendimento Odontológico a Pacientes com Coagulopatias Hereditárias",
-    "source_url": "https://www.saude.pr.gov.br/sites/default/arquivos_restritos/files/documento/2020-04/manual_de_atendimento_odontolologico_a_pacientes_coacogulopatias_hereditarias_0.pdf"
+    "source_url": "https://www.saude.pr.gov.br/sites/default/arquivos_restritos/files/documento/2020-04/manual_de_atendimento_odontolologico_a_pacientes_coacogulopatias_hereditarias_0.pdf",
+    "presentations": []
   },
   {
     "name": "Aciclovir (gengivoestomatite herpética primária)",
@@ -837,7 +1085,13 @@
     "presentation": "Suspensão oral 200 mg/5 mL (indicada para menores de 12 anos); comprimidos 200/400 mg",
     "notes": "Só traz benefício claro se iniciado nas primeiras 96h do início das lesões — depois disso o efeito é limitado. Reduz duração das lesões, febre e dificuldade de deglutição, mas a maioria dos casos é autolimitada e trata-se só com analgesia e hidratação. Reservar para dor importante/risco de desidratação. Manter boa hidratação oral é a prioridade — é a principal complicação a monitorar.",
     "source_name": "Gengivoestomatite Herpética em Crianças e Adolescentes (Protocolo Einstein) + Bula ANVISA Aciclovir",
-    "source_url": "https://medicalsuite.einstein.br/pratica-medica/Pathways/Gengivoestomatite%20v.3.pdf"
+    "source_url": "https://medicalsuite.einstein.br/pratica-medica/Pathways/Gengivoestomatite%20v.3.pdf",
+    "presentations": [
+      {
+        "label": "Suspensão oral 200 mg/5 mL",
+        "concentration_mg_per_ml": 40
+      }
+    ]
   },
   {
     "name": "Nistatina suspensão oral (candidíase oral)",
@@ -851,7 +1105,8 @@
     "presentation": "Suspensão oral 100.000 UI/mL",
     "notes": "Prematuros/baixo peso: 1 mL (100.000 UI) 4x/dia. Lactentes: 1-2 mL (100.000-200.000 UI) 4x/dia. Crianças maiores: 1-6 mL (100.000-600.000 UI) 4x/dia. Em lactentes e crianças pequenas, aplicar metade da dose de cada lado da boca (ainda não conseguem bochechar). Manter o tratamento por alguns dias após o desaparecimento dos sintomas.",
     "source_name": "Bula ANVISA - Nistatina Suspensão Oral (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/nistatina/bula"
+    "source_url": "https://consultaremedios.com.br/nistatina/bula",
+    "presentations": []
   },
   {
     "name": "Miconazol gel oral (candidíase oral)",
@@ -865,7 +1120,8 @@
     "presentation": "Gel oral 20 mg/g, bisnaga 40 g",
     "notes": "6-24 meses: ¼ colher de chá (1,25 mL) 4x/dia. ≥2 anos: ½ colher de chá (2,5 mL) 4x/dia. CONTRAINDICADO em menores de 6 meses — reflexo de deglutição ainda imaturo, risco de engasgo. Manter tratamento por pelo menos 1 semana após desaparecimento dos sintomas. Atenção à interação com anticoagulantes orais (potencializa o efeito).",
     "source_name": "Bula ANVISA - Daktarin gel oral (miconazol), Johnson & Johnson",
-    "source_url": "https://consultaremedios.com.br/daktarin/bula"
+    "source_url": "https://consultaremedios.com.br/daktarin/bula",
+    "presentations": []
   },
   {
     "name": "Lidocaína viscosa 2% oral (contraindicada para dor de dentição)",
@@ -879,7 +1135,8 @@
     "presentation": "Solução oral viscosa 2%",
     "notes": "ALERTA FDA (referendado por sociedades odontológicas/pediátricas): NÃO usar lidocaína viscosa 2% para dor de dentição em bebês/crianças pequenas — dosagem errada em casa pode causar convulsão, dano cerebral, arritmia e óbito. A FDA analisou 22 relatos de reação adversa grave (incluindo mortes) em crianças de 5 meses a 3 anos. Alternativas recomendadas: mordedor resfriado na geladeira (não congelado) e massagem suave da gengiva com gaze limpa. Uso odontológico de lidocaína viscosa por profissional, sob supervisão, em outras indicações (ex.: anestesia de mucosa antes de procedimento) é diferente do uso doméstico não supervisionado alertado aqui.",
     "source_name": "FDA (alerta) via news.med.br - FDA não recomenda uso de lidocaína para dor de dentição em crianças",
-    "source_url": "https://www.news.med.br/p/pharma-news/550087/fda-nao-recomenda-o-uso-de-lidocaina-no-tratamento-da-dor-da-erupcao-de-dentes-em-criancas.htm"
+    "source_url": "https://www.news.med.br/p/pharma-news/550087/fda-nao-recomenda-o-uso-de-lidocaina-no-tratamento-da-dor-da-erupcao-de-dentes-em-criancas.htm",
+    "presentations": []
   },
   {
     "name": "Triancinolona acetonida orabase (úlcera aftosa/estomatite)",
@@ -893,7 +1150,8 @@
     "presentation": "Pomada/orabase 1 mg/g",
     "notes": "Aplicar camada bem fina (quantidade do tamanho de uma lentilha) sobre a lesão, sem esfregar, até formar uma película. CONTRAINDICADA na presença de infecção fúngica, viral (inclusive herpética) ou bacteriana da mucosa oral não tratada — corticoide tópico pode piorar infecção ativa. Não é antibiótico nem antiviral; alivia sintoma, não trata a causa infecciosa.",
     "source_name": "Bula ANVISA - Triancinolona Acetonida pomada bucal 1 mg/g",
-    "source_url": "https://bula.com.br/original/triancinolona-acetonida-pomada-bucal-1-mgg"
+    "source_url": "https://bula.com.br/original/triancinolona-acetonida-pomada-bucal-1-mgg",
+    "presentations": []
   },
   {
     "name": "Cetamina intranasal + midazolam oral (sedação combinada odontopediátrica)",
@@ -907,7 +1165,8 @@
     "presentation": "Solução injetável de cetamina/S-cetamina administrada por via intranasal (uso off-label da via); midazolam conforme item já cadastrado neste catálogo",
     "notes": "Técnica de sedação avançada — exige profissional com treinamento específico em sedação, monitorização contínua (oximetria, sinais vitais) e equipe/equipamento de resgate disponíveis. Não é primeira linha — midazolam isolado, hidrato de cloral ou óxido nitroso costumam ser tentados antes. Início de ação em ~44 min, recuperação em ~90 min. Náusea/vômito intraoperatório em até 8% dos casos. Evidência ainda em consolidação — checar protocolo institucional/anestesiologista antes de adotar.",
     "source_name": "PMC - Intranasal esketamine combined with oral midazolam for pediatric dental procedures (estudo prospectivo)",
-    "source_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10389564/"
+    "source_url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC10389564/",
+    "presentations": []
   },
   {
     "name": "Flumazenil (reversão de sedação por benzodiazepínico)",
@@ -921,7 +1180,13 @@
     "presentation": "Solução injetável 0,1 mg/mL (ampola de 5 mL contendo 0,5 mg)",
     "notes": "max_dose_mg = 0,2 mg é o teto POR DOSE. A dose TOTAL acumulada não deve passar de 0,05 mg/kg OU 1 mg — o que for MENOR. Bula: uso adulto e pediátrico ACIMA DE 1 ANO; abaixo de 1 ano, em superdose em criança e em ressuscitação neonatal a experiência é limitada e o uso não é recomendado. É o antídoto que fecha o ciclo dos itens de sedação já cadastrados neste catálogo (midazolam oral, cetamina intranasal + midazolam): quem seda com benzodiazepínico precisa ter flumazenil, oxigênio e monitorização acessíveis. ALERTA: a meia-vida do flumazenil em crianças (média 40 min, faixa 20-75 min) é MENOR que a do midazolam — a criança pode RESSEDAR depois da reversão; manter monitorização e não liberar precocemente. Não usar em intoxicação mista (principalmente antidepressivo cíclico) nem em paciente epiléptico em uso crônico de benzodiazepínico: a supressão abrupta do efeito protetor do agonista pode desencadear convulsão.",
     "source_name": "Bula ANVISA - Flumazenil solução injetável 0,1 mg/mL (União Química)",
-    "source_url": "https://www.uniaoquimica.com.br/wp-content/uploads/2020/08/bula_Flumazenil.pdf"
+    "source_url": "https://www.uniaoquimica.com.br/wp-content/uploads/2020/08/bula_Flumazenil.pdf",
+    "presentations": [
+      {
+        "label": "Solução injetável 0,1 mg/mL",
+        "concentration_mg_per_ml": 0.1
+      }
+    ]
   },
   {
     "name": "Fenoximetilpenicilina potássica (Penicilina V oral)",
@@ -935,7 +1200,8 @@
     "presentation": "Pó para solução oral 80.000 UI/mL após reconstituição (5 mL = 400.000 UI); comprimidos 500.000 UI",
     "notes": "DOSE EM UNIDADES INTERNACIONAIS — o motor de cálculo por mg/kg NÃO se aplica aqui. Bula (<12 anos): 25.000 a 90.000 UI/kg/dia divididas em 3 a 6 tomadas. Fusoespiroquetose (angina de Vincent) leve a moderada da orofaringe: 400.000 a 500.000 UI a cada 6-8h — a própria bula ressalva que 'infecções envolvendo a gengiva requerem tratamento dentário adequado', ou seja, o antibiótico não substitui a drenagem/tratamento endodôntico. RESTRIÇÃO DE IDADE POR APRESENTAÇÃO: comprimido é contraindicado abaixo de 12 anos; pó para solução oral é contraindicado abaixo de 5 anos. A solução reconstituída dura só 7 dias em temperatura ambiente. Profilaxia de endocardite pela bula: 1.500.000 UI (<27 kg) 1h antes e 800.000-1.000.000 UI 6h depois — atenção, as diretrizes cardiológicas atuais já abandonaram a dose pós-procedimento e preferem amoxicilina 50 mg/kg dose única (item já cadastrado); usar este regime só se houver justificativa e protocolo do serviço.",
     "source_name": "Bula ANVISA profissional - PEN-VE-ORAL (fenoximetilpenicilina potássica)",
-    "source_url": "https://uploads.consultaremedios.com.br/drug_leaflet/pro/Bula-Pen-Ve-Oral-Profissional-Consulta-Remedios.pdf"
+    "source_url": "https://uploads.consultaremedios.com.br/drug_leaflet/pro/Bula-Pen-Ve-Oral-Profissional-Consulta-Remedios.pdf",
+    "presentations": []
   },
   {
     "name": "Eritromicina (estolato) — alternativa em alérgico à penicilina",
@@ -949,7 +1215,17 @@
     "presentation": "Suspensão oral 25 mg/mL e 50 mg/mL; comprimidos 500 mg",
     "notes": "Faixa da bula: 30-50 mg/kg/dia em doses divididas, podendo ser dobrada em infecções mais graves; sem teto absoluto em mg definido para pediatria (adulto pode chegar a 4 g/dia) — não preencher max_dose_mg com estimativa. A bula traz explicitamente a indicação de 'profilaxia a curto prazo contra endocardite bacteriana antes de intervenções cirúrgicas ou dentárias em pacientes com história de febre reumática ou cardiopatia, hipersensíveis à penicilina'. ATENÇÃO — ALTERNATIVA HISTÓRICA: as diretrizes atuais de profilaxia de endocardite não usam mais eritromicina (intolerância gastrintestinal e interações); em alérgico à penicilina prefere-se clindamicina, azitromicina ou cefalexina, todas já cadastradas neste catálogo. Riscos: hepatite colestática (contraindicado em doença hepática conhecida), estenose hipertrófica do piloro em recém-nascidos — usar com cautela nos 3 primeiros meses de vida, prolongamento de QT/torsade e muitas interações medicamentosas (CYP3A4, estatinas). Há antagonismo in vitro entre eritromicina e clindamicina — não associar as duas.",
     "source_name": "Bula ANVISA profissional - Estolato de Eritromicina (Prati-Donaduzzi)",
-    "source_url": "https://uploads.consultaremedios.com.br/drug_leaflet/pro/Bula-Estolato-de-Eritromicina-Prati-Donaduzzi-Profissional-Consulta-Remedios.pdf"
+    "source_url": "https://uploads.consultaremedios.com.br/drug_leaflet/pro/Bula-Estolato-de-Eritromicina-Prati-Donaduzzi-Profissional-Consulta-Remedios.pdf",
+    "presentations": [
+      {
+        "label": "Suspensão oral 25 mg/mL",
+        "concentration_mg_per_ml": 25
+      },
+      {
+        "label": "Suspensão oral 50 mg/mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Fluconazol (candidíase orofaríngea)",
@@ -963,7 +1239,13 @@
     "presentation": "Suspensão oral (pó para suspensão 10 mg/mL); cápsulas 50/100/150 mg",
     "notes": "Bula: 3 mg/kg/dia, com dose de ataque de 6 mg/kg no primeiro dia para atingir mais rápido o nível terapêutico; duração 7-14 dias, podendo ser maior em imunossupressão grave. A bula NÃO fixa um teto pediátrico em mg — orienta apenas 'não exceder a dose máxima diária de adultos'; outras referências pediátricas (guias MSF) citam teto de 200 mg/dia. Por isso max_dose_mg fica nulo: confirmar o teto com o protocolo do serviço em vez de estimar. É medicação SISTÊMICA — em odontopediatria a primeira linha para candidíase oral continua sendo tópica (nistatina ou miconazol, já cadastrados); reservar o fluconazol para falha terapêutica, recorrência ou imunossupressão. Em menores de 4 semanas o intervalo é alargado (a cada 72h nas 2 primeiras semanas, a cada 48h na 3ª-4ª semana). Atenção a interações (CYP2C9/CYP3A4) e a prolongamento de QT.",
     "source_name": "Bula ANVISA - Fluconazol (bulário Consulta Remédios)",
-    "source_url": "https://consultaremedios.com.br/fluconazol/bula"
+    "source_url": "https://consultaremedios.com.br/fluconazol/bula",
+    "presentations": [
+      {
+        "label": "Suspensão oral 10 mg/mL",
+        "concentration_mg_per_ml": 10
+      }
+    ]
   },
   {
     "name": "Diamino fluoreto de prata 38% (cariostático)",
@@ -977,7 +1259,8 @@
     "presentation": "Solução de diamino fluoreto de prata a 38% (equivalente a 5% de flúor), aplicada com microbrush em godé plástico",
     "notes": "NÃO é medicamento dosado por peso — é procedimento tópico profissional, não calculável pela calculadora de mg/kg. Protocolo AAPD: remover apenas os detritos grosseiros (NÃO é preciso remover dentina cariada), isolar com roletes, proteger gengiva/mucosa (manteiga de cacau), aplicar só na superfície afetada com microbrush escorrido, secar com jato de ar leve por ao menos 1 minuto, remover o excesso com gaze e manter isolamento por até 3 minutos para reduzir absorção sistêmica. Usar godé PLÁSTICO — o produto corrói vidro e metal. Aplicação anual já é mais eficaz que 4 aplicações/ano de verniz de flúor a 5%, e a aplicação semestral aumenta ainda mais a taxa de paralisação (após uma única aplicação, 50% das superfícies paralisadas aos 6 meses voltaram a estar ativas em 24 meses — reaplicação é necessária). EFEITO ADVERSO PRINCIPAL: escurecimento PERMANENTE (preto) da lesão tratada e do esmalte — consentimento informado dos pais é obrigatório, incluindo a possibilidade de manchar pele (temporária, ~14 dias), roupas e superfícies (permanente). CONTRAINDICADO em alergia a compostos de prata; evitar contato com gengivite descamativa/mucosite. Complementa, não substitui, o verniz fluoretado já cadastrado (uma opção é DFP nas lesões ativas + verniz no restante da dentição).",
     "source_name": "AAPD - Use of Silver Diamine Fluoride for Dental Caries Management in Children and Adolescents, Including Those with Special Health Care Needs (Pediatr Dent 2017;39(5):E135-E145)",
-    "source_url": "https://www.aapd.org/media/policies_guidelines/g_sdf.pdf"
+    "source_url": "https://www.aapd.org/media/policies_guidelines/g_sdf.pdf",
+    "presentations": []
   },
   {
     "name": "Emulsão lipídica 20% (intoxicação por anestésico local - LAST)",
@@ -991,7 +1274,8 @@
     "presentation": "Emulsão lipídica a 20% para infusão intravenosa",
     "notes": "DOSE EM VOLUME POR PESO, não em mg/kg — o motor de cálculo por mg/kg NÃO se aplica. Esquema ASRA aplicado à anestesia odontológica: bolus IV de 1,5 mL/kg em cerca de 1 minuto, seguido de infusão contínua de 0,25 mL/kg/min; se os sintomas persistirem, repetir o bolus de 1,5 mL/kg a intervalos de 5 minutos e dobrar a velocidade de infusão. DOSE TOTAL MÁXIMA: 12 mL/kg. Manter a infusão por pelo menos 10 min após a estabilidade circulatória, associada aos protocolos de reanimação (ACLS/PALS). É o antídoto correspondente aos tetos por peso dos anestésicos locais já cadastrados (lidocaína, articaína, mepivacaína, prilocaína) — o risco de LAST em odontopediatria vem justamente de calcular a dose por número de tubetes em vez de por quilo. Lactentes menores de 4 meses exigem redução de ~15% na dose do anestésico local. Recurso de serviço de emergência/hospitalar: o consultório que não dispõe dele precisa ter plano de acionamento imediato do SAMU e suporte avançado. Interromper o anestésico, chamar ajuda, garantir via aérea e O2 a 100% vêm ANTES da emulsão lipídica.",
     "source_name": "Rhee SH, Park SH, Ryoo SH, Karm MH. Lipid emulsion therapy of local anesthetic systemic toxicity due to dental anesthesia. J Dent Anesth Pain Med 2019;19(4):181-189 (diretriz ASRA aplicada à odontologia)",
-    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6726891/"
+    "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6726891/",
+    "presentations": []
   },
   {
     "name": "Azul de metileno 1% (metahemoglobinemia)",
@@ -1005,7 +1289,13 @@
     "presentation": "Solução injetável a 1% (10 mg/mL)",
     "notes": "1-2 mg/kg/dose, equivalente a 0,1-0,2 mL/kg da solução a 1%, IV BEM LENTO (5-10 min) — infusão rápida provoca dor torácica, dispneia, hipertensão e sudorese. Sem teto absoluto em mg: o limite é POR PESO — doses acima de 7 mg/kg podem ser tóxicas e acima de 15 mg/kg causam lesão direta da hemácia com hemólise e corpos de Heinz; por isso max_dose_mg fica nulo. É o antídoto dos dois itens deste catálogo que causam metahemoglobinemia: benzocaína gel 20% tópica (contraindicada abaixo de 2 anos) e prilocaína. Suspeitar quando houver cianose desproporcional, saturação que não sobe com O2 e sangue achocolatado. Sinais por gravidade: cianose com 15-20% de metahemoglobina, fadiga/cefaleia/taquicardia com 20-45%, rebaixamento de consciência acima de 55%. Risco de hemólise em deficiência de G6PD. Recurso de emergência hospitalar — o consultório precisa reconhecer o quadro e acionar transporte imediato.",
     "source_name": "Manual Farmacêutico Einstein - Antídotos: Azul de Metileno",
-    "source_url": "https://aplicacoes.einstein.br/manualfarmaceutico/Paginas/Termos.aspx?filtro=Ant%C3%ADdotos&itemID=118"
+    "source_url": "https://aplicacoes.einstein.br/manualfarmaceutico/Paginas/Termos.aspx?filtro=Ant%C3%ADdotos&itemID=118",
+    "presentations": [
+      {
+        "label": "Solução injetável 1% (10 mg/mL)",
+        "concentration_mg_per_ml": 10
+      }
+    ]
   },
   {
     "name": "Lidocaína spray 10% (anestésico tópico odontológico)",
@@ -1019,7 +1309,8 @@
     "presentation": "Solução spray 100 mg/mL (10%), frasco nebulizador de 50 mL — cada nebulização = 10 mg de lidocaína",
     "notes": "Uso odontológico da bula: 1 a 5 aplicações (10 a 50 mg). max_dose_mg = 200 mg corresponde ao teto geral da bula de 20 nebulizações — é limite de ADULTO e nunca deve ser a referência em criança. RESTRIÇÃO DE IDADE/PESO: a bula NÃO recomenda o spray a 10% em menores de 5 anos ou abaixo de 20 kg, justamente pela concentração elevada. IMPORTANTE: a lidocaína tópica absorvida pela mucosa SOMA-SE ao total do anestésico injetável do mesmo atendimento — descontar do teto de 4,4 mg/kg da lidocaína injetável já cadastrada, não tratar como se fosse dose separada. Não aplicar na laringe. Não ingerir alimentos nos 60 min seguintes (risco de engasgo por perda do reflexo de deglutição). Metahemoglobinemia é reação adversa relatada — ver o item de azul de metileno neste catálogo.",
     "source_name": "Bula ANVISA - Xylestesin Spray 10% (lidocaína, Cristália)",
-    "source_url": "https://consultaremedios.com.br/xylestesin-spray/bula"
+    "source_url": "https://consultaremedios.com.br/xylestesin-spray/bula",
+    "presentations": []
   },
   {
     "name": "Codeína (contraindicada em Odontopediatria)",
@@ -1033,7 +1324,8 @@
     "presentation": "Solução oral 3 mg/mL; comprimidos 30/60 mg; associações com paracetamol; solução injetável",
     "notes": "ALERTA REGULATÓRIO: a codeína é CONTRAINDICADA para dor em menores de 12 anos, e contraindicada para dor pós-operatória em menores de 18 anos submetidos a tonsilectomia e/ou adenoidectomia. Contraindicada também em metabolizadores ultrarrápidos do CYP2D6, que convertem codeína em morfina mais rápido e podem ter depressão respiratória fatal mesmo na dose usual — ocorreram MORTES nesse cenário, sobretudo em crianças com apneia obstrutiva do sono. Entre 12 e 18 anos a bula ainda desaconselha o uso para dor; quando indicada acima de 12 anos, a posologia de bula é 0,5-1 mg/kg a cada 4-6h, máximo 60 mg/dia — registrado aqui apenas como informação, NÃO como sugestão de prescrição pediátrica. Para dor pós-exodontia em criança, usar paracetamol, dipirona ou ibuprofeno (já cadastrados). Risco somado ao dos sedativos deste catálogo (midazolam, hidrato de cloral): depressão respiratória. Incluída só como alerta, não como opção de dose.",
     "source_name": "Bula ANVISA - Codein (fosfato de codeína), Cristália",
-    "source_url": "https://consultaremedios.com.br/codein/bula"
+    "source_url": "https://consultaremedios.com.br/codein/bula",
+    "presentations": []
   },
   {
     "name": "Glicose (hipoglicemia durante sedação odontológica)",
@@ -1047,6 +1339,7 @@
     "presentation": "Suco de fruta adoçado, sachê de glicose (15 g), gel de glicose 40% (400 mg/mL); solução glicosada 10%, 25% ou 50% para uso IV",
     "notes": "DOSE EM GRAMAS/mL POR PESO, não em mg/kg — o motor de cálculo por mg/kg NÃO se aplica. CRIANÇA CONSCIENTE E EUPNEICA (a via preferencial): ~0,3 g/kg de carboidrato, entre 10 e 20 g no total — ex.: 120 mL de suco adoçado (~12 g) ou gel de glicose 40% na dose de 0,5 mL/kg. CRIANÇA COM REBAIXAMENTO DE CONSCIÊNCIA, vômitos ou refratária à via oral: lactentes/crianças 2 mL/kg de glicose 25% IV; adolescentes 1 mL/kg de glicose 50% IV (máximo 50 mL); neonatos 2 mL/kg de glicose 10%. Reavaliar a glicemia capilar em 15 min; se não reverter, repetir. Prevenção vale mais que resgate: seguir as recomendações de jejum pré-sedação sem prolongá-las além do necessário e medir a glicemia capilar se a criança chegar com jejum longo, mal-estar, sudorese ou sonolência desproporcional à sedação. Confirmar a hipoglicemia com glicemia capilar antes de tratar — sonolência durante sedação tem outras causas.",
     "source_name": "Hospital Israelita Albert Einstein - Guia do Episódio de Cuidado: Hipoglicemia em Crianças no Departamento de Emergência",
-    "source_url": "https://medicalsuite.einstein.br/pratica-medica/Pathways/Hipoglicemia-em-Crian%C3%A7as.pdf"
+    "source_url": "https://medicalsuite.einstein.br/pratica-medica/Pathways/Hipoglicemia-em-Crian%C3%A7as.pdf",
+    "presentations": []
   }
 ]

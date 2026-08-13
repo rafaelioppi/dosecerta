@@ -357,6 +357,31 @@
   border-color: var(--color-alert-500);
 }
 
+/* ===== Seletor de apresentação (concentração) ===== */
+/* O resultado sai em mL da apresentação escolhida — o controle precisa ter o
+   mesmo peso visual dos demais passos, mas sem competir com o número final. */
+.presentation-picker {
+  margin-top: var(--space-sm);
+}
+
+.presentation-select {
+  width: 100%;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  padding: 0.7rem 0.9rem;
+  font-size: var(--fs-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.presentation-select:focus,
+.presentation-select:focus-visible {
+  border-color: var(--color-accent-500);
+  outline: 3px solid var(--color-focus);
+  outline-offset: 3px;
+}
+
 /* ===== Aviso de erro do formulário ===== */
 .calc-alert {
   display: flex;
@@ -548,6 +573,17 @@
 .dose-readout__calc {
   margin-top: var(--space-xs);
   font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Equivalência mg quando o resultado principal é mL (e vice-versa): a dose é
+   sempre em mg por kg; o mL é a conversão para a apresentação escolhida. Ver
+   os dois lados juntos evita "o número está em quê mesmo?". */
+.dose-readout__equiv {
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-xs);
+  font-weight: 600;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }

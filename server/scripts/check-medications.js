@@ -134,6 +134,51 @@ meds.forEach((m) => {
   }
 });
 
+// ---- 10b. presentations: formato e coerência com dose_mg_per_kg ----
+meds.forEach((m) => {
+  const pres = m.presentations;
+  if (pres == null) return; // ausente = sem apresentações líquidas (ok, resultado em mg)
+  if (!Array.isArray(pres)) {
+    errors.push(`[${m.name}] presentations não é array`);
+    return;
+  }
+  const names = new Set();
+  pres.forEach((p, i) => {
+    if (!p || typeof p !== "object") {
+      errors.push(`[${m.name}] presentations[${i}] não é objeto`);
+      return;
+    }
+    if (!p.label || !String(p.label).trim()) {
+      errors.push(`[${m.name}] presentations[${i}] sem label`);
+    }
+    const c = Number(p.concentration_mg_per_ml);
+    if (!Number.isFinite(c) || c <= 0) {
+      errors.push(`[${m.name}] presentations[${i}] concentração inválida: ${JSON.stringify(p.concentration_mg_per_ml)}`);
+    }
+    const normLabel = String(p.label || "").trim().toLowerCase();
+    if (names.has(normLabel)) {
+      errors.push(`[${m.name}] presentations com label duplicado: "${p.label}"`);
+    }
+    names.add(normLabel);
+  });
+  // Apresentação líquida com concentração faz sentido só onde há dose por kg:
+  // sem dose_mg_per_kg a calculadora não converte mg->mL (mostra a regra).
+  if (pres.length && m.dose_mg_per_kg == null) {
+    flag(warnings, m, `tem presentations mas dose_mg_per_kg é nulo — a calculadora não usará estas concentrações (item vai pra "ver notas")`);
+  }
+});
+
+// ---- 10c. presentations em texto livre deveria ter concentração estruturada ----
+// Só aviso: se o campo presentation (texto) cita mg/mL mas não há presentations
+// cadastradas, a calculadora cai em mg — pode ser omissão (ex.: frasco que a
+// bula descreve e que deveria virar linha no seletor).
+meds.forEach((m) => {
+  const pres = Array.isArray(m.presentations) ? m.presentations : [];
+  if (!pres.length && m.presentation && /mg\s*\/\s*5?\s*mL|mg\/mL|%\s*\(/i.test(m.presentation) && m.dose_mg_per_kg != null) {
+    flag(warnings, m, `apresentação em texto cita concentração mas presentations está vazio — resultado continuará em mg; conferir se deveria ter linhas de mL`);
+  }
+});
+
 // ---- 11. Espaço duplo / espaço nas pontas em campos de texto ----
 ["name", "category", "indication", "notes", "source_name"].forEach((field) => {
   meds.forEach((m) => {
