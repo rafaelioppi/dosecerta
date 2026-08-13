@@ -22,7 +22,7 @@
 
 @media (min-width: 900px) {
   .calc-layout {
-    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
   }
 }
 

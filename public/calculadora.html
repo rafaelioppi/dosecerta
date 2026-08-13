@@ -516,7 +516,11 @@
         .map((p, i) => {
           const mgml = Number(p.concentration_mg_per_ml);
           const conc = Number.isFinite(mgml) ? `${fmt(mgml)} mg/mL` : "sem concentração";
-          return `<option value="${i}" ${i === selectedPresentationIndex ? "selected" : ""}>${escapeHtml(p.label)} — ${conc}</option>`;
+          // O rótulo quase sempre já traz a concentração ("Suspensão oral 100 mg/mL").
+          // Não duplicar: texto curto não corta no select.
+          const labelHasConc = /mg\/mL|mg\s*\/\s*5\s*mL|%|mg\//i.test(p.label);
+          const option = labelHasConc ? p.label : `${p.label} — ${conc}`;
+          return `<option value="${i}" ${i === selectedPresentationIndex ? "selected" : ""}>${escapeHtml(option)}</option>`;
         })
         .join("");
       picker.hidden = false;
