@@ -224,12 +224,17 @@
 }
 
 /* ===== Atalhos de uso recente ===== */
+/* Ficam abaixo do medicamento escolhido e com visual propositalmente discreto
+   (chip pequeno, sem cor de destaque): são atalhos, não podem parecer uma
+   seleção em andamento nem competir com o nome do medicamento atual. */
 .recent-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2xs);
-  margin-top: var(--space-sm);
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--color-border);
 }
 
 .recent-row__label {
@@ -240,13 +245,13 @@
 
 .recent-chip {
   max-width: 100%;
-  padding: 0.3rem 0.7rem;
+  padding: 0.25rem 0.6rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  background: var(--color-bg-alt);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--color-text);
+  background: var(--color-bg);
+  font-size: var(--fs-2xs);
+  font-weight: 500;
+  color: var(--color-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -259,13 +264,15 @@
 }
 
 /* ===== Medicamento escolhido (confirmação explícita) ===== */
+/* Visual mais forte que os chips de recente: o medicamento atual é o que vai
+   ser calculado, não pode ser confundido com um atalho de troca. */
 .med-chosen {
   margin-top: var(--space-sm);
   padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-left: 3px solid var(--color-accent-500);
+  border: 1.5px solid color-mix(in srgb, var(--color-accent-500) 45%, transparent);
+  border-left: 4px solid var(--color-accent-500);
   border-radius: var(--radius-sm);
-  background: var(--color-bg-alt);
+  background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
 }
 
 .med-chosen[data-flag="rescue"] {
@@ -518,6 +525,14 @@
   border: 1px solid var(--color-border);
 }
 
+/* Nota de concentração: além do strong, a nota inteira ganha borda de destaque
+   quando há concentração em jogo. */
+.dose-flag--info.dose-flag--conc {
+  border-color: color-mix(in srgb, var(--color-accent-500) 45%, transparent);
+  border-width: 1.5px;
+  background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
+}
+
 .dose-flag--info svg {
   color: var(--color-accent-strong);
 }
@@ -531,6 +546,38 @@
   color: var(--color-accent-strong);
   font-weight: 800;
   white-space: nowrap;
+}
+
+/* Badge de concentração: o dado vital que decide o volume em mL. Quer atenção
+   quase tanto quanto o número grande — destaque com preenchimento sólido,
+   borda e tipografia maior que o restante da nota. */
+.dose-conc-badge {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  margin-top: var(--space-md);
+  padding: var(--space-xs) var(--space-md);
+  border: 2px solid var(--color-accent-500);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-accent-500) 16%, transparent);
+  font-variant-numeric: tabular-nums;
+}
+
+.dose-conc-badge__label {
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dose-conc-badge__value {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 4vw, 1.8rem);
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-accent-strong);
 }
 
 /* O número: o elemento mais legível da página inteira. */

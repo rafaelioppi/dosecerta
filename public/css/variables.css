@@ -43,6 +43,7 @@
   --font-heading: "Sora", "Segoe UI", system-ui, sans-serif;
   --font-body: "Inter", "Segoe UI", system-ui, sans-serif;
 
+  --fs-2xs: 0.6875rem;
   --fs-xs: 0.8125rem;
   --fs-sm: 0.9375rem;
   --fs-base: 1rem;

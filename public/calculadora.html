@@ -61,14 +61,16 @@
             </div>
             <p class="calc-help" id="med-help">Comece a digitar e escolha na lista. Use ↑ ↓ e Enter.</p>
 
-            <div class="recent-row" id="recent-row" hidden>
-              <span class="recent-row__label" id="recent-label">Recentes:</span>
-            </div>
-
             <div class="med-chosen" id="med-chosen" hidden>
               <p class="med-chosen__name" id="chosen-name"></p>
               <p class="med-chosen__meta" id="chosen-meta"></p>
               <p class="med-chosen__alert" id="chosen-alert" hidden></p>
+            </div>
+
+            <!-- Recentes ficam ABAIXO do medicamento escolhido, como atalhos de
+                 troca rápida — não podem disputar atenção com a seleção atual. -->
+            <div class="recent-row" id="recent-row" hidden>
+              <span class="recent-row__label" id="recent-label">Recentes:</span>
             </div>
 
             <div class="presentation-picker" id="presentation-picker" hidden>
@@ -135,9 +137,13 @@
               <p class="dose-readout__value"><span id="dose-number">—</span><span class="dose-readout__unit" id="dose-unit">mg</span></p>
               <p class="dose-readout__calc" id="dose-calc"></p>
               <p class="dose-readout__equiv" id="dose-equiv" hidden></p>
+              <p class="dose-conc-badge" id="dose-conc-badge" hidden>
+                <span class="dose-conc-badge__label">Concentração</span>
+                <span class="dose-conc-badge__value" id="dose-conc-badge-value">—</span>
+              </p>
             </div>
 
-            <p class="dose-flag dose-flag--info" id="dose-conc-note" hidden>
+            <p class="dose-flag dose-flag--info dose-flag--conc" id="dose-conc-note" hidden>
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor"/></svg>
               <span id="dose-conc-note-text"></span>
             </p>
@@ -924,14 +930,18 @@
 
       // Nota de segurança: o mL depende da concentração do frasco em mãos.
       // A concentração referenciada vem em destaque — é o dado que decide o volume.
+      const concBadge = $("dose-conc-badge");
       const concNote = $("dose-conc-note");
       if (hasMl) {
         const conc = Number(pres.concentration_mg_per_ml);
+        $("dose-conc-badge-value").textContent = `${fmt(conc)} mg/mL`;
+        concBadge.hidden = false;
         $("dose-conc-note-text").innerHTML =
           `Volume para a apresentação ${escapeHtml(pres.label)} — concentração <strong>${escapeHtml(fmt(conc))} mg/mL</strong>. ` +
           `Confira a concentração do frasco antes de administrar: apresentações diferentes mudam o mL.`;
         concNote.hidden = false;
       } else {
+        concBadge.hidden = true;
         concNote.hidden = true;
       }
 
