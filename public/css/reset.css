@@ -10,6 +10,15 @@
   padding: 0;
 }
 
+/* O atributo `hidden` do HTML usa display:none na UA stylesheet, mas qualquer
+   `display: flex/grid/inline-flex` definido em CSS de classe ganha por
+   especificidade e DESESPERDICA o hidden — o elemento continua visível (bug
+   grave na calculadora: badge de concentração de um medicamento anterior
+   ficava na tela). `!important` garante que escondido é escondido. */
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
