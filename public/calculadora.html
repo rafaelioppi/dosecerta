@@ -138,7 +138,7 @@
               <p class="dose-readout__calc" id="dose-calc"></p>
               <p class="dose-readout__equiv" id="dose-equiv" hidden></p>
               <p class="dose-conc-badge" id="dose-conc-badge" hidden>
-                <span class="dose-conc-badge__label">Concentração</span>
+                <span class="dose-conc-badge__label">Concentração da embalagem</span>
                 <span class="dose-conc-badge__value" id="dose-conc-badge-value">—</span>
               </p>
             </div>
@@ -928,17 +928,17 @@
         equivEl.hidden = true;
       }
 
-      // Nota de segurança: o mL depende da concentração do frasco em mãos.
-      // A concentração referenciada vem em destaque — é o dado que decide o volume.
+      // REGRA: a concentração que sai na resposta é a DESCRITA NA EMBALAGEM —
+      // o mesmo rótulo (label) escolhido no seletor. Nunca a derivada (mg/mL),
+      // que pode não bater com o frasco em mãos (ex.: "250 mg/5 mL" ≠ "50 mg/mL").
       const concBadge = $("dose-conc-badge");
       const concNote = $("dose-conc-note");
       if (hasMl) {
-        const conc = Number(pres.concentration_mg_per_ml);
-        $("dose-conc-badge-value").textContent = `${fmt(conc)} mg/mL`;
+        $("dose-conc-badge-value").textContent = pres.label;
         concBadge.hidden = false;
         $("dose-conc-note-text").innerHTML =
-          `Volume para a apresentação ${escapeHtml(pres.label)} — concentração <strong>${escapeHtml(fmt(conc))} mg/mL</strong>. ` +
-          `Confira a concentração do frasco antes de administrar: apresentações diferentes mudam o mL.`;
+          `Concentração conforme a embalagem: <strong>${escapeHtml(pres.label)}</strong>. ` +
+          `Confira o frasco em mãos antes de administrar: a mesma dose em mg muda o volume (mL) se a apresentação for diferente.`;
         concNote.hidden = false;
       } else {
         concBadge.hidden = true;
