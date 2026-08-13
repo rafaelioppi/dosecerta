@@ -1071,7 +1071,16 @@
     "notes": "SEMPRE em conjunto com o hematologista e o protocolo da coagulopatia do paciente — não é conduta isolada do dentista. Faixa 25-30 mg/kg/dose a cada 8h por via oral. A via TÓPICA (bochecho ou compressa embebida no sítio cirúrgico) é preferida quando possível, por concentrar o efeito local e reduzir exposição sistêmica. Reduz necessidade de reposição de fator de coagulação em cirurgias odontológicas de pacientes hemofílicos.",
     "source_name": "SESA-PR - Manual de Atendimento Odontológico a Pacientes com Coagulopatias Hereditárias",
     "source_url": "https://www.saude.pr.gov.br/sites/default/arquivos_restritos/files/documento/2020-04/manual_de_atendimento_odontolologico_a_pacientes_coacogulopatias_hereditarias_0.pdf",
-    "presentations": []
+    "presentations": [
+      {
+        "label": "Comprimido 250 mg",
+        "concentration_mg_per_ml": 250
+      },
+      {
+        "label": "Solução injetável 50 mg/mL",
+        "concentration_mg_per_ml": 50
+      }
+    ]
   },
   {
     "name": "Aciclovir (gengivoestomatite herpética primária)",

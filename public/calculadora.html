@@ -106,6 +106,13 @@
           <span id="calc-error-text"></span>
         </p>
 
+        <div class="dose-confirmation calc-confirmation" id="calc-confirmation">
+          <label class="dose-confirmation__checkbox">
+            <input id="calc-confirm-checkbox" type="checkbox" aria-label="Confirmar revisão clínica da dose" />
+            <span><strong>Revisei</strong> indicação, peso, apresentação e frequência. <strong>Esta é uma dose para revisão clínica, não substitui a prescrição.</strong></span>
+          </label>
+        </div>
+
         <button class="btn btn--primary btn--block" id="calc-btn" type="submit">Calcular dose</button>
       </form>
 
@@ -136,6 +143,7 @@
               <p class="dose-readout__label"><span class="dose-readout__kindicon" id="dose-kind-icon" aria-hidden="true">💊</span><span id="dose-kind">por dose</span></p>
               <p class="dose-readout__value"><span id="dose-number">—</span><span class="dose-readout__unit" id="dose-unit">mg</span></p>
               <p class="dose-readout__calc" id="dose-calc"></p>
+              <p class="dose-readout__breakdown" id="dose-breakdown" hidden></p>
               <p class="dose-readout__equiv" id="dose-equiv" hidden></p>
               <p class="dose-conc-badge" id="dose-conc-badge" hidden>
                 <span class="dose-conc-badge__label">Concentração da embalagem</span>
@@ -299,6 +307,58 @@
         };
       }
       return { icon: "💊", label: "dose calculada", hint: null };
+    }
+
+    function extractAgeRisk(noteText) {
+      const text = String(noteText || "");
+      if (!text) return null;
+
+      const patterns = [
+        /contrai?ndicado\s*(?:em|a partir de|abaixo de)?\s*(?:crian[cç]as?|menores?|beb[eê]s?|lactentes?)?\s*(?:a partir de\s*)?(\d+)\s*(?:anos?|meses?)/i,
+        /menor(?:es?)?\s*de\s*(\d+)\s*anos?/i,
+        /abaixo\s*de\s*(\d+)\s*anos?/i,
+        /a\s*partir\s*de\s*(\d+)\s*mes(?:es)?/i,
+        /\b(\d+)\s*anos?\s*(?:ou\s*)?mais\b/i,
+      ];
+
+      for (const re of patterns) {
+        const match = text.match(re);
+        if (match) {
+          const value = match[1];
+          const unit = /mes/.test(re.toString()) ? "meses" : "anos";
+          return `Restrição de idade: ${match[0].trim()}`;
+        }
+      }
+
+      return null;
+    }
+
+    function estimateDosesPerDay(frequency) {
+      if (!frequency) return null;
+      const text = norm(frequency);
+      const match = text.match(/(\d+(?:[.,]\d+)?)\s*x\s*ao\s*dia|\b(\d+)\s*vezes?\s*ao\s*dia|\b(\d+)\s*vezes?\s*por\s*dia|a\s*cada\s*(\d+(?:[.,]\d+)?)\s*h/);
+      if (match) {
+        const numeric = Number((match[1] || match[2] || match[3] || match[4] || "").replace(",", "."));
+        if (Number.isFinite(numeric) && numeric > 0) return numeric;
+      }
+      const explicit = text.match(/a\s*cada\s*(\d+)\s*h/);
+      if (explicit) {
+        const hours = Number(explicit[1]);
+        if (Number.isFinite(hours) && hours > 0) return 24 / hours;
+      }
+      const byDayMatches = text.match(/(\d+)\s*x\s*ao\s*dia|\b(\d+)\s*vezes?\s*ao\s*dia|\b(\d+)\s*vezes?\s*por\s*dia/);
+      if (byDayMatches) {
+        const numeric = Number((byDayMatches[1] || byDayMatches[2] || byDayMatches[3] || "").replace(",", "."));
+        if (Number.isFinite(numeric) && numeric > 0) return numeric;
+      }
+      return null;
+    }
+
+    function calcPerDoseFromFrequency(med, dailyDoseMg) {
+      if (dailyDoseMg == null || !med || !med.dose_unit || !/\/dia/i.test(med.dose_unit)) return null;
+      const doses = estimateDosesPerDay(med.frequency || "");
+      if (!doses || doses <= 0) return null;
+      return dailyDoseMg / doses;
     }
 
     // ---------------------------------------------------------------------
@@ -475,6 +535,7 @@
       closeCombo();
       $("med-clear").hidden = false;
       $("step-med").classList.remove("is-invalid");
+      resetClinicalReview();
       // Resultado anterior some junto: dose de um medicamento nunca pode
       // ficar na tela ao lado do nome de outro.
       hideResult();
@@ -551,6 +612,7 @@
       $("med-clear").hidden = true;
       $("med-chosen").hidden = true;
       $("presentation-picker").hidden = true;
+      resetClinicalReview();
       updateWeightStep();
       markSelectedInCatalog();
       hideResult();
@@ -568,11 +630,15 @@
       // O alerta aparece já na escolha, antes de calcular: quem selecionou por
       // engano precisa saber disso agora, não depois do número na tela.
       const alertEl = $("chosen-alert");
+      const ageRisk = extractAgeRisk(selectedMed.notes || "");
       if (flag === "warning") {
         alertEl.textContent = "Contraindicado em odontopediatria — está no catálogo só para consulta.";
         alertEl.hidden = false;
       } else if (flag === "rescue") {
         alertEl.textContent = "Medicação de emergência — confirme a indicação e o protocolo.";
+        alertEl.hidden = false;
+      } else if (ageRisk) {
+        alertEl.textContent = ageRisk;
         alertEl.hidden = false;
       } else {
         alertEl.hidden = true;
@@ -632,6 +698,7 @@
     // Trocar o peso invalida o número que está na tela.
     $("weight").addEventListener("input", () => {
       if (!$("dose-card").hidden) hideResult();
+      resetClinicalReview();
       $("step-weight").classList.remove("is-invalid");
     });
 
@@ -739,12 +806,19 @@
       $("calc-error").hidden = false;
       $("step-med").classList.toggle("is-invalid", field === "med");
       $("step-weight").classList.toggle("is-invalid", field === "weight");
+      $("calc-confirmation").classList.toggle("is-invalid", field === "review");
     }
 
     function hideError() {
       $("calc-error").hidden = true;
       $("step-med").classList.remove("is-invalid");
       $("step-weight").classList.remove("is-invalid");
+      $("calc-confirmation").classList.remove("is-invalid");
+    }
+
+    function resetClinicalReview() {
+      const review = $("calc-confirm-checkbox");
+      if (review) review.checked = false;
     }
 
     function hideResult() {
@@ -779,6 +853,13 @@
           "med"
         );
         searchInput.focus();
+        return;
+      }
+
+      const review = $("calc-confirm-checkbox");
+      if (!review || !review.checked) {
+        showError("Confirme a revisão clínica antes de calcular: indicação, peso, apresentação e frequência.", "review");
+        review && review.focus();
         return;
       }
 
@@ -842,6 +923,7 @@
       categoryEl.textContent = med.category;
 
       const flagEl = $("result-flag");
+      const ageRisk = extractAgeRisk(med.notes || "");
       if (flag === "warning") {
         $("result-flag-text").innerHTML =
           "<strong>Contraindicado em odontopediatria.</strong> Está no catálogo para consulta, não como opção de conduta — leia as notas antes de qualquer decisão.";
@@ -851,6 +933,10 @@
         $("result-flag-text").innerHTML =
           "<strong>Medicação de emergência.</strong> Confirme indicação, via e protocolo de atendimento antes de administrar.";
         flagEl.className = "dose-flag dose-flag--rescue";
+        flagEl.hidden = false;
+      } else if (ageRisk) {
+        $("result-flag-text").innerHTML = `<strong>Restrição de idade.</strong> ${escapeHtml(ageRisk.replace(/^Restrição de idade:\s*/i, ""))}`;
+        flagEl.className = "dose-flag dose-flag--warning";
         flagEl.hidden = false;
       } else {
         flagEl.hidden = true;
@@ -912,11 +998,15 @@
       renderHead(med);
       const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
       const kind = doseKind(base.dose_unit);
+      const dosePerDose = calcPerDoseFromFrequency(base, result.doseMg);
+      const dosesPerDay = estimateDosesPerDay(base.frequency || "");
 
       $("dose-rule").hidden = true;
       $("dose-readout-wrap").hidden = false;
       $("dose-kind").textContent = kind.label;
       $("dose-kind-icon").textContent = kind.icon;
+      $("dose-breakdown").hidden = true;
+      resetClinicalReview();
 
       // mL quando a apresentação tem concentração conhecida; senão mg (como antes).
       const pres = result.presentation;
@@ -938,6 +1028,11 @@
       } else {
         $("dose-calc").textContent = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg`;
         equivEl.hidden = true;
+      }
+
+      if (dosePerDose != null && dosesPerDay != null) {
+        $("dose-breakdown").hidden = false;
+        $("dose-breakdown").textContent = `Dose total do dia: ${fmt(result.doseMg)} mg. Dose por tomada: ${fmt(dosePerDose)} mg (${fmt(dosesPerDay)}x/dia).`;
       }
 
       // REGRA: a concentração que sai na resposta é a DESCRITA NA EMBALAGEM —
