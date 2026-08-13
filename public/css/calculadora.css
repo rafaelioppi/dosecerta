@@ -522,6 +522,17 @@
   color: var(--color-accent-strong);
 }
 
+/* A concentração referenciada é o dado que decide o volume em mL — destaque
+   visual forte (pill com cor de destaque), não só negrito. */
+.dose-flag--info strong {
+  padding: 0 0.32em;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--color-accent-500) 14%, transparent);
+  color: var(--color-accent-strong);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
 /* O número: o elemento mais legível da página inteira. */
 .dose-readout {
   padding: var(--space-md) var(--space-sm);
@@ -577,6 +588,11 @@
   font-variant-numeric: tabular-nums;
 }
 
+.dose-readout__calc strong {
+  color: var(--color-accent-strong);
+  font-weight: 800;
+}
+
 /* Equivalência mg quando o resultado principal é mL (e vice-versa): a dose é
    sempre em mg por kg; o mL é a conversão para a apresentação escolhida. Ver
    os dois lados juntos evita "o número está em quê mesmo?". */
@@ -586,6 +602,11 @@
   font-weight: 600;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
+}
+
+.dose-readout__equiv strong {
+  color: var(--color-accent-strong);
+  font-weight: 800;
 }
 
 /* Estado "não é mg/kg" — 21 dos 58 itens do catálogo caem aqui, então é um

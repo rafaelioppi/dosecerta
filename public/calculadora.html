@@ -914,8 +914,8 @@
       // visível pra conferir, mesmo quando o número grande é o volume.
       if (hasMl) {
         const conc = Number(pres.concentration_mg_per_ml);
-        $("dose-calc").textContent = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg = ${fmt(result.doseMg)} mg ÷ ${fmt(conc)} mg/mL`;
-        equivEl.textContent = `equivalente a ${fmt(result.doseMg)} mg (apresentação: ${pres.label})`;
+        $("dose-calc").innerHTML = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg = ${fmt(result.doseMg)} mg ÷ <strong>${escapeHtml(fmt(conc))} mg/mL</strong>`;
+        equivEl.innerHTML = `equivalente a <strong>${escapeHtml(fmt(result.doseMg))} mg</strong> (apresentação: ${escapeHtml(pres.label)})`;
         equivEl.hidden = false;
       } else {
         $("dose-calc").textContent = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg`;
@@ -923,9 +923,13 @@
       }
 
       // Nota de segurança: o mL depende da concentração do frasco em mãos.
+      // A concentração referenciada vem em destaque — é o dado que decide o volume.
       const concNote = $("dose-conc-note");
       if (hasMl) {
-        $("dose-conc-note-text").textContent = `Volume para a apresentação ${pres.label} (${fmt(Number(pres.concentration_mg_per_ml))} mg/mL). Confira a concentração do frasco antes de administrar — apresentações diferentes mudam o mL.`;
+        const conc = Number(pres.concentration_mg_per_ml);
+        $("dose-conc-note-text").innerHTML =
+          `Volume para a apresentação ${escapeHtml(pres.label)} — concentração <strong>${escapeHtml(fmt(conc))} mg/mL</strong>. ` +
+          `Confira a concentração do frasco antes de administrar: apresentações diferentes mudam o mL.`;
         concNote.hidden = false;
       } else {
         concNote.hidden = true;
