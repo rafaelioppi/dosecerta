@@ -525,14 +525,6 @@
   border: 1px solid var(--color-border);
 }
 
-/* Nota de concentração: além do strong, a nota inteira ganha borda de destaque
-   quando há concentração em jogo. */
-.dose-flag--info.dose-flag--conc {
-  border-color: color-mix(in srgb, var(--color-accent-500) 45%, transparent);
-  border-width: 1.5px;
-  background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
-}
-
 .dose-flag--info svg {
   color: var(--color-accent-strong);
 }
@@ -666,31 +658,6 @@
 }
 
 .dose-readout__calc strong {
-  color: var(--color-accent-strong);
-  font-weight: 800;
-}
-
-.dose-readout__breakdown {
-  margin-top: var(--space-xs);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  line-height: 1.5;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Equivalência mg quando o resultado principal é mL (e vice-versa): a dose é
-   sempre em mg por kg; o mL é a conversão para a apresentação escolhida. Ver
-   os dois lados juntos evita "o número está em quê mesmo?". */
-.dose-readout__equiv {
-  margin-top: var(--space-2xs);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--color-text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
-.dose-readout__equiv strong {
   color: var(--color-accent-strong);
   font-weight: 800;
 }
@@ -1230,10 +1197,6 @@
   }
 
   .dose-readout__calc {
-    font-size: var(--fs-2xs);
-  }
-
-  .dose-readout__breakdown {
     font-size: var(--fs-2xs);
   }
 

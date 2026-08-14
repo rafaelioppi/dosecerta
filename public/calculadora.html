@@ -144,18 +144,11 @@
               <p class="dose-readout__value"><span id="dose-number">—</span><span class="dose-readout__unit" id="dose-unit">mg</span></p>
               <p class="dose-readout__freq" id="dose-freq" hidden></p>
               <p class="dose-readout__calc" id="dose-calc"></p>
-              <p class="dose-readout__breakdown" id="dose-breakdown" hidden></p>
-              <p class="dose-readout__equiv" id="dose-equiv" hidden></p>
               <p class="dose-conc-badge" id="dose-conc-badge" hidden>
                 <span class="dose-conc-badge__label">Concentração da embalagem</span>
                 <span class="dose-conc-badge__value" id="dose-conc-badge-value">—</span>
               </p>
             </div>
-
-            <p class="dose-flag dose-flag--info dose-flag--conc" id="dose-conc-note" hidden>
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/><path d="M12 11v5.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="7.8" r="1.1" fill="currentColor"/></svg>
-              <span id="dose-conc-note-text"></span>
-            </p>
 
             <p class="dose-flag dose-flag--cap" id="dose-cap" hidden>
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 3"/></svg>
@@ -832,15 +825,12 @@
       $("dose-card").hidden = true;
       $("dose-empty").hidden = false;
       // Nenhum resíduo do cálculo anterior pode sobreviver à troca: badge de
-      // concentração, equivalência, teto e nota de concentração voltam ao estado
-      // inicial — o próximo medicamento renderiza os seus do zero.
+      // concentração, teto, aviso de frequência e a linha de frequência voltam
+      // ao estado inicial — o próximo medicamento renderiza os seus do zero.
       $("dose-conc-badge").hidden = true;
-      $("dose-conc-note").hidden = true;
-      $("dose-equiv").hidden = true;
       $("dose-cap").hidden = true;
       $("dose-kind-hint").hidden = true;
       $("dose-freq").hidden = true;
-      $("dose-breakdown").hidden = true;
     }
 
     function parseWeight(raw) {
@@ -1013,8 +1003,6 @@
 
       $("dose-rule").hidden = true;
       $("dose-readout-wrap").hidden = false;
-      $("dose-breakdown").hidden = true;
-      $("dose-equiv").hidden = true;
       $("dose-kind-hint").hidden = true;
       resetClinicalReview();
 
@@ -1029,16 +1017,10 @@
       // mg/kg/dose o número da fonte já é a tomada (com o teto já aplicado).
       let perDoseMg = canSplit ? result.doseMg / dosesPerDay : result.doseMg;
       perDoseMg = Math.round(perDoseMg * 100) / 100;
-      const dailyTotalMg =
-        isDaily || !dosesPerDay ? result.doseMg : Math.round(result.doseMg * dosesPerDay * 100) / 100;
 
-      // Volume equivalente por tomada e total do dia (quando há concentração).
+      // Volume por tomada quando há concentração conhecida.
       let perDoseMl = null;
-      let dailyTotalMl = null;
-      if (hasMl) {
-        perDoseMl = Math.round((perDoseMg / conc) * 100) / 100;
-        dailyTotalMl = Math.round((dailyTotalMg / conc) * 100) / 100;
-      }
+      if (hasMl) perDoseMl = Math.round((perDoseMg / conc) * 100) / 100;
 
       const mainValue = hasMl ? perDoseMl : perDoseMg;
       $("dose-number").textContent = fmt(mainValue);
@@ -1060,38 +1042,14 @@
         freqEl.hidden = true;
       }
 
-      // Conta na íntegra: da fonte até o número da tela, por tomada.
+      // Conta numa linha só: fonte → mg → mL (o → mostra a conversão pela
+      // concentração que está no badge abaixo).
       const kgLine = `${fmt(base.dose_mg_per_kg)} ${escapeHtml(shortUnit(base.dose_unit))} × ${fmt(weight)} kg`;
-      const dosePart = hasMl
-        ? `${fmt(perDoseMg)} mg ÷ <strong>${escapeHtml(fmt(conc))} mg/mL</strong> = <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>`
-        : `<strong>${escapeHtml(fmt(perDoseMg))} mg</strong>`;
+      const arrow = hasMl ? ` = ${fmt(perDoseMg)} mg → <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>` : ` = <strong>${escapeHtml(fmt(perDoseMg))} mg</strong>`;
       if (canSplit) {
-        $("dose-calc").innerHTML = `${kgLine} = ${fmt(result.doseMg)} mg/dia ÷ ${fmt(dosesPerDay)} = ${dosePart} <em>por tomada</em>`;
+        $("dose-calc").innerHTML = `${kgLine} = ${fmt(result.doseMg)} mg/dia ÷ ${fmt(dosesPerDay)}${arrow}`;
       } else {
-        $("dose-calc").innerHTML = `${kgLine} = ${dosePart} <em>${splitUnknown ? "total do dia" : "por tomada"}</em>`;
-      }
-
-      // Total do dia como apoio (e equivalência quando o volume é o destaque).
-      if (dosesPerDay) {
-        $("dose-breakdown").hidden = false;
-        if (tpd === "dose única") {
-          $("dose-breakdown").textContent = `Dose única: ${fmt(dailyTotalMg)} mg${hasMl ? ` (${fmt(dailyTotalMl)} mL)` : ""}`;
-        } else if (result.cappedByMax && !isDaily) {
-          // Esquema por dose com teto: não multiplicar para um total não
-          // validado pela fonte — mostra só o teto aplicado.
-          $("dose-breakdown").textContent = `Teto da fonte: ${fmt(result.doseMg)} mg${hasMl ? ` (${fmt(result.doseMl)} mL)` : ""} · ${fmt(dosesPerDay)}x/dia`;
-        } else {
-          $("dose-breakdown").textContent = `Total no dia: ${fmt(dailyTotalMg)} mg${hasMl ? ` (${fmt(dailyTotalMl)} mL)` : ""} · ${fmt(dosesPerDay)}x/dia`;
-        }
-      } else {
-        $("dose-breakdown").hidden = true;
-      }
-
-      if (hasMl) {
-        $("dose-equiv").innerHTML = `equivalente a <strong>${escapeHtml(fmt(perDoseMg))} mg por tomada</strong> (apresentação: ${escapeHtml(pres.label)})`;
-        $("dose-equiv").hidden = false;
-      } else {
-        $("dose-equiv").hidden = true;
+        $("dose-calc").innerHTML = `${kgLine}${arrow} <em>${splitUnknown ? "total do dia" : "por tomada"}</em>`;
       }
 
       if (splitUnknown) {
@@ -1102,21 +1060,15 @@
         $("dose-kind-hint").hidden = true;
       }
 
-      // REGRA: a concentração que sai na resposta é a DESCRITA NA EMBALAGEM —
-      // o mesmo rótulo (label) escolhido no seletor. Nunca a derivada (mg/mL),
-      // que pode não bater com o frasco em mãos (ex.: "250 mg/5 mL" ≠ "50 mg/mL").
+      // Concentração usada na conversão — o dado que decide o volume em mL.
+      // A REGRA segue valendo: sai o rótulo da EMBALAGEM (o mesmo escolhido no
+      // seletor), nunca o valor derivado mg/mL.
       const concBadge = $("dose-conc-badge");
-      const concNote = $("dose-conc-note");
       if (hasMl) {
         $("dose-conc-badge-value").textContent = pres.label;
         concBadge.hidden = false;
-        $("dose-conc-note-text").innerHTML =
-          `Concentração conforme a embalagem: <strong>${escapeHtml(pres.label)}</strong>. ` +
-          `Confira o frasco em mãos antes de administrar: a mesma dose em mg muda o volume (mL) se a apresentação for diferente.`;
-        concNote.hidden = false;
       } else {
         concBadge.hidden = true;
-        concNote.hidden = true;
       }
 
       const cap = $("dose-cap");
