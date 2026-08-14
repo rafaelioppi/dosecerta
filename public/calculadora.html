@@ -123,7 +123,7 @@
 
         <div class="dose-empty" id="dose-empty">
           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="3" stroke="currentColor" stroke-width="1.6"/><path d="M8 7h8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M8 12h3M8 16.5h3M14 12h2M14 16.5h2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <span>O resultado aparece aqui, com a conta feita, a frequência e a fonte usada.</span>
+          <span>O resultado aparece aqui com a dose por tomada, de quanto em quanto tempo, a conta feita e a fonte usada.</span>
         </div>
 
         <article class="dose-card" id="dose-card" hidden tabindex="-1" data-flag="">
@@ -140,8 +140,9 @@
           <!-- Leitura principal (medicamentos com dose por kg) -->
           <div id="dose-readout-wrap" hidden>
             <div class="dose-readout">
-              <p class="dose-readout__label"><span class="dose-readout__kindicon" id="dose-kind-icon" aria-hidden="true">💊</span><span id="dose-kind">por dose</span></p>
+              <p class="dose-readout__label"><span class="dose-readout__kindicon" id="dose-kind-icon" aria-hidden="true">💊</span><span id="dose-kind">dose por tomada</span></p>
               <p class="dose-readout__value"><span id="dose-number">—</span><span class="dose-readout__unit" id="dose-unit">mg</span></p>
+              <p class="dose-readout__freq" id="dose-freq" hidden></p>
               <p class="dose-readout__calc" id="dose-calc"></p>
               <p class="dose-readout__breakdown" id="dose-breakdown" hidden></p>
               <p class="dose-readout__equiv" id="dose-equiv" hidden></p>
@@ -287,26 +288,23 @@
     }
 
     // "mg/kg/dia" e "mg/kg/dose" são clinicamente diferentes: um é o total de
-    // 24 h, o outro é o que se administra de uma vez. O resultado precisa
-    // dizer qual dos dois está na tela.
-    function doseKind(unit) {
-      const u = norm(unit);
-      if (u.includes("/dia")) {
-        return {
-          icon: "📅",
-          label: "total no dia",
-          hint: "Este número é a dose de 24 horas. Divida pelas tomadas indicadas na frequência abaixo.",
-        };
-      }
-      if (u.includes("/dose")) return { icon: "💊", label: "por dose", hint: null };
-      if (u.includes("maxim")) {
-        return {
-          icon: "⚠️",
-          label: "dose máxima",
-          hint: "Este é o teto para o peso informado, não a dose de rotina. Confira a dose usual nas notas da fonte.",
-        };
-      }
-      return { icon: "💊", label: "dose calculada", hint: null };
+    // 24 h, o outro é o que se administra de uma vez. A resposta sempre mostra
+    // a dose POR TOMADA e, em destaque, quantas vezes ao dia (ou o intervalo).
+    function shortInterval(frequency) {
+      if (!frequency) return null;
+      const m = norm(frequency).match(/a\s*cada\s*\d+(?:[.,]\d+)?(?:\s*(?:a|-)\s*\d+(?:[.,]\d+)?)?\s*h/);
+      return m ? m[0] : null;
+    }
+
+    function timesPerDayLabel(doses, frequency) {
+      if (doses == null) return null;
+      const text = norm(frequency || "");
+      // "dose única" só quando é mesmo de uma vez só; "dose única diária"
+      // (ex.: ceftriaxona) continua sendo "1x ao dia".
+      const onceOnly = /dose\s*unica|administrac\w*\s*unica/.test(text) && !/ao\s*dia|por\s*dia|diaria/.test(text);
+      if (onceOnly) return "dose única";
+      const rounded = Math.round(doses * 100) / 100;
+      return `${fmt(rounded)}x ao dia`;
     }
 
     function extractAgeRisk(noteText) {
@@ -336,29 +334,38 @@
     function estimateDosesPerDay(frequency) {
       if (!frequency) return null;
       const text = norm(frequency);
-      const match = text.match(/(\d+(?:[.,]\d+)?)\s*x\s*ao\s*dia|\b(\d+)\s*vezes?\s*ao\s*dia|\b(\d+)\s*vezes?\s*por\s*dia|a\s*cada\s*(\d+(?:[.,]\d+)?)\s*h/);
-      if (match) {
-        const numeric = Number((match[1] || match[2] || match[3] || match[4] || "").replace(",", "."));
-        if (Number.isFinite(numeric) && numeric > 0) return numeric;
-      }
-      const explicit = text.match(/a\s*cada\s*(\d+)\s*h/);
-      if (explicit) {
-        const hours = Number(explicit[1]);
-        if (Number.isFinite(hours) && hours > 0) return 24 / hours;
-      }
-      const byDayMatches = text.match(/(\d+)\s*x\s*ao\s*dia|\b(\d+)\s*vezes?\s*ao\s*dia|\b(\d+)\s*vezes?\s*por\s*dia/);
-      if (byDayMatches) {
-        const numeric = Number((byDayMatches[1] || byDayMatches[2] || byDayMatches[3] || "").replace(",", "."));
-        if (Number.isFinite(numeric) && numeric > 0) return numeric;
-      }
-      return null;
-    }
 
-    function calcPerDoseFromFrequency(med, dailyDoseMg) {
-      if (dailyDoseMg == null || !med || !med.dose_unit || !/\/dia/i.test(med.dose_unit)) return null;
-      const doses = estimateDosesPerDay(med.frequency || "");
-      if (!doses || doses <= 0) return null;
-      return dailyDoseMg / doses;
+      // Contagem explícita: "4x ao dia", "3 vezes ao dia", "1x/dia".
+      let m = text.match(/(\d+(?:[.,]\d+)?)\s*(?:x|vez(?:es)?)\s*(?:(?:ao|por)\s*)?dia/);
+      if (m) {
+        const n = Number(m[1].replace(",", "."));
+        if (Number.isFinite(n) && n > 0) return n;
+      }
+
+      // "máximo 5 administrações em 24h".
+      m = text.match(/(\d+)\s*administrac\w*\s*(?:em|por)\s*(?:24\s*h|dia)/);
+      if (m) {
+        const n = Number(m[1]);
+        if (Number.isFinite(n) && n > 0) return n;
+      }
+      if (/dose\s*unica|administrac\w*\s*unica/.test(text)) return 1;
+
+      // "dividida em 3-4 doses" → usa o maior (mais tomadas = dose menor por
+      // tomada = leitura mais conservadora).
+      m = text.match(/dividida\s+em\s+(\d+)(?:\s*(?:a|-)\s*(\d+))?\s*(?:dose|tomada|administrac)/);
+      if (m) {
+        const n = Number(m[2] || m[1]);
+        if (Number.isFinite(n) && n > 0) return n;
+      }
+
+      // Intervalo "a cada 6-8h" → 24 / menor intervalo = maior nº de tomadas.
+      m = text.match(/a\s*cada\s*(\d+(?:[.,]\d+)?)(?:\s*(?:a|-)\s*(\d+(?:[.,]\d+)?))?\s*h/);
+      if (m) {
+        const hours = Number(m[1].replace(",", "."));
+        if (Number.isFinite(hours) && hours > 0) return Math.round((24 / hours) * 100) / 100;
+      }
+
+      return null;
     }
 
     // ---------------------------------------------------------------------
@@ -832,6 +839,8 @@
       $("dose-equiv").hidden = true;
       $("dose-cap").hidden = true;
       $("dose-kind-hint").hidden = true;
+      $("dose-freq").hidden = true;
+      $("dose-breakdown").hidden = true;
     }
 
     function parseWeight(raw) {
@@ -997,42 +1006,100 @@
     function renderDose(med, result, weight) {
       renderHead(med);
       const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
-      const kind = doseKind(base.dose_unit);
-      const dosePerDose = calcPerDoseFromFrequency(base, result.doseMg);
+      const unit = String(base.dose_unit || "");
+      const isDaily = /\/dia/i.test(norm(unit));
       const dosesPerDay = estimateDosesPerDay(base.frequency || "");
+      const tpd = timesPerDayLabel(dosesPerDay, base.frequency || "");
 
       $("dose-rule").hidden = true;
       $("dose-readout-wrap").hidden = false;
-      $("dose-kind").textContent = kind.label;
-      $("dose-kind-icon").textContent = kind.icon;
       $("dose-breakdown").hidden = true;
+      $("dose-equiv").hidden = true;
+      $("dose-kind-hint").hidden = true;
       resetClinicalReview();
 
-      // mL quando a apresentação tem concentração conhecida; senão mg (como antes).
       const pres = result.presentation;
       const hasMl = result.doseMl != null && pres && Number(pres.concentration_mg_per_ml) > 0;
-      const mainValue = hasMl ? result.doseMl : result.doseMg;
-      const unitEl = $("dose-unit");
-      const equivEl = $("dose-equiv");
+      const conc = hasMl ? Number(pres.concentration_mg_per_ml) : null;
 
-      $("dose-number").textContent = fmt(mainValue);
-      unitEl.textContent = hasMl ? "mL" : "mg";
+      // Esquema mg/kg/dia só vira "por tomada" quando a fonte diz quantas vezes.
+      const canSplit = isDaily && dosesPerDay && dosesPerDay > 0;
 
-      // Conta na íntegra: mg/kg × kg = mg [÷ mg/mL = mL], sempre com o lado mg
-      // visível pra conferir, mesmo quando o número grande é o volume.
+      // Dose por tomada em mg. Em mg/kg/dia divide-se o total do dia; em
+      // mg/kg/dose o número da fonte já é a tomada (com o teto já aplicado).
+      let perDoseMg = canSplit ? result.doseMg / dosesPerDay : result.doseMg;
+      perDoseMg = Math.round(perDoseMg * 100) / 100;
+      const dailyTotalMg =
+        isDaily || !dosesPerDay ? result.doseMg : Math.round(result.doseMg * dosesPerDay * 100) / 100;
+
+      // Volume equivalente por tomada e total do dia (quando há concentração).
+      let perDoseMl = null;
+      let dailyTotalMl = null;
       if (hasMl) {
-        const conc = Number(pres.concentration_mg_per_ml);
-        $("dose-calc").innerHTML = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg = ${fmt(result.doseMg)} mg ÷ <strong>${escapeHtml(fmt(conc))} mg/mL</strong>`;
-        equivEl.innerHTML = `equivalente a <strong>${escapeHtml(fmt(result.doseMg))} mg</strong> (apresentação: ${escapeHtml(pres.label)})`;
-        equivEl.hidden = false;
-      } else {
-        $("dose-calc").textContent = `${fmt(base.dose_mg_per_kg)} ${shortUnit(base.dose_unit)} × ${fmt(weight)} kg`;
-        equivEl.hidden = true;
+        perDoseMl = Math.round((perDoseMg / conc) * 100) / 100;
+        dailyTotalMl = Math.round((dailyTotalMg / conc) * 100) / 100;
       }
 
-      if (dosePerDose != null && dosesPerDay != null) {
+      const mainValue = hasMl ? perDoseMl : perDoseMg;
+      $("dose-number").textContent = fmt(mainValue);
+      $("dose-unit").textContent = hasMl ? "mL" : "mg";
+
+      // Leitura principal: "dose por tomada". Sem frequência para dividir, o
+      // número que sobra é o total do dia — o aviso abaixo explica.
+      const splitUnknown = isDaily && !dosesPerDay;
+      $("dose-kind").textContent = splitUnknown ? "total no dia" : "dose por tomada";
+      $("dose-kind-icon").textContent = splitUnknown ? "📅" : "💊";
+
+      // De quanto em quanto tempo — linha de destaque logo abaixo do número.
+      const freqEl = $("dose-freq");
+      if (tpd) {
+        const interval = shortInterval(base.frequency || "");
+        freqEl.innerHTML = `<span aria-hidden="true">🕐</span> <strong>${escapeHtml(tpd)}</strong>${interval ? ` · ${escapeHtml(interval)}` : ""}`;
+        freqEl.hidden = false;
+      } else {
+        freqEl.hidden = true;
+      }
+
+      // Conta na íntegra: da fonte até o número da tela, por tomada.
+      const kgLine = `${fmt(base.dose_mg_per_kg)} ${escapeHtml(shortUnit(base.dose_unit))} × ${fmt(weight)} kg`;
+      const dosePart = hasMl
+        ? `${fmt(perDoseMg)} mg ÷ <strong>${escapeHtml(fmt(conc))} mg/mL</strong> = <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>`
+        : `<strong>${escapeHtml(fmt(perDoseMg))} mg</strong>`;
+      if (canSplit) {
+        $("dose-calc").innerHTML = `${kgLine} = ${fmt(result.doseMg)} mg/dia ÷ ${fmt(dosesPerDay)} = ${dosePart} <em>por tomada</em>`;
+      } else {
+        $("dose-calc").innerHTML = `${kgLine} = ${dosePart} <em>${splitUnknown ? "total do dia" : "por tomada"}</em>`;
+      }
+
+      // Total do dia como apoio (e equivalência quando o volume é o destaque).
+      if (dosesPerDay) {
         $("dose-breakdown").hidden = false;
-        $("dose-breakdown").textContent = `Dose total do dia: ${fmt(result.doseMg)} mg. Dose por tomada: ${fmt(dosePerDose)} mg (${fmt(dosesPerDay)}x/dia).`;
+        if (tpd === "dose única") {
+          $("dose-breakdown").textContent = `Dose única: ${fmt(dailyTotalMg)} mg${hasMl ? ` (${fmt(dailyTotalMl)} mL)` : ""}`;
+        } else if (result.cappedByMax && !isDaily) {
+          // Esquema por dose com teto: não multiplicar para um total não
+          // validado pela fonte — mostra só o teto aplicado.
+          $("dose-breakdown").textContent = `Teto da fonte: ${fmt(result.doseMg)} mg${hasMl ? ` (${fmt(result.doseMl)} mL)` : ""} · ${fmt(dosesPerDay)}x/dia`;
+        } else {
+          $("dose-breakdown").textContent = `Total no dia: ${fmt(dailyTotalMg)} mg${hasMl ? ` (${fmt(dailyTotalMl)} mL)` : ""} · ${fmt(dosesPerDay)}x/dia`;
+        }
+      } else {
+        $("dose-breakdown").hidden = true;
+      }
+
+      if (hasMl) {
+        $("dose-equiv").innerHTML = `equivalente a <strong>${escapeHtml(fmt(perDoseMg))} mg por tomada</strong> (apresentação: ${escapeHtml(pres.label)})`;
+        $("dose-equiv").hidden = false;
+      } else {
+        $("dose-equiv").hidden = true;
+      }
+
+      if (splitUnknown) {
+        $("dose-kind-hint-text").textContent =
+          "A fonte não indica quantas tomadas ao dia. Divida o total acima pela frequência que você vai prescrever.";
+        $("dose-kind-hint").hidden = false;
+      } else {
+        $("dose-kind-hint").hidden = true;
       }
 
       // REGRA: a concentração que sai na resposta é a DESCRITA NA EMBALAGEM —
@@ -1064,16 +1131,8 @@
         cap.hidden = true;
       }
 
-      const hint = $("dose-kind-hint");
-      if (kind.hint) {
-        $("dose-kind-hint-text").textContent = kind.hint;
-        hint.hidden = false;
-      } else {
-        hint.hidden = true;
-      }
-
       revealCard(
-        `${med.name}: ${fmt(mainValue)} ${hasMl ? "mililitros" : "miligramas"}, ${kind.label}, para ${fmt(weight)} quilos.` +
+        `${med.name}: dose por tomada de ${fmt(mainValue)} ${hasMl ? "mililitros" : "miligramas"}, ${tpd ? `${tpd}, ` : ""}para ${fmt(weight)} quilos.` +
           (result.cappedByMax ? " Valor limitado à dose máxima." : "")
       );
     }

@@ -627,6 +627,36 @@
   letter-spacing: 0;
 }
 
+/* De quanto em quanto tempo: o segundo dado mais importante do resultado.
+   Pill de destaque logo abaixo do número grande. */
+.dose-readout__freq {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  margin-top: var(--space-xs);
+  padding: var(--space-2xs) var(--space-sm);
+  border: 1px solid color-mix(in srgb, var(--color-accent-500) 32%, transparent);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--color-accent-500) 12%, transparent);
+  font-family: var(--font-heading);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--color-accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.dose-readout__freq span[aria-hidden="true"] {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", var(--font-body);
+  font-weight: 400;
+  font-size: 0.95em;
+}
+
+.dose-card[data-flag="rescue"] .dose-readout__freq {
+  border-color: color-mix(in srgb, var(--color-primary-strong) 34%, transparent);
+  background: color-mix(in srgb, var(--color-primary-strong) 13%, transparent);
+  color: var(--color-primary-strong);
+}
+
 /* A conta na íntegra: dá para conferir o número sem sair da tela. */
 .dose-readout__calc {
   margin-top: var(--space-xs);
@@ -1193,6 +1223,10 @@
   .dose-readout__value {
     font-size: clamp(1.75rem, 8vw, 2.5rem);
     margin-top: var(--space-xs);
+  }
+
+  .dose-readout__freq {
+    font-size: var(--fs-xs);
   }
 
   .dose-readout__calc {
