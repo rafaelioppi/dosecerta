@@ -216,6 +216,7 @@
     const RECENTS_MAX = 5;
 
     let allMeds = [];
+    let medsById = new Map(); // id (string) -> medicamento — evita rescanear allMeds a cada seleção/render
     let medsLoaded = false; // true só depois que o catálogo chega — evita "nenhum encontrado" falso
     let selectedMed = null;
     let selectedPresentationIndex = 0; // índice no array med.presentations escolhido pelo profissional
@@ -314,11 +315,7 @@
 
       for (const re of patterns) {
         const match = text.match(re);
-        if (match) {
-          const value = match[1];
-          const unit = /mes/.test(re.toString()) ? "meses" : "anos";
-          return `Restrição de idade: ${match[0].trim()}`;
-        }
+        if (match) return `Restrição de idade: ${match[0].trim()}`;
       }
 
       return null;
@@ -428,6 +425,7 @@
         if (!res.ok) throw new Error("http " + res.status);
         const body = await res.json();
         allMeds = body.items || [];
+        medsById = new Map(allMeds.map((m) => [String(m.id), m]));
         medsLoaded = true;
         if (body.notice) $("safety-notice").textContent = body.notice;
       } catch {
@@ -506,8 +504,11 @@
     }
 
     function updateActiveOption() {
-      const options = listbox.querySelectorAll(".combo__option");
-      options.forEach((el, i) => el.setAttribute("aria-selected", String(i === activeIndex)));
+      // renderCombo() acabou de montar estes <li> — listbox.children já são
+      // exatamente eles (ou o único <li> de "carregando"/"nada encontrado"),
+      // sem precisar reconsultar o DOM por seletor a cada tecla de seta.
+      const options = listbox.children;
+      for (let i = 0; i < options.length; i++) options[i].setAttribute("aria-selected", String(i === activeIndex));
       const active = options[activeIndex];
       if (active) {
         searchInput.setAttribute("aria-activedescendant", active.id);
@@ -528,9 +529,10 @@
     }
 
     function selectMed(id, opts = {}) {
-      const med = allMeds.find((m) => String(m.id) === String(id));
+      const med = medsById.get(String(id));
       if (!med) return;
       selectedMed = med;
+      selectedPresentationIndex = 0; // troca de medicamento invalida a apresentação/concentração escolhida antes
       searchInput.value = med.name;
       closeCombo();
       $("med-clear").hidden = false;
@@ -609,6 +611,9 @@
       selectedMed = null;
       selectedPresentationIndex = 0;
       searchInput.value = "";
+      // Mesmo motivo do selectMed(): peso de um paciente não pode ficar visível
+      // depois que o medicamento associado a ele foi removido da seleção.
+      $("weight").value = "";
       $("med-clear").hidden = true;
       $("med-chosen").hidden = true;
       $("presentation-picker").hidden = true;
@@ -779,7 +784,7 @@
     function renderRecents() {
       const row = $("recent-row");
       const meds = readRecents()
-        .map((id) => allMeds.find((m) => String(m.id) === String(id)))
+        .map((id) => medsById.get(String(id)))
         .filter(Boolean);
       if (!meds.length) {
         row.hidden = true;
@@ -822,15 +827,13 @@
     }
 
     function hideResult() {
+      // Esconder #dose-card já basta: `[hidden] { display: none !important }`
+      // (reset.css) garante que nenhum filho (badge de concentração, teto,
+      // aviso de frequência etc.) fica visível enquanto o pai está escondido —
+      // e cada um desses campos já é setado do zero em toda renderDose()/
+      // renderRule(), então não há resíduo do cálculo anterior a limpar aqui.
       $("dose-card").hidden = true;
       $("dose-empty").hidden = false;
-      // Nenhum resíduo do cálculo anterior pode sobreviver à troca: badge de
-      // concentração, teto, aviso de frequência e a linha de frequência voltam
-      // ao estado inicial — o próximo medicamento renderiza os seus do zero.
-      $("dose-conc-badge").hidden = true;
-      $("dose-cap").hidden = true;
-      $("dose-kind-hint").hidden = true;
-      $("dose-freq").hidden = true;
     }
 
     function parseWeight(raw) {
@@ -890,6 +893,7 @@
             medicationId: selectedMed.id,
             weightKg: weight,
             presentationIndex: selectedPresentationIndex,
+            confirmed: true, // já validado acima (checkbox de revisão clínica marcado)
           }),
         });
         body = await res.json();
@@ -941,7 +945,7 @@
         flagEl.hidden = true;
       }
 
-      const base = allMeds.find((m) => String(m.id) === String(med.id)) || {};
+      const base = medsById.get(String(med.id)) || {};
       $("fact-indication").textContent = med.indication || base.indication || "—";
       $("fact-frequency").textContent = med.frequency || "—";
       $("fact-route").textContent = med.route || "—";
@@ -995,7 +999,7 @@
 
     function renderDose(med, result, weight) {
       renderHead(med);
-      const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
+      const base = medsById.get(String(med.id)) || selectedMed || {};
       const unit = String(base.dose_unit || "");
       const isDaily = /\/dia/i.test(norm(unit));
       const dosesPerDay = estimateDosesPerDay(base.frequency || "");
@@ -1012,6 +1016,11 @@
 
       // Esquema mg/kg/dia só vira "por tomada" quando a fonte diz quantas vezes.
       const canSplit = isDaily && dosesPerDay && dosesPerDay > 0;
+
+      // Cálculo bruto por peso, sem o teto aplicado — usado só pra mostrar a
+      // conta real (mg/kg × peso) e a comparação com o teto, nunca como valor
+      // administrado (esse é sempre result.doseMg/doseMl, já com o teto).
+      const rawDailyMg = Math.round(Number(base.dose_mg_per_kg) * weight * 100) / 100;
 
       // Dose por tomada em mg. Em mg/kg/dia divide-se o total do dia; em
       // mg/kg/dose o número da fonte já é a tomada (com o teto já aplicado).
@@ -1047,7 +1056,11 @@
       const kgLine = `${fmt(base.dose_mg_per_kg)} ${escapeHtml(shortUnit(base.dose_unit))} × ${fmt(weight)} kg`;
       const arrow = hasMl ? ` = ${fmt(perDoseMg)} mg → <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>` : ` = <strong>${escapeHtml(fmt(perDoseMg))} mg</strong>`;
       if (canSplit) {
-        $("dose-calc").innerHTML = `${kgLine} = ${fmt(result.doseMg)} mg/dia ÷ ${fmt(dosesPerDay)}${arrow}`;
+        // O total do dia na equação é sempre o valor BRUTO (mg/kg × peso), não
+        // o já limitado pelo teto — senão a conta escrita fica falsa quando
+        // cappedByMax (ex.: "50 × 90 = 4000" quando 50×90 é na verdade 4500).
+        // O teto, quando existe, aparece à parte no aviso "dose-cap" abaixo.
+        $("dose-calc").innerHTML = `${kgLine} = ${fmt(rawDailyMg)} mg/dia ÷ ${fmt(dosesPerDay)}${arrow}`;
       } else {
         $("dose-calc").innerHTML = `${kgLine}${arrow} <em>${splitUnknown ? "total do dia" : "por tomada"}</em>`;
       }
@@ -1073,11 +1086,20 @@
 
       const cap = $("dose-cap");
       if (result.cappedByMax) {
-        const raw = Math.round(Number(base.dose_mg_per_kg) * weight * 100) / 100;
-        const capText = hasMl
-          ? `Limitado ao teto de ${fmt(result.maxDoseMg)} mg (${fmt(result.doseMl)} mL). O cálculo por peso daria ${fmt(raw)} mg — o teto da fonte prevalece.`
-          : `<strong>Limitado ao teto de ${fmt(result.maxDoseMg)} mg.</strong> O cálculo por peso daria ${fmt(raw)} mg — o teto da fonte prevalece.`;
-        $("dose-cap-text").innerHTML = capText;
+        // O teto da fonte (max_dose_mg / result.doseMl) é sempre um total
+        // DIÁRIO — nunca confundir com o valor "por tomada" mostrado no número
+        // principal. Por isso todo valor aqui é explicitamente rotulado
+        // "no dia", e quando a dose é dividida (canSplit) mostramos também o
+        // valor por tomada já com o teto aplicado, no mesmo par mg/mL que o
+        // profissional vai de fato administrar.
+        const dailyLabel = hasMl
+          ? `${fmt(result.maxDoseMg)} mg/dia (${fmt(result.doseMl)} mL/dia)`
+          : `${fmt(result.maxDoseMg)} mg/dia`;
+        const perDoseNote = canSplit
+          ? ` Por tomada (÷ ${fmt(dosesPerDay)}): ${fmt(perDoseMg)} mg${hasMl ? ` (${fmt(perDoseMl)} mL)` : ""}.`
+          : "";
+        $("dose-cap-text").innerHTML =
+          `<strong>Limitado ao teto de ${dailyLabel}.</strong> O cálculo por peso daria ${fmt(rawDailyMg)} mg/dia — o teto da fonte prevalece.${perDoseNote}`;
         cap.hidden = false;
       } else {
         cap.hidden = true;
@@ -1091,7 +1113,7 @@
 
     function renderRule(med) {
       renderHead(med);
-      const base = allMeds.find((m) => String(m.id) === String(med.id)) || selectedMed || {};
+      const base = medsById.get(String(med.id)) || selectedMed || {};
       const rule = med.dose_unit || base.dose_unit || "consulte a fonte";
 
       $("dose-readout-wrap").hidden = true;

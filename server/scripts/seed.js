@@ -35,9 +35,15 @@ function seedMedications() {
       if (existing) {
         skipped++;
         // Backfill não-destrutivo: preenche presentations só se o registro no
-        // banco ainda não tiver nenhuma (nunca sobrescreve edição do admin).
-        const result = backfill.run(toJson(m), existing.id);
-        if (result.changes) backfilled++;
+        // banco ainda não tiver nenhuma (nunca sobrescreve edição do admin) E
+        // só quando o seed realmente trouxer dado novo — gravar '[]' quando o
+        // seed não tem presentations ainda "usaria" o slot vazio e bloquearia
+        // pra sempre um backfill futuro (a coluna deixaria de ser NULL/'').
+        const hasPresentations = Array.isArray(m.presentations) && m.presentations.length > 0;
+        if (hasPresentations) {
+          const result = backfill.run(toJson(m), existing.id);
+          if (result.changes) backfilled++;
+        }
         continue;
       }
       insert.run({

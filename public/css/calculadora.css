@@ -111,7 +111,13 @@
   transition: border-color var(--transition-fast);
 }
 
-.combo__inputwrap:focus-within {
+/* Anel de foco compartilhado pelos três controles principais do formulário
+   (medicamento, peso, apresentação) — um valor só de outline, pra uma revisão
+   de acessibilidade (largura/cor/offset) não precisar ser aplicada 3x. */
+.combo__inputwrap:focus-within,
+.weight-input:focus-within,
+.presentation-select:focus,
+.presentation-select:focus-visible {
   border-color: var(--color-accent-500);
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
@@ -320,12 +326,6 @@
   transition: border-color var(--transition-fast);
 }
 
-.weight-input:focus-within {
-  border-color: var(--color-accent-500);
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
-}
-
 .weight-input input {
   flex: 1;
   min-width: 0;
@@ -380,13 +380,6 @@
   padding: 0.7rem 0.9rem;
   font-size: var(--fs-sm);
   transition: border-color var(--transition-fast);
-}
-
-.presentation-select:focus,
-.presentation-select:focus-visible {
-  border-color: var(--color-accent-500);
-  outline: 3px solid var(--color-focus);
-  outline-offset: 3px;
 }
 
 /* ===== Aviso de erro do formulário ===== */

@@ -51,14 +51,22 @@ router.get("/:id", requireAuth, (req, res) => {
 });
 
 router.post("/calculate", requireAuth, (req, res) => {
-  const { medicationId, weightKg, presentationIndex } = req.body || {};
+  const { medicationId, weightKg, presentationIndex, confirmed } = req.body || {};
   const weight = Number(weightKg);
 
   if (!medicationId) {
     return res.status(400).json({ error: "Informe o medicamento." });
   }
-  if (!weight || weight <= 0 || weight > 150) {
-    return res.status(400).json({ error: "Informe um peso válido (kg)." });
+  // O checkbox "revisei indicação, peso, apresentação e frequência" (UI) só
+  // valia como gate no cliente — uma chamada direta à API pulava o passo
+  // inteiro sem aviso. Isto não confirma que a revisão realmente aconteceu
+  // (é um campo auto-declarado, como o próprio checkbox já era), mas fecha a
+  // lacuna de uma integração/chamada direta ignorar o gate silenciosamente.
+  if (confirmed !== true) {
+    return res.status(400).json({ error: "Confirme a revisão clínica antes de calcular (campo 'confirmed')." });
+  }
+  if (!weight || weight < 0.5 || weight > 150) {
+    return res.status(400).json({ error: "Informe um peso válido entre 0,5 e 150 kg." });
   }
 
   const med = db.prepare("SELECT * FROM medications WHERE id = ?").get(medicationId);

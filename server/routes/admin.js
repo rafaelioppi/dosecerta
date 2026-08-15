@@ -25,21 +25,29 @@ router.get("/users", (_req, res) => {
   );
 });
 
+// Regras de validação compartilhadas entre criar (POST) e editar (PUT) um
+// usuário — únicas exceções: PUT não exige senha (mantém a atual se omitida),
+// mas ainda valida o comprimento se uma nova senha for enviada.
+function validateUserPayload({ name, email, password, role }, { requirePassword }) {
+  if (!name || String(name).trim().length < 2) return "Informe um nome válido.";
+  if (!email || !EMAIL_RE.test(String(email))) return "Informe um e-mail válido.";
+  if (requirePassword && (!password || String(password).length < 8)) {
+    return "A senha deve ter pelo menos 8 caracteres.";
+  }
+  if (!requirePassword && password && String(password).length < 8) {
+    return "A senha deve ter pelo menos 8 caracteres.";
+  }
+  if (role !== "admin" && role !== "professional") {
+    return "Papel inválido — use 'admin' ou 'professional'.";
+  }
+  return null;
+}
+
 router.post("/users", async (req, res) => {
   const { name, email, password, role, councilType, councilNumber } = req.body || {};
 
-  if (!name || String(name).trim().length < 2) {
-    return res.status(400).json({ error: "Informe um nome válido." });
-  }
-  if (!email || !EMAIL_RE.test(String(email))) {
-    return res.status(400).json({ error: "Informe um e-mail válido." });
-  }
-  if (!password || String(password).length < 8) {
-    return res.status(400).json({ error: "A senha deve ter pelo menos 8 caracteres." });
-  }
-  if (role !== "admin" && role !== "professional") {
-    return res.status(400).json({ error: "Papel inválido — use 'admin' ou 'professional'." });
-  }
+  const validationError = validateUserPayload({ name, email, password, role }, { requirePassword: true });
+  if (validationError) return res.status(400).json({ error: validationError });
 
   const normalizedEmail = String(email).trim().toLowerCase();
   const existing = db.prepare("SELECT id FROM users WHERE email = ?").get(normalizedEmail);
@@ -67,18 +75,8 @@ router.put("/users/:id", async (req, res) => {
   const existing = db.prepare("SELECT id FROM users WHERE id = ?").get(req.params.id);
   if (!existing) return res.status(404).json({ error: "Usuário não encontrado." });
 
-  if (!name || String(name).trim().length < 2) {
-    return res.status(400).json({ error: "Informe um nome válido." });
-  }
-  if (!email || !EMAIL_RE.test(String(email))) {
-    return res.status(400).json({ error: "Informe um e-mail válido." });
-  }
-  if (role !== "admin" && role !== "professional") {
-    return res.status(400).json({ error: "Papel inválido — use 'admin' ou 'professional'." });
-  }
-  if (password && String(password).length < 8) {
-    return res.status(400).json({ error: "A senha deve ter pelo menos 8 caracteres." });
-  }
+  const validationError = validateUserPayload({ name, email, password, role }, { requirePassword: false });
+  if (validationError) return res.status(400).json({ error: validationError });
 
   const normalizedEmail = String(email).trim().toLowerCase();
   const emailTaken = db.prepare("SELECT id FROM users WHERE email = ? AND id != ?").get(normalizedEmail, req.params.id);
@@ -129,53 +127,11 @@ function normalizePresentations(value) {
     .filter((p) => p.concentration_mg_per_ml != null);
 }
 
-router.post("/medications", (req, res) => {
-  const m = req.body || {};
-  if (!m.name || !m.category || !m.source_name || !m.source_url) {
-    return res.status(400).json({ error: "name, category, source_name e source_url são obrigatórios." });
-  }
-  const result = db
-    .prepare(
-      `INSERT INTO medications
-        (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-         route, presentation, notes, source_name, source_url, presentations, created_by)
-       VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
-               @route, @presentation, @notes, @source_name, @source_url, @presentations, @created_by)`
-    )
-    .run({
-      name: m.name,
-      category: m.category,
-      indication: m.indication || null,
-      dose_mg_per_kg: m.dose_mg_per_kg ?? null,
-      dose_unit: m.dose_unit || null,
-      frequency: m.frequency || null,
-      max_dose_mg: m.max_dose_mg ?? null,
-      route: m.route || null,
-      presentation: m.presentation || null,
-      notes: m.notes || null,
-      source_name: m.source_name,
-      source_url: m.source_url,
-      presentations: JSON.stringify(normalizePresentations(m.presentations)),
-      created_by: req.session.userId,
-    });
-  res.status(201).json({ id: result.lastInsertRowid });
-});
-
-router.put("/medications/:id", (req, res) => {
-  const m = req.body || {};
-  const existing = db.prepare("SELECT id FROM medications WHERE id = ?").get(req.params.id);
-  if (!existing) return res.status(404).json({ error: "Medicamento não encontrado." });
-
-  db.prepare(
-    `UPDATE medications SET
-       name = @name, category = @category, indication = @indication,
-       dose_mg_per_kg = @dose_mg_per_kg, dose_unit = @dose_unit, frequency = @frequency,
-       max_dose_mg = @max_dose_mg, route = @route, presentation = @presentation, notes = @notes,
-       source_name = @source_name, source_url = @source_url, presentations = @presentations,
-       updated_at = datetime('now')
-     WHERE id = @id`
-  ).run({
-    id: req.params.id,
+// Campos compartilhados entre criar e editar um medicamento — mesma forma nos
+// dois INSERTs/UPDATEs, pra um campo novo (ex.: presentations, no passado)
+// não poder ser adicionado em só um dos dois caminhos por esquecimento.
+function medicationFields(m) {
+  return {
     name: m.name,
     category: m.category,
     indication: m.indication || null,
@@ -188,7 +144,63 @@ router.put("/medications/:id", (req, res) => {
     notes: m.notes || null,
     source_name: m.source_name,
     source_url: m.source_url,
-    presentations: JSON.stringify(normalizePresentations(m.presentations)),
+  };
+}
+
+function validateMedicationFields(m) {
+  if (!m.name || !m.category || !m.source_name || !m.source_url) {
+    return "name, category, source_name e source_url são obrigatórios.";
+  }
+  return null;
+}
+
+router.post("/medications", (req, res) => {
+  const m = req.body || {};
+  const validationError = validateMedicationFields(m);
+  if (validationError) return res.status(400).json({ error: validationError });
+
+  const result = db
+    .prepare(
+      `INSERT INTO medications
+        (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
+         route, presentation, notes, source_name, source_url, presentations, created_by)
+       VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
+               @route, @presentation, @notes, @source_name, @source_url, @presentations, @created_by)`
+    )
+    .run({
+      ...medicationFields(m),
+      presentations: JSON.stringify(normalizePresentations(m.presentations)),
+      created_by: req.session.userId,
+    });
+  res.status(201).json({ id: result.lastInsertRowid });
+});
+
+router.put("/medications/:id", (req, res) => {
+  const m = req.body || {};
+  const validationError = validateMedicationFields(m);
+  if (validationError) return res.status(400).json({ error: validationError });
+
+  const existing = db.prepare("SELECT id, presentations FROM medications WHERE id = ?").get(req.params.id);
+  if (!existing) return res.status(404).json({ error: "Medicamento não encontrado." });
+
+  // `presentations` só é sobrescrito quando o payload realmente traz o campo.
+  // Um caller que não manda `presentations` (ex.: cliente desatualizado, script
+  // antigo) preserva o valor já salvo em vez de apagá-lo silenciosamente.
+  const presentations =
+    m.presentations === undefined ? existing.presentations || "[]" : JSON.stringify(normalizePresentations(m.presentations));
+
+  db.prepare(
+    `UPDATE medications SET
+       name = @name, category = @category, indication = @indication,
+       dose_mg_per_kg = @dose_mg_per_kg, dose_unit = @dose_unit, frequency = @frequency,
+       max_dose_mg = @max_dose_mg, route = @route, presentation = @presentation, notes = @notes,
+       source_name = @source_name, source_url = @source_url, presentations = @presentations,
+       updated_at = datetime('now')
+     WHERE id = @id`
+  ).run({
+    id: req.params.id,
+    ...medicationFields(m),
+    presentations,
   });
   res.json({ ok: true });
 });

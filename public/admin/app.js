@@ -31,6 +31,44 @@ function escapeHtml(str) {
   return String(str ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
+// Abre um card de formulário (usuário ou medicamento): revela, rola o painel
+// até ele e foca o primeiro campo. Um único helper pros dois formulários —
+// um ajuste de UX (offset de rolagem, foco) vale pros dois de uma vez.
+function openFormCard(cardId, panelId, focusId) {
+  document.getElementById(cardId).hidden = false;
+  window.scrollTo({ top: document.getElementById(panelId).offsetTop - 100, behavior: "smooth" });
+  document.getElementById(focusId).focus();
+}
+
+// POST (criar) ou PUT (editar) com o mesmo tratamento de sucesso/erro pros
+// dois formulários admin — inclusive falha de rede, que nenhum dos dois
+// tratava antes (um fetch() rejeitado por rede fora derrubava o handler sem
+// aviso nenhum ao usuário).
+async function submitForm({ id, baseUrl, payload, status, onSuccess }) {
+  const url = id ? `${baseUrl}/${id}` : baseUrl;
+  const method = id ? "PUT" : "POST";
+  let res;
+  try {
+    res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      credentials: "same-origin",
+      body: JSON.stringify(payload),
+    });
+  } catch {
+    status.textContent = "Falha de conexão com o servidor. Tente novamente.";
+    status.classList.add("error");
+    return;
+  }
+  if (res.ok) {
+    onSuccess();
+  } else {
+    const body = await res.json().catch(() => ({}));
+    status.textContent = body.error || "Falha ao salvar.";
+    status.classList.add("error");
+  }
+}
+
 // Apresentações líquidas: array [{label, concentration_mg_per_ml}] <-> textarea
 // no formato "rótulo | mg/mL" (uma linha por apresentação). A calculadora usa
 // estas concentrações pra mostrar o resultado em mL.
@@ -53,19 +91,31 @@ function serializePresentations(value) {
     .join("\n");
 }
 
+// Retorna { presentations, invalidLines } em vez de descartar silenciosamente
+// linhas com concentração vazia/inválida — o admin precisa ver que uma linha
+// não foi salva, em vez de achar que salvou e descobrir semanas depois que a
+// calculadora não tem aquela concentração.
 function parsePresentationsText(text) {
-  return String(text || "")
+  const presentations = [];
+  const invalidLines = [];
+  String(text || "")
     .split("\n")
-    .map((line) => line.split("|"))
-    .filter((parts) => parts.length >= 2 && parts[0].trim())
-    .map((parts) => {
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .forEach((line) => {
+      const parts = line.split("|");
+      if (parts.length < 2 || !parts[0].trim()) {
+        invalidLines.push(line);
+        return;
+      }
       const conc = Number(String(parts[1] ?? "").trim().replace(",", "."));
-      return {
-        label: parts[0].trim(),
-        concentration_mg_per_ml: Number.isFinite(conc) && conc > 0 ? conc : null,
-      };
-    })
-    .filter((p) => p.concentration_mg_per_ml != null);
+      if (!Number.isFinite(conc) || conc <= 0) {
+        invalidLines.push(line);
+        return;
+      }
+      presentations.push({ label: parts[0].trim(), concentration_mg_per_ml: conc });
+    });
+  return { presentations, invalidLines };
 }
 
 /* ===== Usuários ===== */
@@ -98,9 +148,7 @@ async function loadUsers() {
 }
 
 function openUserForm() {
-  document.getElementById("user-form-card").hidden = false;
-  window.scrollTo({ top: document.getElementById("panel-users").offsetTop - 100, behavior: "smooth" });
-  document.getElementById("user-name").focus();
+  openFormCard("user-form-card", "panel-users", "user-name");
 }
 
 function closeUserForm() {
@@ -210,24 +258,16 @@ document.getElementById("user-save").addEventListener("click", async () => {
   }
   if (!payload.password) delete payload.password; // editando sem trocar senha
 
-  const url = id ? `/api/admin/users/${id}` : "/api/admin/users";
-  const method = id ? "PUT" : "POST";
-
-  const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: "same-origin",
-    body: JSON.stringify(payload),
+  await submitForm({
+    id,
+    baseUrl: "/api/admin/users",
+    payload,
+    status,
+    onSuccess: () => {
+      closeUserForm();
+      loadUsers();
+    },
   });
-
-  if (res.ok) {
-    closeUserForm();
-    loadUsers();
-  } else {
-    const body = await res.json().catch(() => ({}));
-    status.textContent = body.error || "Falha ao salvar.";
-    status.classList.add("error");
-  }
 });
 
 async function loadMeds() {
@@ -268,9 +308,7 @@ async function loadMeds() {
 }
 
 function openMedForm() {
-  document.getElementById("med-form-card").hidden = false;
-  window.scrollTo({ top: document.getElementById("panel-meds").offsetTop - 100, behavior: "smooth" });
-  document.getElementById("med-name").focus();
+  openFormCard("med-form-card", "panel-meds", "med-name");
 }
 
 function closeMedForm() {
@@ -278,31 +316,39 @@ function closeMedForm() {
   resetMedForm();
 }
 
+// Mapa campo do form -> propriedade do medicamento (com transformação opcional
+// pro texto do input). Usado tanto por fillMedForm quanto por resetMedForm,
+// pra um campo novo (ex.: presentations, no passado) não poder ser esquecido
+// em só um dos dois — a lista de campos existe uma vez só.
+const MED_FORM_FIELDS = [
+  ["name", (m) => m.name || ""],
+  ["category", (m) => m.category || ""],
+  ["indication", (m) => m.indication || ""],
+  ["dose", (m) => m.dose_mg_per_kg ?? ""],
+  ["dose-unit", (m) => m.dose_unit || ""],
+  ["frequency", (m) => m.frequency || ""],
+  ["max", (m) => m.max_dose_mg ?? ""],
+  ["route", (m) => m.route || ""],
+  ["presentation", (m) => m.presentation || ""],
+  ["notes", (m) => m.notes || ""],
+  ["presentations", (m) => serializePresentations(m.presentations)],
+  ["source-name", (m) => m.source_name || ""],
+  ["source-url", (m) => m.source_url || ""],
+];
+
 function fillMedForm(med) {
   document.getElementById("med-form-title").textContent = "Editar medicamento";
   document.getElementById("med-id").value = med.id;
-  document.getElementById("med-name").value = med.name || "";
-  document.getElementById("med-category").value = med.category || "";
-  document.getElementById("med-indication").value = med.indication || "";
-  document.getElementById("med-dose").value = med.dose_mg_per_kg ?? "";
-  document.getElementById("med-dose-unit").value = med.dose_unit || "";
-  document.getElementById("med-frequency").value = med.frequency || "";
-  document.getElementById("med-max").value = med.max_dose_mg ?? "";
-  document.getElementById("med-route").value = med.route || "";
-  document.getElementById("med-presentation").value = med.presentation || "";
-  document.getElementById("med-notes").value = med.notes || "";
-  document.getElementById("med-presentations").value = serializePresentations(med.presentations);
-  document.getElementById("med-source-name").value = med.source_name || "";
-  document.getElementById("med-source-url").value = med.source_url || "";
+  MED_FORM_FIELDS.forEach(([field, getValue]) => {
+    document.getElementById(`med-${field}`).value = getValue(med);
+  });
   openMedForm();
 }
 
 function resetMedForm() {
   document.getElementById("med-form-title").textContent = "Adicionar medicamento";
   document.getElementById("med-id").value = "";
-  ["name", "category", "indication", "dose", "dose-unit", "frequency", "max", "route", "presentation", "notes", "presentations", "source-name", "source-url"].forEach(
-    (field) => (document.getElementById(`med-${field}`).value = "")
-  );
+  MED_FORM_FIELDS.forEach(([field]) => (document.getElementById(`med-${field}`).value = ""));
 }
 
 document.getElementById("med-add-btn").addEventListener("click", () => {
@@ -318,6 +364,16 @@ document.getElementById("med-save").addEventListener("click", async () => {
   status.className = "form-status";
 
   const id = document.getElementById("med-id").value;
+
+  const { presentations, invalidLines } = parsePresentationsText(document.getElementById("med-presentations").value);
+  if (invalidLines.length) {
+    status.textContent = `Linha(s) de apresentação inválida(s) (formato "rótulo | mg/mL", concentração > 0): ${invalidLines
+      .map((l) => `"${l}"`)
+      .join(", ")}. Corrija ou remova antes de salvar.`;
+    status.classList.add("error");
+    return;
+  }
+
   const payload = {
     name: document.getElementById("med-name").value.trim(),
     category: document.getElementById("med-category").value.trim(),
@@ -329,7 +385,7 @@ document.getElementById("med-save").addEventListener("click", async () => {
     route: document.getElementById("med-route").value.trim() || null,
     presentation: document.getElementById("med-presentation").value.trim() || null,
     notes: document.getElementById("med-notes").value.trim() || null,
-    presentations: parsePresentationsText(document.getElementById("med-presentations").value),
+    presentations,
     source_name: document.getElementById("med-source-name").value.trim(),
     source_url: document.getElementById("med-source-url").value.trim(),
   };
@@ -340,22 +396,14 @@ document.getElementById("med-save").addEventListener("click", async () => {
     return;
   }
 
-  const url = id ? `/api/admin/medications/${id}` : "/api/admin/medications";
-  const method = id ? "PUT" : "POST";
-
-  const res = await fetch(url, {
-    method,
-    headers: { "Content-Type": "application/json" },
-    credentials: "same-origin",
-    body: JSON.stringify(payload),
+  await submitForm({
+    id,
+    baseUrl: "/api/admin/medications",
+    payload,
+    status,
+    onSuccess: () => {
+      closeMedForm();
+      loadMeds();
+    },
   });
-
-  if (res.ok) {
-    closeMedForm();
-    loadMeds();
-  } else {
-    const body = await res.json().catch(() => ({}));
-    status.textContent = body.error || "Falha ao salvar.";
-    status.classList.add("error");
-  }
 });

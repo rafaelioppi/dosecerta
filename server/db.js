@@ -29,12 +29,6 @@ function ensureColumn(table, column, ddl) {
   }
 }
 
-ensureColumn("medications", "presentations", "TEXT");
-// presentations = JSON array de { label, concentration_mg_per_ml } das
-// apresentações líquidas do medicamento (xarope/suspensão/solução/gotas).
-// O calculador usa estas concentrações pra converter mg -> mL. NULL = o
-// medicamento não tem apresentação líquida com concentração conhecida.
-
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -73,6 +67,12 @@ db.exec(`
     expires INTEGER NOT NULL
   );
 `);
+
+ensureColumn("medications", "presentations", "TEXT");
+// presentations = JSON array de { label, concentration_mg_per_ml } das
+// apresentações líquidas do medicamento (xarope/suspensão/solução/gotas).
+// O calculador usa estas concentrações pra converter mg -> mL. NULL = o
+// medicamento não tem apresentação líquida com concentração conhecida.
 
 /**
  * Executa `fn` dentro de uma transação SQLite manual (node:sqlite não tem o

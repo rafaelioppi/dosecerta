@@ -97,8 +97,21 @@ meds.forEach((m) => {
 });
 
 // ---- 7. Regra de consistência "contraindicado" ----
+// Mesma lógica de detecção usada em public/calculadora.html (categoryFlag):
+// minúsculo + sem acento + substring "contraindicado". Mantida em sincronia
+// de propósito — as duas decidem a mesma coisa (é ou não contraindicado) e
+// precisam concordar, senão o auditor offline pode aprovar uma categoria que
+// a calculadora ao vivo trataria como alerta de segurança, ou vice-versa.
+function isContraindicatedCategory(category) {
+  const norm = String(category ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+  return norm.includes("contraindicado");
+}
+
 meds.forEach((m) => {
-  const isContraindicated = /contraindicad/i.test(m.category);
+  const isContraindicated = isContraindicatedCategory(m.category);
   if (isContraindicated && m.dose_mg_per_kg != null) {
     errors.push(`[${m.name}] categoria diz "contraindicado" mas tem dose_mg_per_kg=${m.dose_mg_per_kg} cadastrada — isso faria a calculadora sugerir uma dose pra algo que não deveria ter dose sugerida`);
   }
@@ -193,8 +206,13 @@ meds.forEach((m) => {
 // ---- Relatório ----
 console.log(`\nAuditoria offline de ${meds.length} medicamentos (${SEED_PATH})\n`);
 
+// Uma passada só pro relatório de contagem por categoria, em vez de refiltrar
+// o array inteiro uma vez por categoria (O(categorias × meds)).
+const categoryCounts = new Map();
+meds.forEach((m) => categoryCounts.set(m.category, (categoryCounts.get(m.category) || 0) + 1));
+
 console.log(`Categorias distintas (${categories.length}):`);
-categories.sort().forEach((c) => console.log(`  · ${c} — ${meds.filter((m) => m.category === c).length} item(ns)`));
+categories.sort().forEach((c) => console.log(`  · ${c} — ${categoryCounts.get(c)} item(ns)`));
 
 console.log(`\n❌ Erros (${errors.length}) — dado inconsistente, corrigir:`);
 errors.forEach((e) => console.log(`  - ${e}`));
