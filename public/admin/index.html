@@ -22,6 +22,24 @@
       <p>Usuários e catálogo de medicamentos.</p>
     </div>
 
+    <div class="stats-row" id="admin-stats">
+      <div class="stat-card">
+        <span class="stat-card__value" id="stat-users-total">—</span>
+        <span class="stat-card__label">Usuários</span>
+        <span class="stat-card__sub" id="stat-users-breakdown"></span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value" id="stat-meds-total">—</span>
+        <span class="stat-card__label">Medicamentos no catálogo</span>
+        <span class="stat-card__sub" id="stat-meds-categories"></span>
+      </div>
+      <div class="stat-card stat-card--warning" id="stat-meds-issues-card" hidden>
+        <span class="stat-card__value" id="stat-meds-issues">0</span>
+        <span class="stat-card__label">Com pendência</span>
+        <span class="stat-card__sub">Dose + teto sem "Teto é por..." definido</span>
+      </div>
+    </div>
+
     <div class="tabs" role="tablist">
       <button class="tab-btn is-active" data-tab="users">Usuários</button>
       <button class="tab-btn" data-tab="meds">Medicamentos</button>
@@ -29,7 +47,17 @@
 
     <!-- ===== Usuários ===== -->
     <section class="tab-panel is-active" id="panel-users">
-      <button class="btn btn--primary" id="user-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar usuário</button>
+      <div class="toolbar">
+        <button class="btn btn--primary" id="user-add-btn">+ Adicionar usuário</button>
+        <div class="toolbar__filters">
+          <input type="search" id="user-search" class="toolbar__search" placeholder="Buscar por nome ou e-mail…" aria-label="Buscar usuário" />
+          <select id="user-role-filter" aria-label="Filtrar por papel">
+            <option value="">Todos os papéis</option>
+            <option value="admin">Admin</option>
+            <option value="professional">Profissional</option>
+          </select>
+        </div>
+      </div>
 
       <div class="card form-card" id="user-form-card" style="max-width:520px; margin-bottom:var(--space-lg);" hidden>
         <h3 id="user-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar usuário</h3>
@@ -68,19 +96,43 @@
         <p class="form-status" id="user-status" role="status" aria-live="polite"></p>
       </div>
 
+      <p class="table-group-label">Admins</p>
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Criado em</th><th></th></tr>
+            <tr><th>Nome</th><th>E-mail</th><th>Conselho</th><th>Criado em</th><th></th></tr>
           </thead>
-          <tbody id="users-tbody"></tbody>
+          <tbody id="users-admin-tbody"></tbody>
         </table>
       </div>
+
+      <p class="table-group-label">Profissionais</p>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Nome</th><th>E-mail</th><th>Conselho</th><th>Criado em</th><th></th></tr>
+          </thead>
+          <tbody id="users-professional-tbody"></tbody>
+        </table>
+      </div>
+      <p class="table-empty" id="users-empty" hidden>Nenhum usuário encontrado com esse filtro.</p>
     </section>
 
     <!-- ===== Medicamentos ===== -->
     <section class="tab-panel" id="panel-meds">
-      <button class="btn btn--primary" id="med-add-btn" style="margin-bottom:var(--space-lg);">+ Adicionar medicamento</button>
+      <div class="toolbar">
+        <button class="btn btn--primary" id="med-add-btn">+ Adicionar medicamento</button>
+        <div class="toolbar__filters">
+          <input type="search" id="med-search" class="toolbar__search" placeholder="Buscar por nome…" aria-label="Buscar medicamento" />
+          <select id="med-category-filter" aria-label="Filtrar por categoria">
+            <option value="">Todas as categorias</option>
+          </select>
+          <label class="toolbar__checkbox">
+            <input type="checkbox" id="med-issues-filter" />
+            Só com pendência
+          </label>
+        </div>
+      </div>
 
       <div class="card form-card" id="med-form-card" style="max-width:720px; margin-bottom:var(--space-lg);" hidden>
         <h3 id="med-form-title" style="font-family:var(--font-heading); margin-bottom:var(--space-md);">Adicionar medicamento</h3>
@@ -139,11 +191,12 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Nome</th><th>Categoria</th><th>Dose</th><th>Fonte</th><th></th></tr>
+            <tr><th>Nome</th><th>Dose</th><th>Teto é por…</th><th>Tomadas/dia</th><th>Fonte</th><th></th></tr>
           </thead>
           <tbody id="meds-tbody"></tbody>
         </table>
       </div>
+      <p class="table-empty" id="meds-empty" hidden>Nenhum medicamento encontrado com esse filtro.</p>
     </section>
   </main>
 

@@ -429,3 +429,148 @@ section:nth-of-type(even) {
 .data-table tr[data-flag="warning"] {
   box-shadow: inset 3px 0 0 var(--color-alert-500);
 }
+
+.data-table tbody tr:nth-child(even) {
+  background: var(--color-bg-alt);
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+/* ===== Cards de resumo (topo do admin) ===== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
+
+.stat-card__value {
+  font-family: var(--font-heading);
+  font-size: var(--fs-2xl);
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.1;
+}
+
+.stat-card__label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.stat-card__sub {
+  font-size: var(--fs-xs);
+  color: var(--color-text-muted);
+}
+
+.stat-card--warning {
+  border-color: color-mix(in srgb, var(--color-alert-500) 40%, var(--color-border));
+  background: color-mix(in srgb, var(--color-alert-500) 6%, var(--color-surface));
+}
+
+.stat-card--warning .stat-card__value {
+  color: var(--color-alert-500);
+}
+
+/* ===== Barra de busca/filtro acima de cada tabela ===== */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.toolbar__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.toolbar__search,
+.toolbar__filters select {
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.8rem;
+  font-size: var(--fs-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transition: border-color var(--transition-fast);
+}
+
+.toolbar__search:focus,
+.toolbar__filters select:focus {
+  border-color: var(--color-accent-500);
+}
+
+.toolbar__search {
+  min-width: 220px;
+}
+
+.toolbar__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.toolbar__checkbox input {
+  width: auto;
+}
+
+/* Cabeçalho de grupo dentro da tabela de medicamentos (uma linha por categoria) */
+.data-table tr.table-group-row td {
+  background: var(--color-bg-alt);
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-strong);
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.data-table tr.table-group-row:hover td {
+  background: var(--color-bg-alt);
+}
+
+/* Rótulo de seção acima de uma tabela (ex.: "Admins" / "Profissionais") */
+.table-group-label {
+  font-family: var(--font-heading);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin: var(--space-md) 0 var(--space-xs);
+}
+
+.table-group-label:first-of-type {
+  margin-top: 0;
+}
+
+.table-empty {
+  color: var(--color-text-muted);
+  font-size: var(--fs-sm);
+  padding: var(--space-md) 0;
+  text-align: center;
+}
