@@ -119,33 +119,69 @@ function parsePresentationsText(text) {
 }
 
 /* ===== Usuários ===== */
+// Cache em memória da última carga: os filtros (busca/papel) rodam sobre ela
+// sem refazer o fetch, e o resumo (stat cards) também lê daqui.
+let allUsers = [];
+
 async function loadUsers() {
   const res = await fetch("/api/admin/users", { credentials: "same-origin" });
   if (!res.ok) return;
-  const users = await res.json();
+  allUsers = await res.json();
+  renderUserStats();
+  renderUsers();
+}
 
-  document.getElementById("users-tbody").innerHTML = users
-    .map(
-      (u) => `
+function renderUserStats() {
+  const admins = allUsers.filter((u) => u.role === "admin").length;
+  document.getElementById("stat-users-total").textContent = allUsers.length;
+  document.getElementById("stat-users-breakdown").textContent = `${admins} admin${admins === 1 ? "" : "s"} · ${
+    allUsers.length - admins
+  } profissional(is)`;
+}
+
+function userRow(u) {
+  return `
     <tr>
       <td>${escapeHtml(u.name)}</td>
       <td>${escapeHtml(u.email)}</td>
-      <td><span class="tag${u.role === "admin" ? " tag--rescue" : ""}">${u.role === "admin" ? "Admin" : "Profissional"}</span></td>
+      <td>${u.council_type || u.council_number ? escapeHtml([u.council_type, u.council_number].filter(Boolean).join(" ")) : "—"}</td>
       <td>${new Date(u.created_at).toLocaleDateString("pt-BR")}</td>
       <td style="white-space:nowrap;">
         <button class="btn btn--ghost btn--sm" data-edit-user="${u.id}">Editar</button>
       </td>
-    </tr>`
-    )
-    .join("");
+    </tr>`;
+}
+
+// Reaplica busca (nome/e-mail) + filtro de papel sobre allUsers e separa o
+// resultado em duas tabelas (Admins / Profissionais) em vez de uma lista
+// única misturando os dois papéis.
+function renderUsers() {
+  const term = document.getElementById("user-search").value.trim().toLowerCase();
+  const roleFilter = document.getElementById("user-role-filter").value;
+
+  const filtered = allUsers.filter((u) => {
+    if (roleFilter && u.role !== roleFilter) return false;
+    if (!term) return true;
+    return (u.name || "").toLowerCase().includes(term) || (u.email || "").toLowerCase().includes(term);
+  });
+
+  const admins = filtered.filter((u) => u.role === "admin");
+  const professionals = filtered.filter((u) => u.role !== "admin");
+
+  document.getElementById("users-admin-tbody").innerHTML = admins.map(userRow).join("");
+  document.getElementById("users-professional-tbody").innerHTML = professionals.map(userRow).join("");
+  document.getElementById("users-empty").hidden = filtered.length > 0;
 
   document.querySelectorAll("[data-edit-user]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const user = users.find((u) => String(u.id) === btn.dataset.editUser);
+      const user = allUsers.find((u) => String(u.id) === btn.dataset.editUser);
       fillUserForm(user);
     });
   });
 }
+
+document.getElementById("user-search").addEventListener("input", renderUsers);
+document.getElementById("user-role-filter").addEventListener("change", renderUsers);
 
 function openUserForm() {
   openFormCard("user-form-card", "panel-users", "user-name");
@@ -270,30 +306,103 @@ document.getElementById("user-save").addEventListener("click", async () => {
   });
 });
 
+// Igual à regra de save ([app.js] med-save) e ao check-medications.js: dose
+// + teto preenchidos sem "teto é por..." é o bug que já mordeu 5 medicamentos
+// (ver memória max-dose-basis-schema) — a listagem precisa deixar isso visível
+// sem precisar abrir cada medicamento pra editar.
+function medHasBasisIssue(m) {
+  return m.dose_mg_per_kg != null && m.max_dose_mg != null && !m.max_dose_basis;
+}
+
+const MAX_BASIS_LABELS = { per_dose: "Tomada", per_day: "Dia", per_session: "Sessão" };
+
+let allMeds = [];
+
 async function loadMeds() {
   const res = await fetch("/api/admin/medications", { credentials: "same-origin" });
   if (!res.ok) return;
-  const meds = await res.json();
+  allMeds = await res.json();
+  populateCategoryFilter();
+  renderMedStats();
+  renderMeds();
+}
 
-  document.getElementById("meds-tbody").innerHTML = meds
-    .map(
-      (m) => `
-    <tr>
+function populateCategoryFilter() {
+  const select = document.getElementById("med-category-filter");
+  const current = select.value;
+  const categories = [...new Set(allMeds.map((m) => m.category).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  select.innerHTML =
+    `<option value="">Todas as categorias</option>` +
+    categories.map((c) => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+  if (categories.includes(current)) select.value = current;
+}
+
+function renderMedStats() {
+  const categories = new Set(allMeds.map((m) => m.category).filter(Boolean));
+  const issues = allMeds.filter(medHasBasisIssue).length;
+  document.getElementById("stat-meds-total").textContent = allMeds.length;
+  document.getElementById("stat-meds-categories").textContent = `${categories.size} categoria(s)`;
+  document.getElementById("stat-meds-issues-card").hidden = issues === 0;
+  document.getElementById("stat-meds-issues").textContent = issues;
+}
+
+function medRow(m) {
+  const issue = medHasBasisIssue(m);
+  const basisTag = m.max_dose_basis
+    ? `<span class="tag">${MAX_BASIS_LABELS[m.max_dose_basis] || escapeHtml(m.max_dose_basis)}</span>`
+    : issue
+    ? `<span class="tag tag--warning">Faltando</span>`
+    : "—";
+  return `
+    <tr${issue ? ' data-flag="warning"' : ""}>
       <td>${escapeHtml(m.name)}</td>
-      <td>${escapeHtml(m.category)}</td>
       <td>${m.dose_mg_per_kg != null ? m.dose_mg_per_kg + " " + escapeHtml(m.dose_unit || "") : "ver notas"}</td>
+      <td>${basisTag}</td>
+      <td>${m.doses_per_day != null ? escapeHtml(String(m.doses_per_day)) + "x" : "—"}</td>
       <td><a href="${m.source_url}" target="_blank" rel="noopener noreferrer">${escapeHtml(m.source_name)}</a></td>
       <td style="white-space:nowrap;">
         <button class="btn btn--ghost btn--sm" data-edit="${m.id}">Editar</button>
         <button class="btn btn--ghost btn--sm" data-delete="${m.id}">Excluir</button>
       </td>
-    </tr>`
-    )
+    </tr>`;
+}
+
+// Reaplica busca/categoria/pendência sobre allMeds e agrupa o resultado por
+// categoria (uma linha de cabeçalho por grupo) em vez de uma lista plana —
+// era o jeito que fazia achar "todos os antieméticos" exigir rolar a tabela
+// toda lendo a coluna Categoria linha a linha.
+function renderMeds() {
+  const term = document.getElementById("med-search").value.trim().toLowerCase();
+  const categoryFilter = document.getElementById("med-category-filter").value;
+  const onlyIssues = document.getElementById("med-issues-filter").checked;
+
+  const filtered = allMeds.filter((m) => {
+    if (categoryFilter && m.category !== categoryFilter) return false;
+    if (onlyIssues && !medHasBasisIssue(m)) return false;
+    if (!term) return true;
+    return (m.name || "").toLowerCase().includes(term);
+  });
+
+  const byCategory = new Map();
+  filtered.forEach((m) => {
+    const key = m.category || "Sem categoria";
+    if (!byCategory.has(key)) byCategory.set(key, []);
+    byCategory.get(key).push(m);
+  });
+  const categories = [...byCategory.keys()].sort((a, b) => a.localeCompare(b, "pt-BR"));
+
+  document.getElementById("meds-tbody").innerHTML = categories
+    .map((cat) => {
+      const meds = byCategory.get(cat).sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+      const groupHeader = `<tr class="table-group-row"><td colspan="6">${escapeHtml(cat)} · ${meds.length}</td></tr>`;
+      return groupHeader + meds.map(medRow).join("");
+    })
     .join("");
+  document.getElementById("meds-empty").hidden = filtered.length > 0;
 
   document.querySelectorAll("[data-edit]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const med = meds.find((m) => String(m.id) === btn.dataset.edit);
+      const med = allMeds.find((m) => String(m.id) === btn.dataset.edit);
       fillMedForm(med);
     });
   });
@@ -306,6 +415,10 @@ async function loadMeds() {
     });
   });
 }
+
+document.getElementById("med-search").addEventListener("input", renderMeds);
+document.getElementById("med-category-filter").addEventListener("change", renderMeds);
+document.getElementById("med-issues-filter").addEventListener("change", renderMeds);
 
 function openMedForm() {
   openFormCard("med-form-card", "panel-meds", "med-name");
