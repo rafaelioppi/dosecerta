@@ -531,6 +531,12 @@ contact-form {
   min-height: 120px;
 }
 
+.field-help {
+  margin: 0;
+  font-size: var(--fs-2xs);
+  color: var(--color-text-muted);
+}
+
 .field.has-error input,
 .field.has-error textarea {
   border-color: var(--color-alert-500);

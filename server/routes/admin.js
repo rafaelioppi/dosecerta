@@ -130,6 +130,8 @@ function normalizePresentations(value) {
 // Campos compartilhados entre criar e editar um medicamento — mesma forma nos
 // dois INSERTs/UPDATEs, pra um campo novo (ex.: presentations, no passado)
 // não poder ser adicionado em só um dos dois caminhos por esquecimento.
+const VALID_MAX_DOSE_BASIS = ["per_dose", "per_day", "per_session"];
+
 function medicationFields(m) {
   return {
     name: m.name,
@@ -144,12 +146,22 @@ function medicationFields(m) {
     notes: m.notes || null,
     source_name: m.source_name,
     source_url: m.source_url,
+    max_dose_basis: VALID_MAX_DOSE_BASIS.includes(m.max_dose_basis) ? m.max_dose_basis : null,
+    doses_per_day: Number.isFinite(Number(m.doses_per_day)) && m.doses_per_day !== null && m.doses_per_day !== ""
+      ? Number(m.doses_per_day)
+      : null,
   };
 }
 
 function validateMedicationFields(m) {
   if (!m.name || !m.category || !m.source_name || !m.source_url) {
     return "name, category, source_name e source_url são obrigatórios.";
+  }
+  // Mesma regra do server/scripts/check-medications.js: sem isso o servidor
+  // de cálculo não sabe se max_dose_mg é teto por tomada ou por dia (ver
+  // achado da auditoria de 16/ago/2026 — routes/medications.js).
+  if (m.dose_mg_per_kg != null && m.max_dose_mg != null && !VALID_MAX_DOSE_BASIS.includes(m.max_dose_basis)) {
+    return `max_dose_basis é obrigatório (${VALID_MAX_DOSE_BASIS.join(", ")}) quando dose_mg_per_kg e max_dose_mg estão preenchidos.`;
   }
   return null;
 }
@@ -163,9 +175,11 @@ router.post("/medications", (req, res) => {
     .prepare(
       `INSERT INTO medications
         (name, category, indication, dose_mg_per_kg, dose_unit, frequency, max_dose_mg,
-         route, presentation, notes, source_name, source_url, presentations, created_by)
+         route, presentation, notes, source_name, source_url, presentations, created_by,
+         max_dose_basis, doses_per_day)
        VALUES (@name, @category, @indication, @dose_mg_per_kg, @dose_unit, @frequency, @max_dose_mg,
-               @route, @presentation, @notes, @source_name, @source_url, @presentations, @created_by)`
+               @route, @presentation, @notes, @source_name, @source_url, @presentations, @created_by,
+               @max_dose_basis, @doses_per_day)`
     )
     .run({
       ...medicationFields(m),
@@ -195,6 +209,7 @@ router.put("/medications/:id", (req, res) => {
        dose_mg_per_kg = @dose_mg_per_kg, dose_unit = @dose_unit, frequency = @frequency,
        max_dose_mg = @max_dose_mg, route = @route, presentation = @presentation, notes = @notes,
        source_name = @source_name, source_url = @source_url, presentations = @presentations,
+       max_dose_basis = @max_dose_basis, doses_per_day = @doses_per_day,
        updated_at = datetime('now')
      WHERE id = @id`
   ).run({

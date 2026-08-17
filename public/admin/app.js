@@ -328,6 +328,8 @@ const MED_FORM_FIELDS = [
   ["dose-unit", (m) => m.dose_unit || ""],
   ["frequency", (m) => m.frequency || ""],
   ["max", (m) => m.max_dose_mg ?? ""],
+  ["max-basis", (m) => m.max_dose_basis || ""],
+  ["doses-per-day", (m) => m.doses_per_day ?? ""],
   ["route", (m) => m.route || ""],
   ["presentation", (m) => m.presentation || ""],
   ["notes", (m) => m.notes || ""],
@@ -382,6 +384,10 @@ document.getElementById("med-save").addEventListener("click", async () => {
     dose_unit: document.getElementById("med-dose-unit").value.trim() || null,
     frequency: document.getElementById("med-frequency").value.trim() || null,
     max_dose_mg: document.getElementById("med-max").value ? Number(document.getElementById("med-max").value) : null,
+    max_dose_basis: document.getElementById("med-max-basis").value || null,
+    doses_per_day: document.getElementById("med-doses-per-day").value
+      ? Number(document.getElementById("med-doses-per-day").value)
+      : null,
     route: document.getElementById("med-route").value.trim() || null,
     presentation: document.getElementById("med-presentation").value.trim() || null,
     notes: document.getElementById("med-notes").value.trim() || null,
@@ -392,6 +398,15 @@ document.getElementById("med-save").addEventListener("click", async () => {
 
   if (!payload.name || !payload.category || !payload.source_name || !payload.source_url) {
     status.textContent = "Nome, categoria e fonte (nome + URL) são obrigatórios — não cadastre sem fonte.";
+    status.classList.add("error");
+    return;
+  }
+
+  // Mesma regra do check-medications.js (auditoria de 16/ago/2026): sem
+  // "teto é por..." preenchido, a calculadora não sabe se corta o valor
+  // calculado por tomada ou o total do dia — e errava justo nesse ponto.
+  if (payload.dose_mg_per_kg != null && payload.max_dose_mg != null && !payload.max_dose_basis) {
+    status.textContent = 'Preencha "Teto é por..." — obrigatório sempre que Dose (mg/kg) e Dose máxima estiverem preenchidas juntas.';
     status.classList.add("error");
     return;
   }

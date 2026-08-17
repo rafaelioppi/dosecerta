@@ -192,6 +192,51 @@ meds.forEach((m) => {
   }
 });
 
+// ---- 11a. max_dose_basis obrigatório sempre que dá pra aplicar teto ----
+// Achado da auditoria de 16/ago/2026: sem esse campo, o servidor não sabia
+// se max_dose_mg era teto por TOMADA ou por DIA e cortava sempre no valor
+// por tomada — errado em pelo menos 5 itens (Ibuprofeno, Claritromicina,
+// Domperidona, Dimenidrinato gotas, Hidroxizina) para pesos dentro da própria
+// faixa aceita pela calculadora (0,5-150 kg).
+const VALID_BASIS = ["per_dose", "per_day", "per_session"];
+meds.forEach((m) => {
+  if (m.dose_mg_per_kg != null && m.max_dose_mg != null) {
+    if (!m.max_dose_basis) {
+      errors.push(`[${m.name}] tem dose_mg_per_kg e max_dose_mg mas não tem max_dose_basis — o servidor não vai saber se o teto é por dose, por dia ou por sessão`);
+    } else if (!VALID_BASIS.includes(m.max_dose_basis)) {
+      errors.push(`[${m.name}] max_dose_basis="${m.max_dose_basis}" fora do vocabulário (${VALID_BASIS.join(", ")})`);
+    }
+  }
+});
+
+// ---- 11b. peso no teto da faixa aceita (150 kg) também bate o teste dose×dia ----
+// A checagem #6 usava só 3 kg — pega erro na ponta de baixo, mas os casos reais
+// de teto por dose confundido com teto por tomada acontecem na ponta de CIMA
+// (crianças/adolescentes grandes, ainda dentro dos 150 kg que a calculadora aceita).
+const CALC_MAX_WEIGHT_KG = 150;
+meds.forEach((m) => {
+  if (m.dose_mg_per_kg != null && m.max_dose_mg != null) {
+    const doseAtMaxWeight = m.dose_mg_per_kg * CALC_MAX_WEIGHT_KG;
+    const reachable = doseAtMaxWeight > m.max_dose_mg;
+    const unitIsDaily = /\/dia/i.test(m.dose_unit || "");
+    if (reachable && !unitIsDaily && m.max_dose_basis === "per_day" && m.doses_per_day == null) {
+      errors.push(`[${m.name}] max_dose_basis="per_day" mas dose_unit não é "/dia" e doses_per_day está vazio — o servidor não consegue converter o teto diário num valor por tomada nesse item`);
+    }
+  }
+});
+
+// ---- 11c. apresentação sólida (comprimido/cápsula) não pode ter mg/mL ----
+// Achado nº4 da auditoria: "Comprimido 250 mg" com concentration_mg_per_ml
+// fazia a calculadora dividir a dose por 250 e devolver o resultado em
+// mililitros de um comprimido sólido.
+meds.forEach((m) => {
+  (Array.isArray(m.presentations) ? m.presentations : []).forEach((p, i) => {
+    if (p && /comprimido|c[áa]psula/i.test(p.label || "") && p.concentration_mg_per_ml != null) {
+      errors.push(`[${m.name}] presentations[${i}] ("${p.label}") é forma sólida mas tem concentration_mg_per_ml=${p.concentration_mg_per_ml} — a calculadora vai devolver "mL" de um comprimido/cápsula`);
+    }
+  });
+});
+
 // ---- 11. Espaço duplo / espaço nas pontas em campos de texto ----
 ["name", "category", "indication", "notes", "source_name"].forEach((field) => {
   meds.forEach((m) => {

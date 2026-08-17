@@ -106,13 +106,6 @@
           <span id="calc-error-text"></span>
         </p>
 
-        <div class="dose-confirmation calc-confirmation" id="calc-confirmation">
-          <label class="dose-confirmation__checkbox">
-            <input id="calc-confirm-checkbox" type="checkbox" aria-label="Confirmar revisão clínica da dose" />
-            <span><strong>Revisei</strong> indicação, peso, apresentação e frequência. <strong>Esta é uma dose para revisão clínica, não substitui a prescrição.</strong></span>
-          </label>
-        </div>
-
         <button class="btn btn--primary btn--block" id="calc-btn" type="submit">Calcular dose</button>
       </form>
 
@@ -537,7 +530,6 @@
       closeCombo();
       $("med-clear").hidden = false;
       $("step-med").classList.remove("is-invalid");
-      resetClinicalReview();
       // Resultado anterior some junto: dose de um medicamento nunca pode
       // ficar na tela ao lado do nome de outro.
       hideResult();
@@ -617,7 +609,6 @@
       $("med-clear").hidden = true;
       $("med-chosen").hidden = true;
       $("presentation-picker").hidden = true;
-      resetClinicalReview();
       updateWeightStep();
       markSelectedInCatalog();
       hideResult();
@@ -703,7 +694,6 @@
     // Trocar o peso invalida o número que está na tela.
     $("weight").addEventListener("input", () => {
       if (!$("dose-card").hidden) hideResult();
-      resetClinicalReview();
       $("step-weight").classList.remove("is-invalid");
     });
 
@@ -811,19 +801,12 @@
       $("calc-error").hidden = false;
       $("step-med").classList.toggle("is-invalid", field === "med");
       $("step-weight").classList.toggle("is-invalid", field === "weight");
-      $("calc-confirmation").classList.toggle("is-invalid", field === "review");
     }
 
     function hideError() {
       $("calc-error").hidden = true;
       $("step-med").classList.remove("is-invalid");
       $("step-weight").classList.remove("is-invalid");
-      $("calc-confirmation").classList.remove("is-invalid");
-    }
-
-    function resetClinicalReview() {
-      const review = $("calc-confirm-checkbox");
-      if (review) review.checked = false;
     }
 
     function hideResult() {
@@ -858,13 +841,6 @@
         return;
       }
 
-      const review = $("calc-confirm-checkbox");
-      if (!review || !review.checked) {
-        showError("Confirme a revisão clínica antes de calcular: indicação, peso, apresentação e frequência.", "review");
-        review && review.focus();
-        return;
-      }
-
       // Sem dose por kg: 21 dos 58 itens. Não faz sentido exigir peso.
       if (!isPerKg(selectedMed)) {
         renderRule(selectedMed);
@@ -893,7 +869,7 @@
             medicationId: selectedMed.id,
             weightKg: weight,
             presentationIndex: selectedPresentationIndex,
-            confirmed: true, // já validado acima (checkbox de revisão clínica marcado)
+            confirmed: true,
           }),
         });
         body = await res.json();
@@ -997,47 +973,50 @@
       }
     }
 
+    // Rótulo do teto conforme o que a fonte realmente limita — nunca "mg/dia"
+    // fixo. Ver server/routes/medications.js (maxDoseBasis) e a auditoria de
+    // 16/ago/2026 (achado nº3: Hidrocortisona, Ondansetrona, Flumazenil etc.
+    // tinham teto POR DOSE mostrado como se fosse diário).
+    const BASIS_UNIT_LABEL = { per_day: "dia", per_dose: "tomada", per_session: "sessão/procedimento" };
+    const BASIS_LINE_LABEL = { per_day: "no dia", per_dose: "por tomada", per_session: "por sessão" };
+
     function renderDose(med, result, weight) {
       renderHead(med);
       const base = medsById.get(String(med.id)) || selectedMed || {};
-      const unit = String(base.dose_unit || "");
-      const isDaily = /\/dia/i.test(norm(unit));
-      const dosesPerDay = estimateDosesPerDay(base.frequency || "");
+
+      // O servidor já decide tomada-vs-dia usando max_dose_basis/doses_per_day
+      // cadastrados (fonte única de verdade — ver medications.js). O regex
+      // sobre `frequency` só entra como reforço se o registro ainda não tiver
+      // doses_per_day migrado no banco.
+      const dosesPerDay = result.dosesPerDay != null ? Number(result.dosesPerDay) : estimateDosesPerDay(base.frequency || "");
+      const basis = result.maxDoseBasis || (/\/dia/i.test(String(base.dose_unit || "")) ? "per_day" : "per_dose");
       const tpd = timesPerDayLabel(dosesPerDay, base.frequency || "");
 
       $("dose-rule").hidden = true;
       $("dose-readout-wrap").hidden = false;
       $("dose-kind-hint").hidden = true;
-      resetClinicalReview();
 
       const pres = result.presentation;
       const hasMl = result.doseMl != null && pres && Number(pres.concentration_mg_per_ml) > 0;
-      const conc = hasMl ? Number(pres.concentration_mg_per_ml) : null;
 
-      // Esquema mg/kg/dia só vira "por tomada" quando a fonte diz quantas vezes.
-      const canSplit = isDaily && dosesPerDay && dosesPerDay > 0;
+      // Dose por tomada e total do dia já vêm calculados e capeados pelo
+      // servidor — o cliente só formata, não recalcula (evita as duas pontas
+      // divergirem sobre o que é "por tomada").
+      const perDoseMg = result.doseMg;
+      const perDoseMl = result.doseMl;
+      const dailyMg = result.dailyMg;
+      const dailyMl = result.dailyMl;
 
-      // Cálculo bruto por peso, sem o teto aplicado — usado só pra mostrar a
-      // conta real (mg/kg × peso) e a comparação com o teto, nunca como valor
-      // administrado (esse é sempre result.doseMg/doseMl, já com o teto).
-      const rawDailyMg = Math.round(Number(base.dose_mg_per_kg) * weight * 100) / 100;
-
-      // Dose por tomada em mg. Em mg/kg/dia divide-se o total do dia; em
-      // mg/kg/dose o número da fonte já é a tomada (com o teto já aplicado).
-      let perDoseMg = canSplit ? result.doseMg / dosesPerDay : result.doseMg;
-      perDoseMg = Math.round(perDoseMg * 100) / 100;
-
-      // Volume por tomada quando há concentração conhecida.
-      let perDoseMl = null;
-      if (hasMl) perDoseMl = Math.round((perDoseMg / conc) * 100) / 100;
-
-      const mainValue = hasMl ? perDoseMl : perDoseMg;
+      // Sem perDoseMg (mg/kg/dia sem doses_per_day conhecido), mostra-se o
+      // total do dia como leitura principal, com aviso para o profissional
+      // dividir manualmente pela frequência que vai prescrever.
+      const splitUnknown = perDoseMg == null && dailyMg != null;
+      const mainMg = splitUnknown ? dailyMg : perDoseMg;
+      const mainMl = splitUnknown ? dailyMl : perDoseMl;
+      const mainValue = hasMl && mainMl != null ? mainMl : mainMg;
       $("dose-number").textContent = fmt(mainValue);
-      $("dose-unit").textContent = hasMl ? "mL" : "mg";
+      $("dose-unit").textContent = hasMl && mainMl != null ? "mL" : "mg";
 
-      // Leitura principal: "dose por tomada". Sem frequência para dividir, o
-      // número que sobra é o total do dia — o aviso abaixo explica.
-      const splitUnknown = isDaily && !dosesPerDay;
       $("dose-kind").textContent = splitUnknown ? "total no dia" : "dose por tomada";
       $("dose-kind-icon").textContent = splitUnknown ? "📅" : "💊";
 
@@ -1054,15 +1033,18 @@
       // Conta numa linha só: fonte → mg → mL (o → mostra a conversão pela
       // concentração que está no badge abaixo).
       const kgLine = `${fmt(base.dose_mg_per_kg)} ${escapeHtml(shortUnit(base.dose_unit))} × ${fmt(weight)} kg`;
-      const arrow = hasMl ? ` = ${fmt(perDoseMg)} mg → <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>` : ` = <strong>${escapeHtml(fmt(perDoseMg))} mg</strong>`;
+      // A conta "total do dia ÷ tomadas" só faz sentido de mostrar quando o
+      // teto/valor de fato representa o dia inteiro (basis='per_day') — nos
+      // itens por tomada/sessão (ex.: Hidrocortisona) o número já É a tomada,
+      // dividi-lo de novo pela frequência seria dado errado.
+      const canSplit = basis === "per_day" && !splitUnknown && dailyMg != null && dosesPerDay != null && perDoseMg != null;
+      const arrow = hasMl && perDoseMl != null
+        ? ` = ${fmt(perDoseMg)} mg → <strong>${escapeHtml(fmt(perDoseMl))} mL</strong>`
+        : ` = <strong>${escapeHtml(fmt(mainMg))} mg</strong>`;
       if (canSplit) {
-        // O total do dia na equação é sempre o valor BRUTO (mg/kg × peso), não
-        // o já limitado pelo teto — senão a conta escrita fica falsa quando
-        // cappedByMax (ex.: "50 × 90 = 4000" quando 50×90 é na verdade 4500).
-        // O teto, quando existe, aparece à parte no aviso "dose-cap" abaixo.
-        $("dose-calc").innerHTML = `${kgLine} = ${fmt(rawDailyMg)} mg/dia ÷ ${fmt(dosesPerDay)}${arrow}`;
+        $("dose-calc").innerHTML = `${kgLine} = ${fmt(dailyMg)} mg/dia ÷ ${fmt(dosesPerDay)}${arrow}`;
       } else {
-        $("dose-calc").innerHTML = `${kgLine}${arrow} <em>${splitUnknown ? "total do dia" : "por tomada"}</em>`;
+        $("dose-calc").innerHTML = `${kgLine}${arrow} <em>${splitUnknown ? "total do dia" : BASIS_LINE_LABEL[basis] || "por tomada"}</em>`;
       }
 
       if (splitUnknown) {
@@ -1086,20 +1068,19 @@
 
       const cap = $("dose-cap");
       if (result.cappedByMax) {
-        // O teto da fonte (max_dose_mg / result.doseMl) é sempre um total
-        // DIÁRIO — nunca confundir com o valor "por tomada" mostrado no número
-        // principal. Por isso todo valor aqui é explicitamente rotulado
-        // "no dia", e quando a dose é dividida (canSplit) mostramos também o
-        // valor por tomada já com o teto aplicado, no mesmo par mg/mL que o
-        // profissional vai de fato administrar.
-        const dailyLabel = hasMl
-          ? `${fmt(result.maxDoseMg)} mg/dia (${fmt(result.doseMl)} mL/dia)`
-          : `${fmt(result.maxDoseMg)} mg/dia`;
-        const perDoseNote = canSplit
-          ? ` Por tomada (÷ ${fmt(dosesPerDay)}): ${fmt(perDoseMg)} mg${hasMl ? ` (${fmt(perDoseMl)} mL)` : ""}.`
+        // O rótulo do teto segue max_dose_basis — "mg/dia" só quando o teto É
+        // diário de verdade (basis='per_day'); "por tomada"/"por sessão" nos
+        // demais casos, em vez do "mg/dia" fixo que o código tinha antes.
+        const unitLabel = BASIS_UNIT_LABEL[basis] || "tomada";
+        const capMl = basis === "per_day" ? dailyMl : perDoseMl;
+        const capLabel = hasMl && capMl != null
+          ? `${fmt(result.maxDoseMg)} mg/${unitLabel} (${fmt(capMl)} mL/${unitLabel})`
+          : `${fmt(result.maxDoseMg)} mg/${unitLabel}`;
+        const perDoseNote = basis === "per_day" && canSplit
+          ? ` Por tomada (÷ ${fmt(dosesPerDay)}): ${fmt(perDoseMg)} mg${hasMl && perDoseMl != null ? ` (${fmt(perDoseMl)} mL)` : ""}.`
           : "";
         $("dose-cap-text").innerHTML =
-          `<strong>Limitado ao teto de ${dailyLabel}.</strong> O cálculo por peso daria ${fmt(rawDailyMg)} mg/dia — o teto da fonte prevalece.${perDoseNote}`;
+          `<strong>Limitado ao teto de ${capLabel}.</strong> O cálculo por peso ultrapassaria esse teto — o valor da fonte prevalece.${perDoseNote}`;
         cap.hidden = false;
       } else {
         cap.hidden = true;

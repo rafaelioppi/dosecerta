@@ -724,15 +724,6 @@
     gap: 0;
   }
 
-  .calc-confirmation {
-    margin-bottom: var(--space-md);
-    padding: var(--space-sm);
-    border-width: 2px;
-  }
-
-  .dose-confirmation__checkbox {
-    font-size: var(--fs-2xs);
-  }
 }
 
 .dose-notes {
@@ -829,48 +820,6 @@
   margin-right: 0.35em;
   font-size: 0.95em;
   letter-spacing: 0;
-}
-
-.dose-confirmation {
-  margin-top: var(--space-md);
-  padding: var(--space-sm) var(--space-xs);
-  border: 1px solid color-mix(in srgb, var(--color-accent-500) 22%, transparent);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--color-accent-500) 8%, transparent);
-}
-
-.calc-confirmation {
-  margin-top: 0;
-  margin-bottom: var(--space-sm);
-}
-
-.dose-confirmation.is-invalid {
-  border-color: color-mix(in srgb, var(--color-alert-500) 40%, transparent);
-  background: color-mix(in srgb, var(--color-alert-500) 10%, transparent);
-}
-
-.dose-confirmation__checkbox {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-xs);
-  font-size: var(--fs-xs);
-  color: var(--color-text);
-  line-height: 1.5;
-  cursor: pointer;
-}
-
-.dose-confirmation__checkbox strong {
-  color: var(--color-heading);
-  font-weight: 700;
-}
-
-.dose-confirmation__checkbox input {
-  margin-top: 0.2rem;
-  width: 1rem;
-  height: 1rem;
-  accent-color: var(--color-accent-strong);
-  flex-shrink: 0;
-  cursor: pointer;
 }
 
 .dose-source {
@@ -1136,11 +1085,6 @@
 
   .calc-form {
     padding-bottom: var(--space-md);
-  }
-
-  .calc-confirmation {
-    margin: var(--space-md) 0 var(--space-sm) 0;
-    padding: var(--space-sm);
   }
 
   .dose-empty {

@@ -74,6 +74,23 @@ ensureColumn("medications", "presentations", "TEXT");
 // O calculador usa estas concentrações pra converter mg -> mL. NULL = o
 // medicamento não tem apresentação líquida com concentração conhecida.
 
+ensureColumn("medications", "max_dose_basis", "TEXT");
+// max_dose_basis = 'per_dose' | 'per_day' | 'per_session' | NULL — o que
+// max_dose_mg realmente limita. Sem isso o servidor não tinha como saber se
+// devia cortar o valor calculado por TOMADA ou o total do DIA, e aplicava o
+// teto direto em cima do mg/kg calculado nos dois casos — errado sempre que
+// dose_unit é "/dose" mas o teto da fonte é diário (ex.: Ibuprofeno, 800
+// mg/dia tratado como se fosse 800 mg por tomada). NULL = medicamento sem
+// dose_mg_per_kg ou sem max_dose_mg (teto não se aplica ao cálculo).
+
+ensureColumn("medications", "doses_per_day", "REAL");
+// doses_per_day = número de tomadas em 24h, quando a fonte deixa isso claro
+// na bula (não é estimativa "chutada" a partir de frequency por regex no
+// cliente). Usado para (a) dividir mg/kg/dia em dose por tomada e (b) aplicar
+// max_dose_basis='per_day' corretamente. NULL = sem dose por kg ou fonte não
+// especifica quantas tomadas/dia (a UI cai de volta na leitura do total do
+// dia, com aviso explícito).
+
 /**
  * Executa `fn` dentro de uma transação SQLite manual (node:sqlite não tem o
  * helper `.transaction()` do better-sqlite3). Uso: withTransaction(() => { ... }).
