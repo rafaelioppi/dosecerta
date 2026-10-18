@@ -1,3 +1,4 @@
+# DEPLOY DESATIVADO: serviço desligado de vez pelo dono em 2026-10-14 na VM compartilhada; religar exige ordem do dono e reativar os gatilhos
 name: Deploy DoseCerta
 
 # Deploy automático pra VM de produção a cada push em main. Só sincroniza
@@ -7,8 +8,6 @@ name: Deploy DoseCerta
 # systemd, sem tocar em outros projetos hospedados na mesma VM.
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch: {}
 
 env:
@@ -18,6 +17,7 @@ env:
 
 jobs:
   deploy:
+    if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
